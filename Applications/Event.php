@@ -18,7 +18,7 @@
  */
 use \GatewayWorker\Lib\Gateway;
 use \GatewayWorker\Lib\Store;
-use \Vendors\RedisQuene\Redisq;
+use \Vendors\Redis\Redisq;
 
 class Event
 {
@@ -83,11 +83,11 @@ class Event
                 $client_list = self::formatClientsData(array_unique($all_clients));//用户可能由多个终端登陆，防止显示时显示多个用户名
                 
                 //获取最近的20个联系人
-                $recentMembers = \Vendors\RedisQuene\RedisModel::zrevrange('Default', $client_name.':recentchat:members', 0, 19);
+                $recentMembers = \Vendors\Redis\RedisModel::zrevrange('webChat', $client_name.':recentchat:members', 0, 19);
                 
                 //消息队列中获取离线消息
                 $message_from_list = Redisq::pops(array(
-                    'serverName'  => 'Default', #服务器名，参照见Redis的定义 ResysQ
+                    'serverName'  => 'webChat', #服务器名，参照见Redis的定义 ResysQ
                     'key'         => $client_name.':message:quene',  #队列名
                     'num'         => 50,      #多个数据
                 ));
@@ -140,7 +140,7 @@ class Event
                     'time'    => time(),
                 );
                 Redisq::rpush(array(
-                    'serverName'    => 'Default', #服务器名，参照见Redisa的定义 ResysQ
+                    'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
                     'key'      => 'chat:message-list',  #队列名
                     'value'    => serialize($pushArr),  #插入队列的数据
                 ));
@@ -166,13 +166,13 @@ class Event
                         }else{
                             //注意这里是lpush，为了与ltrim一块使用
                             Redisq::lpush(array(
-                                'serverName'    => 'Default', #服务器名，参照见Redisa的定义 ResysQ
+                                'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
                                 'key'      => $username.':message:quene',  #离线消息队列名
                                 'value'    => serialize($pushArr),  #插入队列的数据
                             ));
                             //保存最新50条
                             Redisq::ltrim(array(
-                                'serverName'  => 'Default',     #服务器名，参照见Redis的定义 ResysQ
+                                'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
                                 'key'         => $username.':message:quene',  #队列名
                                 'offset'      => 0,      #开始索引值
                                 'len'         => 50,      #结束索引值
@@ -206,7 +206,7 @@ class Event
                 $chatid = md5($chatid);
                 
                 $historyList = Redisq::range(array(
-                    'serverName'  => 'Default',     #
+                    'serverName'  => 'webChat',     #
                     'key'         => $chatid.':message-history',  #队列名
                     'offset'      => 0,      #开始索引值
                     'len'         => -1,      #结束索引值

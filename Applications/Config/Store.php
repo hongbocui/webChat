@@ -41,26 +41,26 @@ namespace Config;
  */
 class Store
 {
-    // 使用文件存储，注意使用文件存储无法支持workerman分布式部署
+    // 使用文件存储，
     const DRIVER_FILE = 1;
-    // 使用memcache存储，支持workerman分布式部署
+    // 使用memcache存储，
     const DRIVER_MC = 2;
-    // 使用redis存储（推荐），支持workerman分布式部署
+    // 使用redis存储（推荐），
     const DRIVER_REDIS = 3;
     
      // DRIVER_FILE 或者 DRIVER_MC 或者 DRIVER_REDIS（推荐）
     public static $driver = self::DRIVER_REDIS;
     
     //$driver为DRIVER_MC/DRIVER_REDIS时需要配置memcached/redis服务端ip和端口
-    public static $gateway = array(
-        '172.31.153.49:6379',
-    );
-//     public static $user = array(
-//         '127.0.0.1:6379',
-//     );
+    public static $gateway = [];
     
     // $driver为DRIVER_FILE时要配置此项，实际配置在最下面一行
     public static $storePath = '';
+    public static function getGateway(){
+        if(!self::$gateway)
+            self::$gateway = \Vendors\Redis\RedisModel::$server['webChat'];
+        return self::$gateway;
+    }
 }
 
 // 默认系统临时目录下

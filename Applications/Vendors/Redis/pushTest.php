@@ -7,13 +7,13 @@
 	//require 'Redis.php';
 	//use \Vendors\RedisQuene\Redisq;
     use Vendors\Redis\RedisModel;
-    //RedisModel::set('Default', 'aaa', 'bbbbgggggg');
-//     RedisModel::hashSet('Default', 'aaa', 'bbbbgggggg', 'dddd');
-//      RedisModel::hashSet('Default', 'USER_ONLINE_LIST', 'bbbbggg', 'dddd');
-// 	$res = RedisModel::hashGet('Default', 'aaa');
+    //RedisModel::set('webChat', 'aaa', 'bbbbgggggg');
+//     RedisModel::hashSet('webChat', 'aaa', 'bbbbgggggg', 'dddd');
+//      RedisModel::hashSet('webChat', 'USER_ONLINE_LIST', 'bbbbggg', 'dddd');
+// 	$res = RedisModel::hashGet('webChat', 'aaa');
 // 	var_dump($res);die;
 	
-	$res = RedisModel::hashget('Default', 'USER_ONLINE_LIST');
+	$res = RedisModel::hashget('webChat', 'USER_ONLINE_LIST');
 	var_dump($res);die;
 	if(null === $res){
 	    var_dump($res);
@@ -31,17 +31,17 @@
 	    'time'    => time(),
 	);
 	Redisq::rpush(array(
-            'serverName'    => 'Default', #服务器名，参照见Redisa的定义 ResysQ
+            'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
             'key'      => 'chat:message:quene',  #队列名
             'value'    => serialize($messageVal),  #插入队列的数据
         ));
         $long = Redisq::getSize(array(
-            'serverName'    => 'Default', #服务器名，参照见Redisa的定义 ResysQ
+            'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
             'key'      => 'chat:message:quene',  #队列名
         ));
         var_dump($long);
         $arr = Redisq::range(array(
-            'serverName'  => 'Default',     #服务器名，参照见Redisa的定义 ResysQ
+            'serverName'  => 'webChat',     #服务器名，参照见Redisa的定义 ResysQ
             'key'         => 'chat:message:quene',  #队列名
             'offset'      => 0,      #开始索引值
             'len'         => -1,      #结束索引值

@@ -13,7 +13,7 @@ class RedisModel{
      * 服务器配置
      */
     public static  $server = array(
-        'Default' =>  array( #主服务，本业务的服务器redis
+        'webChat' =>  array( #主服务，本业务的服务器redis
                     'host' => '172.31.153.49', #IP
                     'port' => '6379'           #port
                 ),
@@ -72,6 +72,15 @@ class RedisModel{
         if(!self::$server[$server] || !$key)return false;
         self::init($server);
         return self::$redis->get($key);
+    }
+    /**
+     * 自增
+     */
+    public static function increment($server, $key)
+    {
+        if(!self::$server[$server] || !$key)return false;
+        self::init($server);
+        return self::$redis->incr($key);
     }
 
 

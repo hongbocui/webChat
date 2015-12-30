@@ -75,11 +75,9 @@ class Store
             if(!isset(self::$instance[$config_name]))
             {
                 self::$instance[$config_name] = new \GatewayWorker\Lib\StoreDriver\Redis();
-                // 只选择第一个ip作为服务端
-                $address = current(\Config\Store::$$config_name);
-                list($ip, $port) = explode(':', $address);
+                $address = \Config\Store::getGateway();
                 $timeout = 1;
-                self::$instance[$config_name]->connect($ip, $port, $timeout);
+                self::$instance[$config_name]->connect($address['host'], $address['port'], $timeout);
                 //self::$instance[$config_name]->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
             }
             return self::$instance[$config_name];

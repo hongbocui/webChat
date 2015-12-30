@@ -53,9 +53,9 @@
 	    $chatList = $data['touser'];
 	    $chatStr = implode(',', $chatList);
 	    foreach($chatList as $username){
-	        RedisModel::zAdd('Default', $username.':recentchat:members', $data['time'], $chatStr, 864000);
+	        RedisModel::zAdd('webChat', $username.':recentchat:members', $data['time'], $chatStr, 864000);
 	        //删除十天前的最近联系人
-	        RedisModel::zRemRangeByScore('Default', $username.':recentchat:members', 0,  $data['time']-864000);
+	        RedisModel::zRemRangeByScore('webChat', $username.':recentchat:members', 0,  $data['time']-864000);
 	    }
 	}
 	
@@ -74,13 +74,13 @@
 	    $chatid = md5($chatid);
 	    
 	    Redisq::lpush(array(
-            'serverName'    => 'Default', #服务器名，参照见Redisa的定义 ResysQ
+            'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
             'key'      => $chatid.':message-history',  #队列名
             'value'    => serialize($data),  #插入队列的数据
         ));
 	    //保存最新50条
 	    Redisq::ltrim(array(
-            'serverName'  => 'Default',     #服务器名，参照见Redis的定义 ResysQ
+            'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
             'key'         => $chatid.':message-history',  #队列名
             'offset'      => 0,      #开始索引值
             'len'         => 50,      #结束索引值
@@ -89,7 +89,7 @@
 	 
 	deamonStart(array(
             'queueType'   => 'RedisQ',      #消息队列名称 默认是MQ RedisQ
-            'serverName'  => 'Default',      #ResysQ
+            'serverName'  => 'webChat',      #ResysQ
             'queueName'   => 'chat:message-list',      #要监听的消息队列名
             'jobName'     => 'chat:message-list',      #当前处理的job名称
             'cnName'      => 'itcrm聊天队列',      #中文名称
@@ -97,7 +97,7 @@
             'msgNumAtm'   => 2,       #每次处理的消息数，如果是多个会有合并处理
             'maxSleep'    => 30,      #没有消息的时候，deamon将sleep，如果队列消息不多，尽量设置大点，减少处理压力20+
             'adminMail'   => 'cuihb@ifeng.com',      #接受监控报警的邮件地址，多个地址逗号分割
-            'msgServer'   => 'Default',      #要监听的消息队列服务器名
+            'msgServer'   => 'webChat',      #要监听的消息队列服务器名
             'phpFile'     =>  __FILE__,      #php文件地址
             'life'        => 0,       #程序的生命周期，如果0表示是一直循环的Deamon处理，如果设置了时间，必须采用crontab的形式
 		));
@@ -108,7 +108,7 @@
     function deamonStart($paramArr) {
 		$options = array(
             'queueType'   => 'RedisQ',      #消息队列名称 默认是MQ RedisQ
-            'serverName'  => 'Default',      #ResysQ
+            'serverName'  => 'webChat',      #ResysQ
             'queueName'   => 'cui:first:quene',      #要监听的消息队列名
             'jobName'     => 'cui:first:quene',      #当前处理的job名称
             'cnName'      => '',      #中文名称
@@ -116,7 +116,7 @@
             'msgNumAtm'   => 2,      #每次处理的消息数，如果是多个会有合并处理
             'maxSleep'    => 30,      #没有消息的时候，deamon将sleep，如果队列消息不多，尽量设置大点，减少处理压力
             'adminMail'   => '',      #接受监控报警的邮件地址，多个地址逗号分割
-            'msgServer'   => 'Default',      #要监听的消息队列服务器名
+            'msgServer'   => 'webChat',      #要监听的消息队列服务器名
             'phpFile'     => '',      #php文件地址
             'life'        => 3,       #程序的生命周期，如果0表示是一直循环的Deamon处理，如果设置了时间，必须采用crontab的形式
 		);
