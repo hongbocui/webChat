@@ -1,4 +1,4 @@
-环境：
+1环境：
 linux环境下
 安装php，php需要的扩展：pcntl、posix、redis
 建议安装libevent，高并发性更好
