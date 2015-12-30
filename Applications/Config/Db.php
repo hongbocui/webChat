@@ -7,7 +7,7 @@ namespace Config;
 class Db
 {
 	//客服系统数据库  测试环境
-    public static $itcrm = array(
+    public static $webChat = array(
 		'host' => '172.30.204.95',
 		'port' => '3306',
 		'user' => 'zhanglitao',

@@ -172,7 +172,7 @@
             $tm = time();
             $mustDie = $life && ($tm - $lifeStartTm) > $life ? true : false; #判断生命期,是否该结束了
            if($tm - $startTm > 240 || $mustDie){
-               $db      = \GatewayWorker\Lib\Db::instance('itcrm'); #便于记录运行状态用
+               $db      = \GatewayWorker\Lib\Db::instance('webChat'); #便于记录运行状态用
                $startTm = $tm;
                $nowD    = date("d");
                $sql     = "select * from redisq_deamon_status where job_name = '{$jobName}' and queue_name = '{$queueName}' ";

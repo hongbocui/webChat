@@ -17,20 +17,6 @@ class RedisModel{
                     'host' => '172.31.153.49', #IP
                     'port' => '6379'           #port
                 ),
-//      
-//        'ZCloud1' =>  array( #私有云的Reids
-//                    'host' => '', #IP
-//                    'port' => ''           #port
-//                ),
-//        'ZCloud2' =>  array( #私有云的Reids
-//                    'host' => '', #IP
-//                    'port' => ''           #port
-//                ),
-//        'Mojing1' =>  array( #魔镜的Reids
-//                    'host' => '', #IP
-//                    'port' => ''           #port
-//                ),
-       
     );
     public static function init($server = 'Default'){
         if (!isset(self::$redisArr[$server])){
