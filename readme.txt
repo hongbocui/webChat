@@ -5,19 +5,19 @@ linux环境下
 安装redis并启动
 
 需要修改
-1.Config文件中数据库配置
-2.redis队列自动运行程序中的相关数据/Vendors/RedisQuene/doQuene...
- 	修改表名称等
-3./Vendors/RedisQuene/RedisModel中的redis服务器修改
-
+1.数据库配置 Applications/Config/Db.php
+2.redis配置: Applications/Config/Store.php中redis服务器地址
+			             Vendors/RedisQueue/RedisModel中服务器配置
+需要的库表 （待定）
+  ......
 运行：
-一、根目录下以debug方式启动  
+一、启动聊天服务。根目录下以debug方式启动  
 	```php start.php start  ```
 	以daemon方式启动  
 	```php start.php start -d ```
 	还可以使用 stop reload status 等命令
 	
-二、/Vendors/RedisQuene/ 下运行 php doQuene...
+二、聊天数据保存。/Vendors/RedisQuene/ 下运行 php doQuene...
 
 实现的功能：
 1、所有聊天历史记录永久保存

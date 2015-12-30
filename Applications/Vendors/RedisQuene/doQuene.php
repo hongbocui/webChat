@@ -28,7 +28,7 @@
 	 */
 	function insertData($data){
 	    if(!$data) return false;
-	    $db = \GatewayWorker\Lib\Db::instance('itcrm');
+	    $db = \GatewayWorker\Lib\Db::instance('webChat');
 	    
 	    $chatList = $data['touser'];
 	    if(is_array($chatList) && $chatList)
@@ -40,7 +40,7 @@
 	    
 	    //线上要可以做自动分表处理
 	    $touser = implode(',', $chatList);
-	    $sql = "insert into itcrm_message(chatid, fromuser, tousers, message, time) values('{$chatid}', '{$data['fromuser']}','{$touser}','{$data['message']}','{$data['time']}')";
+	    $sql = "insert into webchat_message(chatid, fromuser, tousers, message, time) values('{$chatid}', '{$data['fromuser']}','{$touser}','{$data['message']}','{$data['time']}')";
 	    $db->query($sql);
 	}
 	
