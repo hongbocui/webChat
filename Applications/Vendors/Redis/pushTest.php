@@ -6,7 +6,7 @@
 	//消息队列，向队列中rpush
 	//require 'Redis.php';
 	//use \Vendors\RedisQuene\Redisq;
-    use Vendors\RedisQuene\RedisModel;
+    use Vendors\Redis\RedisModel;
     //RedisModel::set('Default', 'aaa', 'bbbbgggggg');
 //     RedisModel::hashSet('Default', 'aaa', 'bbbbgggggg', 'dddd');
 //      RedisModel::hashSet('Default', 'USER_ONLINE_LIST', 'bbbbggg', 'dddd');

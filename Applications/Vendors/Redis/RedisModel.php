@@ -1,5 +1,5 @@
 <?php
-namespace Vendors\RedisQuene;
+namespace Vendors\Redis;
 /**
  * Redis类
  */

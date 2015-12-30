@@ -11,8 +11,8 @@
 	 */
 	require_once  '../../../Workerman/Autoloader.php';
 	Autoloader::setRootPath("../../");
-	use Vendors\RedisQuene\Redisq;
-	use Vendors\RedisQuene\RedisModel;
+	use Vendors\Redis\Redisq;
+	use Vendors\Redis\RedisModel;
 	
 	//消息队列回调函数
 	function doQuene($data){

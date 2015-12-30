@@ -1,9 +1,9 @@
 <?php
-namespace Vendors\RedisQuene;
+namespace Vendors\Redis;
 /**
  * Redis队列操作封装
  */
-use Vendors\RedisQuene\RedisModel;
+use Vendors\Redis\RedisModel;
 class Redisq
 {  
     /**
