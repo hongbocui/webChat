@@ -14,8 +14,8 @@ class RedisModel{
      */
     public static  $server = array(
         'webChat' =>  array( #主服务，本业务的服务器redis
-                    'host' => '172.31.153.49', #IP
-                    'port' => '6379'           #port
+                    'host' => '127.0.0.1', #IP
+                    'port' => '6526'           #port
                 ),
     );
     public static function init($server = 'Default'){

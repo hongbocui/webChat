@@ -31,13 +31,8 @@
 	    $db = \GatewayWorker\Lib\Db::instance('webChat');
 	    
 	    $chatList = $data['touser'];
-	    if(is_array($chatList) && $chatList)
-	        sort($chatList);
-	    else
-	        return;
-	    $chatid = implode('_', $chatList);
-	    $chatid = md5($chatid);
-	    
+	    $chatid = Api\Model\Mcommon::setChatId($chatList);
+	    if(!$chatid) return;
 	    //线上要可以做自动分表处理
 	    $touser = implode(',', $chatList);
 	    $sql = "insert into webchat_message(chatid, fromuser, tousers, message, time) values('{$chatid}', '{$data['fromuser']}','{$touser}','{$data['message']}','{$data['time']}')";
@@ -66,12 +61,8 @@
 	    if(!$data) return false;
 	    
 	    $chatList = $data['touser'];
-	    if(is_array($chatList) && $chatList)
-	        sort($chatList);
-	    else
-	        return;
-	    $chatid = implode('_', $chatList);
-	    $chatid = md5($chatid);
+	    $chatid = Api\Model\Mcommon::setChatId($chatList);
+	    if(!$chatid) return;
 	    
 	    Redisq::lpush(array(
             'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ

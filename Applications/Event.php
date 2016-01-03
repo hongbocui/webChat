@@ -198,12 +198,8 @@ class Event
             //获取存于redis中的历史记录: {type:history, fromuser:xx， touser:xxx} 
             case 'history':
                 $chatList = $message_data['touser'];
-                if(is_array($chatList) && $chatList)
-                    sort($chatList);
-                else 
-                    return;
-                $chatid = implode('_', $chatList);
-                $chatid = md5($chatid);
+                $chatid = \Api\Model\Mcommon::setChatId($chatList);
+                if(!$chatid) return;
                 
                 $historyList = Redisq::range(array(
                     'serverName'  => 'webChat',     #
