@@ -8,10 +8,10 @@ class Db
 {
 	//客服系统数据库  测试环境
     public static $webChat = array(
-		'host' => '172.30.204.95',
+		'host' => '127.0.0.1',
 		'port' => '3306',
-		'user' => 'zhanglitao',
-		'password' => 'Xje788x8ETGs4QNErR3D_4q50RHfkz0k',
+		'user' => 'puser',
+		'password' => '',
 		'dbname' => 'webChat',
 		'charset' => 'utf8',
 	);
