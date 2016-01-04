@@ -8,6 +8,4 @@
     $class = rtrim('Api\Controler\ ').ucfirst($_REQUEST['c']);
     $method= "do".ucfirst($_REQUEST['a']);
     $data = Api\ApiConfig::run($class, $method); 
-    
-    var_dump($data);
 ?>
