@@ -4,7 +4,6 @@
     require '../../Workerman/Autoloader.php';
     Autoloader::setRootPath("../");
     
-    //require '../Api/Apiconfig.php';
     //class and method
     $class = rtrim('Api\Controler\ ').ucfirst($_REQUEST['c']);
     $method= "do".ucfirst($_REQUEST['a']);
