@@ -3,7 +3,7 @@
     class Mcommon {
         /**
          * 获取chatid
-         * @param array $chatList 聊天列表
+         * @param array $chatList 聊天人员 域账号数组
          * @return 一组对话的唯一的chatid
          */
         public static function setChatId($chatList) {

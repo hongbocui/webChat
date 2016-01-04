@@ -8,8 +8,11 @@ linux环境下
 1.数据库配置 Applications/Config/Db.php
 2.redis配置: Applications/Config/Store.php中redis服务器地址
 			             Vendors/RedisQueue/RedisModel中服务器配置
-需要的库表 （待定）
-  ......
+需要的库表 
+  库： webChat
+  表： redisq_deamon_status //存储redis队列状态
+  表： webchat_user //用来存储用户数据
+  表：webchat_message年月 //会自动生成，用来存储聊天记录
 运行：
 一、启动聊天服务。根目录下以debug方式启动  
 	```php start.php start  ```

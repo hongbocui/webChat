@@ -33,10 +33,18 @@
 	    $chatList = $data['touser'];
 	    $chatid = Api\Model\Mcommon::setChatId($chatList);
 	    if(!$chatid) return;
-	    //线上要可以做自动分表处理
+	    //自动分表处理
+	    Api\Model\Mmessage::createTable(Api\Model\Mmessage::getTbname());
+	    //插入聊天数据
 	    $touser = implode(',', $chatList);
-	    $sql = "insert into webchat_message(chatid, fromuser, tousers, message, time) values('{$chatid}', '{$data['fromuser']}','{$touser}','{$data['message']}','{$data['time']}')";
-	    $db->query($sql);
+	    $insertData = array(
+	        'chatid'   => $chatid,
+	        'fromuser' => $data['fromuser'],
+	        'tousers'  => $touser,
+	        'message'  => $data['message'],
+	        'time'     => $data['time'],
+	    );
+	    Api\Model\Mmessage::storeMessage($insertData);
 	}
 	
 	/**

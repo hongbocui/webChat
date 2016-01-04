@@ -1,7 +1,20 @@
 <?php 
     namespace Api\Model;
+    /**
+     * @author cuihb
+     * // dbobj 中的几个方法 lastInsertId()、single($query = '',$params = null)、
+     * row($query)、column($query)、query($query)
+     */
     class Muser extends Abstractex{
         public static $usertable = 'webchat_user';
+        //数据库对象
+        public static $db = null;
+        
+        public static function dbobj(){
+            if(null === self::$db)
+                self::$db = \GatewayWorker\Lib\Db::instance('webChat');
+            return self::$db;
+        }
         
         public static function getUserinfo($paramArr) {
             $options = array(
@@ -13,17 +26,16 @@
             extract($options);
             $formatData = self::setSelectField($fields);
             
-            $db = \GatewayWorker\Lib\Db::instance('webChat');
             $where = '';
             if($accountid)
                 $where = " where accountid='{$accountid}' ";
             if($isCount) {
                 $sql = " select count(*) from ".self::$usertable;
-                return $db->single($sql);
+                return self::dbobj()->single($sql);
             }
             
             $sql = "select {$formatData} from ".self::$usertable." {$where}";
-            return $db->query($sql);
+            return self::dbobj()->query($sql);
         }
     }
 ?>

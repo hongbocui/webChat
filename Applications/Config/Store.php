@@ -58,7 +58,7 @@ class Store
     public static $storePath = '';
     public static function getGateway(){
         if(!self::$gateway)
-            self::$gateway = \Vendors\Redis\RedisModel::$server['webChat'];
+            self::$gateway = Redis::$server['webChat'];
         return self::$gateway;
     }
 }

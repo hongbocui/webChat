@@ -1,5 +1,6 @@
 <?php
 namespace Vendors\Redis;
+use Config\Redis;
 /**
  * Redis类
  */
@@ -9,20 +10,11 @@ class RedisModel{
     protected static $redis     = false;  #当前方法操作的redis对象
     protected static $dalCfg    = false;
 
-    /**
-     * 服务器配置
-     */
-    public static  $server = array(
-        'webChat' =>  array( #主服务，本业务的服务器redis
-                    'host' => '127.0.0.1', #IP
-                    'port' => '6526'           #port
-                ),
-    );
     public static function init($server = 'Default'){
         if (!isset(self::$redisArr[$server])){
             if (class_exists("\Redis")) {
                 #获得链接信息
-                $hostInfo        = self::$server[$server];
+                $hostInfo        = Redis::$server[$server];
                 if($hostInfo){
                     #连接redis
                     self::$redis    = new \Redis();
@@ -41,7 +33,7 @@ class RedisModel{
      * 获得Redis链接，可以直接用这个链接进行数据操作
      */
     public static function getLink($server){
-        if(!self::$server[$server])return false;
+        if(!Redis::$server[$server])return false;
         self::init($server);
         return self::$redis;
         
@@ -54,7 +46,7 @@ class RedisModel{
      */
     public static function set($server,$key,$value,$time=86400){
         
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         if ($time <> 0) {
@@ -69,7 +61,7 @@ class RedisModel{
      */
     public static function get($server,$key){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
         return self::$redis->get($key);
     }
@@ -78,7 +70,7 @@ class RedisModel{
      */
     public static function increment($server, $key)
     {
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
         return self::$redis->incr($key);
     }
@@ -89,7 +81,7 @@ class RedisModel{
      */
     public function setMulti($server,$key){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         $keyArr = array();
@@ -106,7 +98,7 @@ class RedisModel{
      * @param subKey 传入的是数组
      */
     public function getMulti($server,$keyArr){
-        if(!self::$server[$server])return false;
+        if(!Redis::$server[$server])return false;
         self::init($server);
 
 
@@ -124,7 +116,7 @@ class RedisModel{
      */
     public static function delete($server,$key){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);        
         return self::$redis->delete($key);
     }
@@ -138,7 +130,7 @@ class RedisModel{
      */
     public static function hashSet($server,$key,$subKey,$value,$time=86400)
     {
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         $re = self::$redis->hSet($key, $subKey, $value);
@@ -152,7 +144,7 @@ class RedisModel{
      * 取值
      */
     public static function hashGet($server,$key, $subKey=false){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
         if(false === $subKey)
             return self::$redis->hGetAll($key);
@@ -166,7 +158,7 @@ class RedisModel{
      * 增加集合元素
      */
     public static function sAdd($server,$key,$value,$time=86400){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         $re     = self::$redis->sAdd($key, $value);#认为set的处理是不压缩的
@@ -180,7 +172,7 @@ class RedisModel{
      * 删除一个指定的元素
      */
     public static function sDelete($server,$key , $value){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
         return self::$redis->sRemove($key, $value);
     }
@@ -194,7 +186,7 @@ class RedisModel{
      */
     public static function sMove($server ,$fromKey, $toKey, $value){
 
-        if(!self::$server[$server])return false;
+        if(!Redis::$server[$server])return false;
         self::init($server);
 
         return self::$redis->sMove($fromKey, $toKey, $value);
@@ -205,7 +197,7 @@ class RedisModel{
      */
     public static function sSize($server,$key){
         
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         return self::$redis->sSize($key);
@@ -216,7 +208,7 @@ class RedisModel{
      */
     public static function sIsMember($server,$key, $value){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
         
         return self::$redis->sIsMember($key, $value);
@@ -228,7 +220,7 @@ class RedisModel{
      * @param key集合 $keyArr
      */
     public static function sInter($server,$keyArr = array()){
-        if(!self::$server[$server])return false;
+        if(!Redis::$server[$server])return false;
         self::init($server);
        
        return self::$redis->sInter($keyArr);
@@ -241,7 +233,7 @@ class RedisModel{
      */
     public static function sInterStore($server,$key,$ouput,$keyArr){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         array_unshift($keyArr,$ouput);  #插入到数组的开头
@@ -255,7 +247,7 @@ class RedisModel{
      */
     public static function sUnion($server,$key,$keyArr = array()){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         if($keyArr){
@@ -270,7 +262,7 @@ class RedisModel{
      */
     public static function sDiff($server,$key,$keyArr = array()){
 
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
 
@@ -284,7 +276,7 @@ class RedisModel{
      * @param key集合 $key
      */
     public static function sMembers($server,$key){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
 
         return self::$redis->sMembers($key);
@@ -298,7 +290,7 @@ class RedisModel{
      * @param score 用于对value排序
      */
     public static function zAdd($server, $key, $score, $value, $time=86400){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
     
         $re = self::$redis->zAdd($key, $score, $value);
@@ -311,7 +303,7 @@ class RedisModel{
      * 删除名称为key的zset中score >= star且score <= end的所有元素，返回删除个数
      */
     public static function zRemRangeByScore($server, $key, $start, $end){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
         
         return self::$redis->zRemRangeByScore($key, $start, $end);
@@ -321,7 +313,7 @@ class RedisModel{
      * index 从$begin到$offset的值
      */
     public static function zrevrange($server, $key, $begin, $offset, $withscores = false){
-        if(!self::$server[$server] || !$key)return false;
+        if(!Redis::$server[$server] || !$key)return false;
         self::init($server);
     
         return self::$redis->zrevrange($key, $begin, $offset, $withscores);
