@@ -5,6 +5,8 @@
         public static $messagetablePre = 'webchat_message';
         //数据库对象
         public static $db = null;
+        //redis服务器
+        public static $redisServer = 'webChat';
         
         public static function dbobj(){
             if(null === self::$db)
@@ -13,6 +15,7 @@
         }
         /**
          * 获取某路聊天的历史记录
+         * time/chatid 必须
          */
         public static function getChatMessage($paramArr) {
             $options = array(
@@ -82,6 +85,27 @@
         public static function tbexists($tbname){
             $sql = "SHOW TABLES LIKE '".$tbname."'";
             return self::dbobj()->single($sql);
+        }
+        /****************************************
+         *                redis操作                                   *
+         ****************************************/
+        /**
+         * 用户离线消息队列中获取离线消息
+         */
+        public static function getUnreadMsg($usernanme,$num=50){
+            if(!$usernanme || !$num) return false;
+            $msgList = \Vendors\Redis\Redisq::pops(array(
+                'serverName'  => self::$redisServer, #服务器名，参照见Redis的定义 ResysQ
+                'key'         => $usernanme.':unread:msg',  #队列名
+                'num'         => $num,      #多个数据
+            ));
+            if($msgList){
+                $msgList = array_reverse($msgList, false);//反序，并丢弃原键名
+                foreach($msgList as $key=>$val){
+                    $msgList[$key] = unserialize($val);
+                }
+            }
+            return $msgList;
         }
     }
 ?>

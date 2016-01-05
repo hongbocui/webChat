@@ -48,15 +48,6 @@ class Event
                 return;
             // 客户端登录 message格式: {type:login, client_name:xx} ，添加到客户端，广播给所有客户端xx上线
             case 'login':
-                $user_list = array(
-                    'cuihb',
-                    'zhangsan',
-                    'lisi',
-                    'wangwu',
-                    'zhaoliu',
-                    'xieyx',
-                    'huocc',
-                );
                 // 判断是否有有名字
                 if(!isset($message_data['client_name']))
                 {
@@ -66,7 +57,7 @@ class Event
                 $client_name = htmlspecialchars($message_data['client_name']);
                 
                 //判断数据库中是否存在用户,不存在则关闭链接
-                if(!in_array($client_name, $user_list)){
+                if(!\Api\Model\Muser::getUserinfo(array('accountid'=>$client_name))){
                     //忽略的消息传给用户
                     Gateway::sendToCurrentClient(json_encode(array('type'=>'error', 'info'=>'erroruser')));
                     Gateway::closeClient($client_id);
@@ -77,35 +68,7 @@ class Event
                 $_SESSION['client_name'] = $client_name;
                 
                 //存储用户到在线列表
-                $all_clients = self::addUserToOnlineList($client_id, $client_name);
-                
-                // 整理客户端列表以便显示
-                $client_list = self::formatClientsData(array_unique($all_clients));//用户可能由多个终端登陆，防止显示时显示多个用户名
-                
-                //获取最近的20个联系人
-                $recentMembers = \Vendors\Redis\RedisModel::zrevrange('webChat', $client_name.':recentchat:members', 0, 19);
-                
-                //消息队列中获取离线消息
-                $message_from_list = Redisq::pops(array(
-                    'serverName'  => 'webChat', #服务器名，参照见Redis的定义 ResysQ
-                    'key'         => $client_name.':message:quene',  #队列名
-                    'num'         => 50,      #多个数据
-                ));
-                if($message_from_list){
-                    $message_from_list = array_reverse($message_from_list, false);//反序，并丢弃原键名
-                    foreach($message_from_list as $key=>$val){
-                        $message_from_list[$key] = unserialize($val);
-                    }
-                }
-                if($recentMembers || $message_from_list){
-                    $ignore_message = array(
-                        'type' => 'ignoreMessage',
-                        'messageList' => $message_from_list,
-                        'recentMembers' => $recentMembers,
-                    );
-                    //忽略的消息传给用户
-                    Gateway::sendToCurrentClient(json_encode($ignore_message));
-                }
+                self::addUserToOnlineList($client_id, $client_name);
                 //转播给在线客户，xx上线 message {type:login, client_id:xx, name:xx}
                 $new_message = array(
                     'type' => $message_data['type'],
@@ -113,15 +76,6 @@ class Event
                     'time'        => date('Y-m-d H:i:s')
                 );
                 Gateway::sendToAll(json_encode($new_message));
-                //刷新自己列表
-                $new_message = array(
-                    'type'        => $message_data['type'],
-                    'client_name' => $client_name,
-                    'client_list' => $client_list,//在线用户,用户可能通过多个终端登陆，但显示在线列表时，应只显示一个
-                    'all_list'    => $user_list,//所有用户
-                    'time'        => date('Y-m-d H:i:s')
-                );
-                Gateway::sendToCurrentClient(json_encode($new_message));
                 return;
             // 客户端发言 message: {type:say, touser:xx, content:xx}
             case 'say':
@@ -141,7 +95,7 @@ class Event
                 );
                 Redisq::rpush(array(
                     'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-                    'key'      => 'chat:message-list',  #队列名
+                    'key'      => 'chat:msg-list',  #队列名
                     'value'    => serialize($pushArr),  #插入队列的数据
                 ));
                 
@@ -167,13 +121,13 @@ class Event
                             //注意这里是lpush，为了与ltrim一块使用
                             Redisq::lpush(array(
                                 'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-                                'key'      => $username.':message:quene',  #离线消息队列名
+                                'key'      => $username.':unread:msg',  #离线消息队列名
                                 'value'    => serialize($pushArr),  #插入队列的数据
                             ));
                             //保存最新50条
                             Redisq::ltrim(array(
                                 'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
-                                'key'         => $username.':message:quene',  #队列名
+                                'key'         => $username.':unread:msg',  #队列名
                                 'offset'      => 0,      #开始索引值
                                 'len'         => 50,      #结束索引值
                             ));
@@ -184,14 +138,13 @@ class Event
                 
                 return;
                 // 广播（后期需加参数用此功能）
-                $all_clients = self::getOnlineUserList();
-                $client_id_array = array_keys($all_clients);
+                $client_id_array = array_keys('xxx');
                 $new_message = array(
-                    'type'=>'say', 
+                    'type'     =>'say', 
                     'fromuser' =>$client_name,
                     'touser'   => $message_data['touser'],//all
-                    'content'=>nl2br(htmlspecialchars($message_data['content'])),
-                    'time'=>date('Y-m-d H:i:s'),
+                    'content'  =>nl2br(htmlspecialchars($message_data['content'])),
+                    'time'     =>date('Y-m-d H:i:s'),
                 );
                 return Gateway::sendToAll(json_encode($new_message), $client_id_array);
                 
@@ -203,7 +156,7 @@ class Event
                 
                 $historyList = Redisq::range(array(
                     'serverName'  => 'webChat',     #
-                    'key'         => $chatid.':message-history',  #队列名
+                    'key'         => $chatid.':msg-history',  #队列名
                     'offset'      => 0,      #开始索引值
                     'len'         => -1,      #结束索引值
                 ));
@@ -230,48 +183,15 @@ class Event
     */
    public static function onClose($client_id)
    {
-       
        // debug
        //echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id onClose:''\n";
        //获取clientname
        $client_name = self::getClientnameFromId($client_id);
        //从在线列表中删除一个用户
        self::delUserFromOnline($client_id);
-       //$all_clients = self::getOnlineUserList();
        // 广播 xxx 退出了
        $new_message = array('type'=>'logout', 'client_name'=>$client_name, 'time'=>date('Y-m-d H:i:s'));
        Gateway::sendToAll(json_encode($new_message));
-   }
-   
-  
-   /**
-    * 格式化客户端列表数据
-    * @param array $all_clients
-    */
-   public static function formatClientsData($all_clients)
-   {
-       $client_list = array();
-       if($all_clients)
-       {
-           foreach($all_clients as $tmp_client_id=>$tmp_name)
-           {
-               $client_list[] = array('client_id'=>$tmp_client_id, 'client_name'=>$tmp_name);
-           }
-       }
-       return $client_list;
-   }
-   /**
-    * 获得在线用户列表
-    */
-   public static function getOnlineUserList(){
-       $key = \Config\St\Storekey::USER_ONLINE_LIST;
-       $store = Store::instance("gateway");
-       $ret = $store->hGetAll($key);
-       if(false === $ret)
-       {
-           return array();
-       }
-       return $ret;
    }
    /**
     * 从在线用户中删除一个用户
@@ -280,7 +200,6 @@ class Event
    public static function delUserFromOnline($client_id){
        $key = \Config\St\Storekey::USER_ONLINE_LIST;
        $store = Store::instance("gateway");
-       
        // 存储驱动是redis
            $try_count = 3;
            while ($try_count--) {
@@ -339,28 +258,37 @@ class Event
                $client_list = array();
            }
            if (!isset($client_list[$client_id])) {
-               //是否允许多用户登录
+               //是否允许多用户登录,剔除用户的clientid
                if(\Config\St\Status::NOT_ALLOW_CLIENTS)
-                   $client_list = self::notAllowMoreClient($client_list, $client_name);
+                   self::notAllowMoreClient($client_list, $client_name);
                // 将存储中不在线用户删除
-               if ($all_online_client_id && $client_list) {
-                   $all_online_client_id = array_flip($all_online_client_id);
-                   $client_list = array_intersect_key($client_list, $all_online_client_id);
-               }
-               // 添加在线客户端
-               $client_list[$client_id] = $client_name;
+               self::deleteOfflineUser($client_list, $all_online_client_id);
                // 添加
                if($store->hSet($key, $client_id, $client_name))
-                   return $client_list;
+                   return true;
            } else {
-               return $client_list;
+               return true;
            }
        }
-       return $client_list;
+       return false;
+   }
+   /**
+    * 删除存储中的不在线用户
+    */
+   public static function deleteOfflineUser($clientList, $allClients) {
+       if(!$allClients || !$clientList) return;
+       $allClients = array_flip($allClients);
+       $offlineList = array_diff_key($clientList, $allClients);
+       if($offlineList){
+           foreach($offlineList as $offlineName){
+               self::notAllowMoreClient($clientList, $offlineName);
+           }
+       }
+       return;
    }
    /**
     * 不允许多用户登录
-    * 剔除用户的其他clentid
+    * 剔除存储用户
     */
    public static function notAllowMoreClient($client_list, $client_name){
        if(is_array($client_list)){

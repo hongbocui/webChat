@@ -37,7 +37,7 @@ $gateway->pingInterval = 10;
 // 心跳数据
 $gateway->pingData = '{"type":"ping"}';
 
-/* 
+/* 上线时 为了安全 开启
 // 当客户端连接上来时，设置连接的onWebSocketConnect，即在websocket握手时的回调
 $gateway->onConnect = function($connection)
 {
@@ -45,7 +45,7 @@ $gateway->onConnect = function($connection)
     {
         // 可以在这里判断连接来源是否合法，不合法就关掉连接
         // $_SERVER['HTTP_ORIGIN']标识来自哪个站点的页面发起的websocket链接
-        if($_SERVER['HTTP_ORIGIN'] != 'http://chat.workerman.net')
+        if($_SERVER['HTTP_ORIGIN'] != 'http://chat.zhbor.com')
         {
             $connection->close();
         }

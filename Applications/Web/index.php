@@ -59,10 +59,6 @@
               case 'login':
                   //{"type":"re_login","client_name":"xxx","client_list":"[...]","all_list":"[...]","time":"xxx"}
             	  add_online_client(data['client_name']);
-				  if(typeof(data['client_list']) != "undefined")
-                  	  flush_client_list(data['client_list']);
-              	  if(typeof(data['all_list']) != "undefined")
-                      flush_all_list(data['all_list']);
                   console.log(data['client_name']+"登录成功");
                   break;
               // 断线重连，只更新用户列表
@@ -77,13 +73,7 @@
             	  //{"type":"say","fromuser":xxx,"touser":xxx,"message":"xxx","time":"xxx"}
             	  say(data['fromuser'], data['touser'], data['message'], data['time']);
             	  break;
-              // 加载忽略消息,以及近期联系人
-              case 'ignoreMessage':
-            	  //{"type":"ignoreMessage","messageList":"[...]"}
-            	  loadRecentMembers(data['recentMembers']);
-            	  loadIgnoreMessage(data['messageList']);
-            	  break;
-              // 加载忽略消息
+              // 加载历史消息
               case 'history':
             	  //{"type":"history","messageList":"[...]"}
             	  loadHistoryMessage(data['messageList']);
@@ -215,7 +205,7 @@
     	var userlist_online_window = $("#userlist-online");
     	userlist_online_window.empty();
     	for(var p in client_list){
-    		userlist_online_window.append('<li id="'+client_list[p]['client_name']+'"><a>'+client_list[p]['client_name']+'</a></li>');
+    		userlist_online_window.append('<li id="'+client_list[p]+'"><a>'+client_list[p]+'</a></li>');
         }
     }
     //删除下线用户
@@ -297,96 +287,6 @@
             show_prompt();
         }
     }
-    $(function(){
-    	//点击用户
-        $("#userlist-online,#userlist-all,#userlist-nearly").on("click", 'li', function(){
-            var toChatUser = $(this).find("a").html();
-            if(toChatUser == name){
-                alert("不可以与自己聊天");return false;
-            }
-            $("#chat_myname").html(name);
-            var groupChatMembers = $("#nowChatTo").html();
-            //拉人事件
-            if($("#groupChat").html() == '确认'){
-                if(groupChatMembers.indexOf(toChatUser) < 0){//防止重复
-                    if(groupChatMembers){
-                    	$("#nowChatTo").html(groupChatMembers+','+toChatUser);
-                    }else{
-                    	$("#nowChatTo").html(toChatUser);
-                    }
-                }
-                	
-            }else{
-            	$("#dialog").empty();
-            	$("#nowChatTo").html(toChatUser);
-            	//加载本地历史
-            	var chatList = toChatUser.split(',');
-            	chatList.push(name);
-            	chatList.sort();
-                var userTOuser = chatList.join("_");
-                if(window["chat"+userTOuser+"History"] != undefined){
-                    var historyLog = window["chat"+userTOuser+"History"];
-                    chatInDialogContainer(historyLog, true);
-                //redis中取历史记录
-                }else{
-                	ws.send(JSON.stringify({"type":"history","fromuser":name,"touser":chatList}));
-
-                	//等待redis中数据
-                    var i = 0;
-                    var waitHistory = function(){
-                            i++;
-                        	if(window["chat"+userTOuser+"History"] != undefined){
-                        		chatInDialogContainer(window["chat"+userTOuser+"History"], true);
-                        		clearInterval(waitTime);
-                            }
-                    	    if(i>50)
-                    	    	clearInterval(waitTime);
-                        };
-                	var waitTime = setInterval(waitHistory, 10);
-                	
-                }
-                $(this).find("a").css("color", "#428bca");
-            }
-        });
-        //建群成功
-        $("#groupChat").click(function(){
-        	var groupChatMembers = $("#nowChatTo").html();
-            var chatList = groupChatMembers.split(',');
-            chatList.push(name);
-            chatList.sort();
-            var userTOuser = chatList.join("_");
-            
-            if($("#groupChat").html() == '拉人'){
-            	isGetSomeone = userTOuser;
-            	$("#groupChat").html('确认');
-            }else{
-                if(isGetSomeone != userTOuser){//如果聊天对象改变了，则去加载记录
-                    if(window["chat"+userTOuser+"History"] != undefined){
-                        var historyLog = window["chat"+userTOuser+"History"];
-                        chatInDialogContainer(historyLog, true);
-                    //redis中取历史记录
-                    }else{
-                    	ws.send(JSON.stringify({"type":"history","fromuser":name,"touser":chatList}));
-    
-                    	//等待redis中数据
-                        var i = 0;
-                        var waitHistory = function(){
-                                i++;
-                            	if(window["chat"+userTOuser+"History"] != undefined){
-                            		chatInDialogContainer(window["chat"+userTOuser+"History"], true);
-                            		clearInterval(waitTime);
-                                }
-                        	    if(i>50)
-                        	    	clearInterval(waitTime);
-                            };
-                    	var waitTime = setInterval(waitHistory, 10);
-                    }
-                }
-            	$("#groupChat").html('拉人');
-            }
-        	return false;
-        });
-    }); 
     </script>
 </head>
 <body onload="init();">
@@ -430,7 +330,6 @@
 	        </div>
 	    </div>
     </div>
-    <script>
-    </script>
+    <script src="js/webchat.js"></script>
 </body>
 </html>

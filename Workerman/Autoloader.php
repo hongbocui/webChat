@@ -63,7 +63,6 @@ class Autoloader
                 $class_file = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR . "$class_path.php";
             }
         }
-       
         // 找到文件
         if(is_file($class_file))
         {

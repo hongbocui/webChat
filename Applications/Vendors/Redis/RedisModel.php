@@ -5,7 +5,6 @@ use Config\Redis;
  * Redis类
  */
 class RedisModel{
-
     protected static $redisArr  = array();#创建的redis对象的集合
     protected static $redis     = false;  #当前方法操作的redis对象
     protected static $dalCfg    = false;
