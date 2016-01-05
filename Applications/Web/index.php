@@ -1,6 +1,6 @@
 <html><head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>workerman-chat</title>
+  <title>webChat</title>
   <script type="text/javascript">
   //WebSocket = null;
   </script>
