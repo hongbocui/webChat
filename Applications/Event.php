@@ -35,7 +35,7 @@ class Event
         $message_data = json_decode($message, true);
         if(!$message_data)
         {
-            return ;
+            return;
         }
         
         // 根据类型执行不同的业务
@@ -122,12 +122,12 @@ class Event
                                 'key'      => $username.':unread:msg',  #离线消息队列名
                                 'value'    => serialize($pushArr),  #插入队列的数据
                             ));
-                            //保存最新50条
+                            //保存最新100条
                             Redisq::ltrim(array(
                                 'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
                                 'key'         => $username.':unread:msg',  #队列名
                                 'offset'      => 0,      #开始索引值
-                                'len'         => 50,      #结束索引值
+                                'len'         => 100,      #结束索引值
                             ));
                         }
                     }
@@ -152,18 +152,8 @@ class Event
                 $chatid = \Api\Model\Mcommon::setChatId($chatList);
                 if(!$chatid) return;
                 
-                $historyList = Redisq::range(array(
-                    'serverName'  => 'webChat',     #
-                    'key'         => $chatid.':msg-history',  #队列名
-                    'offset'      => 0,      #开始索引值
-                    'len'         => -1,      #结束索引值
-                ));
-                
+                $historyList = \Api\Model\Mmessage::getHistoryMsg($chatid);
                 if($historyList){
-                    $historyList = array_reverse($historyList, false);//反序，并丢弃原键名
-                    foreach($historyList as $key=>$val){
-                        $historyList[$key] = unserialize($val);
-                    }
                     $history_message = array(
                         'type' => 'history',
                         'messageList' => $historyList,
@@ -299,7 +289,7 @@ class Event
                }
            }
        }
-       return $client_list;
+       return;
    }
    
 }

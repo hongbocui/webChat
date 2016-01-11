@@ -92,7 +92,7 @@
         /**
          * 用户离线消息队列中获取离线消息
          */
-        public static function getUnreadMsg($usernanme,$num=50){
+        public static function getUnreadMsg($usernanme,$num=100){
             if(!$usernanme || !$num) return false;
             $msgList = \Vendors\Redis\Redisq::pops(array(
                 'serverName'  => self::$redisServer, #服务器名，参照见Redis的定义 ResysQ
@@ -106,6 +106,24 @@
                 }
             }
             return $msgList;
+        }
+        /**
+         * 获取某路聊天的历史消息
+         */
+        public static function getHistoryMsg($chatid){
+            $historyList = \Vendors\Redis\Redisq::range(array(
+                'serverName'  => 'webChat',     #
+                'key'         => $chatid.':msg-history',  #队列名
+                'offset'      => 0,      #开始索引值
+                'len'         => -1,      #结束索引值
+            ));
+            if(!$historyList) return false;
+            
+            $historyList = array_reverse($historyList, false);//反序，并丢弃原键名
+            foreach($historyList as $key=>$val){
+                $historyList[$key] = unserialize($val);
+            }
+            return $historyList;
         }
     }
 ?>

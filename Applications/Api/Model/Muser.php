@@ -25,7 +25,8 @@
         public static function getUserinfo($paramArr) {
             $options = array(
                 'fields'      => array(),//要查询的字段或者以 英文'，'分开
-                'accountid'   => 0, //若有，则查该用户
+                'accountid'   => 0, //若有，则查该用户信息
+                'dept'        => '', //若有，则查该部门用户信息
                 'isCount'     => 0, //是否是查询总数
             );
             if (is_array($paramArr))$options = array_merge($options, $paramArr);

@@ -24,7 +24,7 @@
             $username = $this->toStr('username');
             $num      = $this->toInt('num');
             if(!$username) return false;
-            $num = $num ? $num : 50;
+            $num = $num ? $num : 100;
             
             $unreadMsg = Mmessage::getUnreadMsg($username, $num);
             echo json_encode($unreadMsg);
