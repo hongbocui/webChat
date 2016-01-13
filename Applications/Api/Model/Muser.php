@@ -19,7 +19,7 @@
             return self::$db;
         }
         /**
-         * 获取所有用户或者某个用户信息
+         * 获取多个用户或者某个用户信息
          * @param unknown $paramArr
          */
         public static function getUserinfo($paramArr) {
@@ -36,6 +36,8 @@
             $where = '';
             if($accountid)
                 $where = " where accountid='{$accountid}' ";
+            if(!$accountid && $dept)
+                $where = " where dept='{$dept}' ";
             if($isCount) {
                 $sql = " select count(*) from ".self::$usertable;
                 return self::dbobj()->single($sql);
@@ -43,6 +45,21 @@
             
             $sql = "select {$formatData} from ".self::$usertable." {$where}";
             return self::dbobj()->query($sql);
+        }
+        /**
+         * 用户验证判断
+         */
+        public static function userAuth($accountid, $pwd=false) {
+            if(!$accountid) return 0;
+            $where = " where accountid='{$accountid}'";
+            
+            if(false !== $pwd) {
+                $pwd = Mcommon::encryptPwd($pwd);
+                $where .= " and pwd='{$pwd}' ";
+            }
+            
+            $sql = "select uid from ".self::$usertable.$where;
+            return self::dbobj()->single($sql) ? 1 : 0;
         }
         /****************************************
          *                redis操作                                   *
@@ -52,6 +69,23 @@
          */
         public static function getRecentMembers ($username, $num = 19) {
             return \Vendors\Redis\RedisModel::zrevrange(self::$redisServer, $username.':recentchat:members', 0, $num);
+        }
+        /**
+         * 获取所有在线用户列表 clientid=>name
+         */
+        public static function getOnlineUsers () {
+            $key = \Config\St\Storekey::USER_ONLINE_LIST;
+            $store = \GatewayWorker\Lib\Store::instance("gateway");
+            $tryCount = 3;
+            while ($tryCount--) {
+                $clientList = $store->hGetAll($key);
+                if (false === $clientList) {
+                    $clientList = array();
+                } else {
+                    return $clientList;
+                }
+            }
+            return $clientList;
         }
     }
 ?>

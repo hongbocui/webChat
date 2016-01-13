@@ -88,8 +88,8 @@ $(function(){
         	return false;
         });
         //所有用户列表。可定时一小时刷新、之后再标示在线用户
-        $.getJSON('/chatapi.php?c=user&a=getoneormore', function(r) {
-        	flush_all_list(r);
+        $.getJSON('/chatapi.php?c=user&a=allusers', function(r) {
+        	flush_all_list(r.data);
         });
         //在线用户列表
         $.getJSON('/chatapi.php?c=user&a=onlineusers', function(r) {
@@ -99,11 +99,11 @@ $(function(){
         var loadRecentAndMsgTime = setInterval(function(){
         	if(name){
             	//最近联系人
-                $.getJSON('/chatapi.php?c=user&a=recentcontact&username='+name, function(r) {
+                $.getJSON('/chatapi.php?c=user&a=recentcontact&accountid='+name, function(r) {
                 	loadRecentMembers(r);
                 });
                 //离线消息列表
-                $.getJSON('/chatapi.php?c=message&a=GetUnreadMsg&username='+name, function(r) {
+                $.getJSON('/chatapi.php?c=message&a=GetUnreadMsg&accountid='+name, function(r) {
                 	loadIgnoreMessage(r);
                 });
                 clearInterval(loadRecentAndMsgTime);

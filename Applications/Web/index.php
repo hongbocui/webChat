@@ -61,17 +61,16 @@
             	  add_online_client(data['client_name']);
                   console.log(data['client_name']+"登录成功");
                   break;
-              // 断线重连，只更新用户列表
-              case 're_login':
-              	  //{"type":"re_login","client_name":"xxx","client_list":"[...]","all_list":"[...]","time":"xxx"}
-            	  flush_client_list(data['client_list']);
-            	  flush_all_list(data['all_list']);
-            	  console.log(data['client_name']+"重连成功");
-                  break;
               // 发言
               case 'say':
             	  //{"type":"say","fromuser":xxx,"touser":xxx,"message":"xxx","time":"xxx"}
             	  say(data['fromuser'], data['touser'], data['message'], data['time']);
+            	  break;
+              // 发言
+              case 'broadcast':
+                  //前端发送广播接口
+                  //ws.send(JSON.stringify({"type":"broadcast","touser":["技术部"],"content":"qqqdddddddddddddddddddd"}));
+                  console.log(data);
             	  break;
               // 加载历史消息
               case 'history':
@@ -82,8 +81,12 @@
               case 'error':
             	  switch(data['info']){
           	          case 'erroruser':
-                	      alert('用户名不存在');
+                	      alert(data['msg']);
                 	      errorType = true;name = '';
+                	      break;
+          	          case 'loginconflict':
+                	      alert(data['msg']);
+                	      errorType = true;
                 	      break;
             	      default:
                 	      break;
@@ -96,7 +99,7 @@
         }
       };
       ws.onclose = function() {
-    	  console.log("连接关闭，定时重连");
+    	  console.log("连接关闭");
     	  // 定时重连
     	  window.clearInterval(timeid);
     	  if(!errorType){
@@ -197,7 +200,7 @@
     	var userlist_all_window = $("#userlist-all");
     	userlist_all_window.empty();
     	for(var p in allList){
-    		userlist_all_window.append('<li><a>'+allList[p]+'</a></li>');
+    		userlist_all_window.append('<li><a>'+p+'</a></li>');
         }
     }
     //刷新在线用户列表

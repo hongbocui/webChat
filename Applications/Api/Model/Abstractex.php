@@ -1,4 +1,8 @@
 <?php 
+    /**
+     * lastInsertId()、single($query = '',$params = null)、
+     * row($query)、column($query)、query($query)
+     */
     namespace Api\Model;
     abstract class Abstractex {
         

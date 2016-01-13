@@ -108,7 +108,7 @@
             return $msgList;
         }
         /**
-         * 获取某路聊天的历史消息
+         * 获取某路聊天的最近的历史消息
          */
         public static function getHistoryMsg($chatid){
             $historyList = \Vendors\Redis\Redisq::range(array(

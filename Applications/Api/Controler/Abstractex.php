@@ -1,13 +1,34 @@
 <?php 
     namespace Api\Controler;
     abstract class Abstractex {
-        
+        /**
+         * 成功 返回json数据
+         */
+        protected function _success($data, $msg='', $code=1) {
+            $returnArr = array(
+                'data' => $data,
+                'msg'  => $msg,
+                'code' => $code
+            );
+            exit(json_encode($returnArr));
+        }
+        /**
+         * 失败返回json数据
+         */
+        protected function _error($msg='', $data=array(), $code=0) {
+            $returnArr = array(
+                'data' => $data,
+                'msg'  => $msg,
+                'code' => $code
+            );
+            exit(json_encode($returnArr));
+        }
         /**
          * 格式化REQUEST数值数据
          *
          * @return Int
          */
-        public function toInt() {
+        protected function toInt() {
             $args = func_get_args();
             $argsNum = func_num_args();
             if ($argsNum)
@@ -26,7 +47,7 @@
          * @param String $feild
          * @return String(Array)
          */
-        public function toStr($feild, $dropHtml = true) {
+        protected function toStr($feild, $dropHtml = true) {
             if (isset($_REQUEST[$feild])) {
                 $val = $_REQUEST[$feild];
                 if (is_array($val))

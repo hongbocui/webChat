@@ -29,10 +29,12 @@
 	function insertData($data){
 	    if(!$data) return false;
 	    $db = \GatewayWorker\Lib\Db::instance('webChat');
-	    
 	    $chatList = $data['touser'];
-	    $chatid = Api\Model\Mcommon::setChatId($chatList);
-	    if(!$chatid) return;
+	    $chatid = '';
+	    if($data['type'] == \Config\St\Storekey::CHAT_MSG_TYPE) {
+	        $chatid = Api\Model\Mcommon::setChatId($chatList);
+	        if(!$chatid) return;
+	    }
 	    //自动分表处理
 	    Api\Model\Mmessage::createTable(Api\Model\Mmessage::getTbname());
 	    //插入聊天数据
@@ -43,6 +45,7 @@
 	        'tousers'  => $touser,
 	        'message'  => $data['message'],
 	        'time'     => $data['time'],
+	        'type'     => $data['type'],
 	    );
 	    Api\Model\Mmessage::storeMessage($insertData);
 	}
@@ -51,6 +54,8 @@
 	 * 保留每个用户最新的n个最近联系人，到redis中
 	 */
 	function storeRecentMembers($data){
+	    if($data['type'] == \Config\St\Storekey::BROADCAST_MSG_TYPE)
+	        return false;
 	    if(!is_array($data['touser']))
 	        return false;
 	    $chatList = $data['touser'];
@@ -66,6 +71,8 @@
 	 * 保留每路最新的n条message(历史消息),到redis中
 	 */
 	function storeMessageList($data){
+	    if($data['type'] == \Config\St\Storekey::BROADCAST_MSG_TYPE)
+	        return false;
 	    if(!$data) return false;
 	    
 	    $chatList = $data['touser'];

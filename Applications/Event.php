@@ -17,6 +17,7 @@
 use \GatewayWorker\Lib\Gateway;
 use \GatewayWorker\Lib\Store;
 use \Vendors\Redis\Redisq;
+use \Api\Model\Muser;
 
 class Event
 {
@@ -32,14 +33,14 @@ class Event
         //echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id session:".json_encode($_SESSION)." onMessage:".$message."\n";
         
         // 客户端传递的是json数据
-        $message_data = json_decode($message, true);
-        if(!$message_data)
+        $messageData = json_decode($message, true);
+        if(!$messageData)
         {
             return;
         }
         
         // 根据类型执行不同的业务
-        switch($message_data['type'])
+        switch($messageData['type'])
         {
             // 客户端回应服务端的心跳
             case 'pong':
@@ -47,17 +48,17 @@ class Event
             // 客户端登录 message格式: {type:login, client_name:xx} ，添加到客户端，广播给所有客户端xx上线
             case 'login':
                 // 判断是否有有名字
-                if(!isset($message_data['client_name']))
+                if(!isset($messageData['client_name']))
                 {
-                    throw new \Exception("\$message_data['client_name'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
+                    throw new \Exception("\$messageData['client_name'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
                 
-                $client_name = htmlspecialchars($message_data['client_name']);
+                $client_name = htmlspecialchars($messageData['client_name']);
                 
                 //判断数据库中是否存在用户,不存在则关闭链接
-                if(!\Api\Model\Muser::getUserinfo(array('accountid'=>$client_name))){
+                if(!Muser::getUserinfo(array('accountid'=>$client_name))){
                     //忽略的消息传给用户
-                    Gateway::sendToCurrentClient(json_encode(array('type'=>'error', 'info'=>'erroruser')));
+                    Gateway::sendToCurrentClient(json_encode(array('type'=>'error', 'info'=>'erroruser', 'msg'=>'用户名不存在')));
                     Gateway::closeClient($client_id);
                     return;
                 }
@@ -69,7 +70,7 @@ class Event
                 self::addUserToOnlineList($client_id, $client_name);
                 //转播给在线客户，xx上线 message {type:login, client_id:xx, name:xx}
                 $new_message = array(
-                    'type' => $message_data['type'],
+                    'type' => $messageData['type'],
                     'client_name' => $client_name,
                     'time'        => date('Y-m-d H:i:s')
                 );
@@ -84,71 +85,66 @@ class Event
                 }
                 $client_name = $_SESSION['client_name'];
                 
+                if(!is_array($messageData['touser'])) return;
                 //所有消息压入redis队列中，以便存储
-                $pushArr = array(
-                    'fromuser'    => $client_name,
-                    'touser'      => $message_data['touser'],
-                    'message' => nl2br(htmlspecialchars($message_data['content'])),
-                    'time'    => time(),
-                );
-                Redisq::rpush(array(
-                    'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-                    'key'      => 'chat:msg-list',  #队列名
-                    'value'    => serialize($pushArr),  #插入队列的数据
-                ));
+                $pushArr = self::makeMsg($client_name, $messageData['touser'], $messageData['content']);
+                self::msgIntoQueue($pushArr);
                 
-                // 聊天
-                if(is_array($message_data['touser']))
-                {
-                    $new_message = array(
-                        'type'=>'say',
-                        'fromuser' =>$client_name,
-                        'touser' =>$message_data['touser'],
-                        'message'=>nl2br(htmlspecialchars($message_data['content'])),
-                        'time'=>date('Y-m-d H:i:s'),
-                    );
-                    $jsonNewMessage = json_encode($new_message);
-                    foreach($message_data['touser'] as $username){
-                        $to_client_id_arr = self::getClientidFromUser($username);
-                        
-                        //对方在线
-                        if($to_client_id_arr){
-                            Gateway::sendToAll($jsonNewMessage, $to_client_id_arr);//对于多客户端来说的
-                        //不在线，则，消息压入到离线列表
-                        }else{
-                            //注意这里是lpush，为了与ltrim一块使用
-                            Redisq::lpush(array(
-                                'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-                                'key'      => $username.':unread:msg',  #离线消息队列名
-                                'value'    => serialize($pushArr),  #插入队列的数据
-                            ));
-                            //保存最新100条
-                            Redisq::ltrim(array(
-                                'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
-                                'key'         => $username.':unread:msg',  #队列名
-                                'offset'      => 0,      #开始索引值
-                                'len'         => 100,      #结束索引值
-                            ));
-                        }
-                    }
-                    return;
+                // 聊天内容
+                $new_message = self::makeMsg($client_name, $messageData['touser'], $messageData['content'], 'say');
+                $jsonNewMessage = json_encode($new_message);
+                //获取所有存储的在线用户
+                $clientLists = Muser::getOnlineUsers();
+                //获取该组用户在线的clientid,并广播
+                $onlineClientIds = self::getClientidsFromUsers($clientLists, $messageData['touser']);
+                if($onlineClientIds){
+                    Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
                 }
-                
+                //获取该组用户所有不在线的用户,并生成离线消息队列
+                $offlineUsers = self::getOfflineUsers($clientLists, $messageData['touser']);
+                if($offlineUsers) {
+                    foreach($offlineUsers as $offname) {
+                       self::offlineMsgQueue($offname, $pushArr, ':unread:msg');
+                    }
+                }
                 return;
-                // 广播（后期需加参数用此功能）
-                $client_id_array = array_keys('xxx');
-                $new_message = array(
-                    'type'     =>'say', 
-                    'fromuser' =>$client_name,
-                    'touser'   => $message_data['touser'],//all
-                    'content'  =>nl2br(htmlspecialchars($message_data['content'])),
-                    'time'     =>date('Y-m-d H:i:s'),
-                );
-                return Gateway::sendToAll(json_encode($new_message), $client_id_array);
+            case 'broadcast':
+                $chatDept = $messageData['touser'];
+                if(!$chatDept) return;
+                // 非法请求
+                if(!isset($_SESSION['client_name'])) {
+                    throw new \Exception("\$_SESSION['client_name'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                }
+                $client_name = $_SESSION['client_name'];
+                if(!is_array($chatDept)) return;
                 
-            //获取存于redis中的历史记录: {type:history, fromuser:xx， touser:xxx} 
+                //所有消息压入redis队列中，以便存储
+                $pushArr = self::makeMsg($client_name, $chatDept, $messageData['content'], \Config\St\Storekey::BROADCAST_MSG_TYPE);
+                self::msgIntoQueue($pushArr);
+                
+                // 聊天内容
+                $new_message = self::makeMsg($client_name, $chatDept, $messageData['content'],'broadcast');
+                $jsonNewMessage = json_encode($new_message);
+                
+                //获取部门下的用户列表
+                $toUsersList = self::getUsersByDept($chatDept);
+                //获取所有存储的在线用户
+                $clientLists = Muser::getOnlineUsers();
+                //获取该组用户在线的clientid
+                $onlineClientIds = self::getClientidsFromUsers($clientLists, $toUsersList);
+                if($onlineClientIds){
+                    Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
+                }
+                //获取该组用户所有不在线的用户
+                $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
+                if($offlineUsers) {
+                    foreach($offlineUsers as $offname) {
+                        self::offlineMsgQueue($offname, $pushArr, ':unread:broadcast');
+                    }
+                }
+                return;
             case 'history':
-                $chatList = $message_data['touser'];
+                $chatList = $messageData['touser'];
                 $chatid = \Api\Model\Mcommon::setChatId($chatList);
                 if(!$chatid) return;
                 
@@ -189,12 +185,12 @@ class Event
        $key = \Config\St\Storekey::USER_ONLINE_LIST;
        $store = Store::instance("gateway");
        // 存储驱动是redis
-           $try_count = 3;
-           while ($try_count--) {
-               if ($store->hDel($key, $client_id)) {
-                   return true;
-               }
+       $try_count = 3;
+       while ($try_count--) {
+           if ($store->hDel($key, $client_id)) {
+               return true;
            }
+       }
        return true;
    }
    /**
@@ -207,26 +203,21 @@ class Event
    }
    
    /**
-    * 根据username 获取client_id.如果取得client_id为false，说明该user不在线
+    * 根据所给用户列表，获取在线的clientid列表
     * @param string $client_name
     */
-   public static function getClientidFromUser($client_name){
-       $key = \Config\St\Storekey::USER_ONLINE_LIST;
-       $store = Store::instance("gateway");
-       $client_id_arr = false;
-       // 存储驱动是redis
-       $try_count = 3;
-       while ($try_count--) {
-           $client_list = $store->hGetAll($key);
-           if (false === $client_list) {
-               $client_list = array();
-           }
-           if(is_array($client_list)){
-               $client_id_arr = array_keys($client_list, $client_name);
-               return $client_id_arr;
-           }
-       }
-       return $client_id_arr;
+   public static function getClientidsFromUsers($clientsList=array(),$clientNameArr = array()){
+       if(!is_array($clientNameArr) || !is_array($clientsList)) return false;
+       $clientIds = array_intersect($clientsList, $clientNameArr);
+       return array_keys($clientIds);
+       return $clientIds;
+   }
+   /**
+    * 根据用户列表，获取所给用户中不在线的用户
+    */
+   public static function getOfflineUsers($clientsList=array(),$clientNameArr=array()) {
+       if(!is_array($clientNameArr) || !is_array($clientsList)) return false;
+       return array_diff($clientNameArr, $clientsList);
    }
    /**
     * 存储用户到在线列表，并返回所有在线用户
@@ -236,28 +227,19 @@ class Event
    public static function addUserToOnlineList($client_id, $client_name){
        $key = \Config\St\Storekey::USER_ONLINE_LIST;
        $store = Store::instance("gateway");
-       // 获取所有所有在线用户--------------
+       // 获取所有所有在线用户clientid--------------
        $all_online_client_id = Gateway::getOnlineStatus();
-       // 存储驱动是Redis
-       $try_count = 3;
-       while ($try_count--) {
-           $client_list = $store->hGetAll($key);
-           if (false === $client_list) {
-               $client_list = array();
-           }
-           if (!isset($client_list[$client_id])) {
-               //是否允许多用户登录,剔除用户的clientid
-               if(\Config\St\Status::NOT_ALLOW_CLIENTS)
-                   self::notAllowMoreClient($client_list, $client_name);
-               // 将存储中不在线用户删除
-               self::deleteOfflineUser($client_list, $all_online_client_id);
-               // 添加
-               if($store->hSet($key, $client_id, $client_name))
-                   return true;
-           } else {
-               return true;
-           }
-       }
+       //获取存储中在线用户列表       
+       $client_list = Muser::getOnlineUsers();
+       if(isset($client_list[$client_id])) return true;
+       //是否允许多用户登录,剔除用户的clientid
+       if(\Config\St\Status::NOT_ALLOW_CLIENTS)
+           self::notAllowMoreClient($client_list, $client_name);
+       // 将存储中不在线用户删除
+       self::deleteOfflineUser($client_list, $all_online_client_id);
+       // 添加
+       if($store->hSet($key, $client_id, $client_name))
+           return true;
        return false;
    }
    /**
@@ -282,14 +264,84 @@ class Event
        if(is_array($client_list)){
            $unsetKey = array_keys($client_list, $client_name);
            if($unsetKey){
+               Gateway::sendToAll(json_encode(array('type'=>'error', 'info'=>'loginconflict', 'msg'=>'您已在另一客户端登陆')),$unsetKey);
                $store = Store::instance("gateway");
                foreach($unsetKey as $unkey){
                    unset($client_list[$unkey]);
+                   //下线用户
+                   Gateway::closeClient($unkey);
+                   //删除存储用户
                    $store->hDel(\Config\St\Storekey::USER_ONLINE_LIST, $unkey);
                }
            }
        }
        return;
+   }
+   /**
+    * 离线聊天数据或广播数据 压入用户离线聊天消息队列
+    */
+   public static function offlineMsgQueue($username, $msgData, $partkey='') {
+       //注意这里是lpush，为了与ltrim一块使用
+       Redisq::lpush(array(
+           'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
+           'key'      => $username.$partkey,  #离线消息队列名
+           'value'    => serialize($msgData),  #插入队列的数据
+       ));
+       //保存最新100条
+       Redisq::ltrim(array(
+           'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
+           'key'         => $username.$partkey,  #队列名
+           'offset'      => 0,      #开始索引值
+           'len'         => 100,      #结束索引值
+       ));
+   }
+   
+   /**
+    * 所有聊天消息和广播消息都压入到redis队列中
+    */
+   public static function msgIntoQueue($msgData) {
+       Redisq::rpush(array(
+           'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
+           'key'      => 'chat:msg-list',  #队列名
+           'value'    => serialize($msgData),  #插入队列的数据
+       ));
+   }
+   /**
+    * 格式化消息数据
+    */
+   private static function makeMsg($from, $to, $content='', $type=0) {
+       return array(
+           'fromuser'    => $from,
+           'touser'      => $to,
+           'message' => nl2br(htmlspecialchars($content)),
+           'time'    => time(),
+           'type'    => $type,
+       );
+   }
+   /**
+    * 根据部门获取部门下所有用户，部门之间用,号分割
+    * 用于广播
+    */
+   public static function getUsersByDept($chatDept) {
+       if(in_array('公司全体员工', $chatDept)) {
+           $toUserList = Muser::getUserinfo(array(
+               'fields' => array('accountid'),
+           ));
+       } else {
+           $toUserList = array();
+           foreach($chatDept as $key=>$dept) {
+               $userList = Muser::getUserinfo(array(
+                   'fields' => array('accountid'),
+                   'dept'   => $dept,
+               ));
+               $toUserList = array_merge($toUserList, $userList);
+           }
+       }
+       if(!$toUserList) return;
+       foreach((array)$toUserList as $key=>$userval) {
+           $toUserList[$key] = $userval['accountid'];
+       }
+       return $toUserList;
    }
    
 }
