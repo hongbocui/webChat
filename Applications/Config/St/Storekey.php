@@ -5,5 +5,10 @@
         const USER_ONLINE_LIST = "USER_ONLINE_LIST";
         
         
+        //信息类型状态
+        const CHAT_MSG_TYPE     = 0;
+        const BROADCAST_MSG_TYPE= 1;
+        
+        
     }
 ?>
