@@ -1,0 +1,110 @@
+* {margin:0; padding:0;}
+body {font:12px Arial,宋体;}
+
+.scroll-box {position:relative;}
+.scroll-y-box {position:absolute; width:10px; height:100%; top:0; right:0; background:#eee;}
+.scroll-y {position:absolute;width:10px;height:100%;background:#d8d8d8;}
+.scroll-x-box {position:absolute; height:10px; width:100%; bottom:0; left:0; background:#eee;}
+.scroll-x {position:absolute;height:10px;width:100%;background:#d8d8d8;}
+
+
+.folders {}
+.folders > span {position:absolute;top:0;left:0;display:block; height:25px;line-height:25px;background:url('./images/tree_folder.gif') left center no-repeat;text-indent:25px;margin-left:10px;}
+.files {}
+.file {position:absolute;left:30px;top:0;}
+.file span {display:block;top:0;left:0; height:18px;line-height:18px;background:url('./images/tree_linemiddle.gif') left center no-repeat;text-indent:25px;margin-left:10px;}
+
+.tree-icon {background:url('../img/tree.png')}
+.tree-item-bg {position: absolute;width: 100%;height: 22px;background: antiquewhite;z-index: 1;top: 0;}
+.tree-folders {position:relative;z-index:2;}
+
+.tree-folders > span {display:block;height:22px;line-height:22px;}
+.tree-files {display:none;padding-left:20px}
+.tree-files > span {display:block;height:22px;line-height:22px;}
+.tree-files > span:hover,.tree-folders > span:hover {cursor:default;}
+.tree-button-bg {width:22px;height:22px;float:left;}
+.tree-button {display:block;width:14px;height:14px;float:left;margin-top:5px}
+.tree-button-close {background-position: -2px -17px;}
+.tree-button-close:hover {background-position: -2px -2px;}
+.tree-button-open {background-position: -2px -48px;}
+.tree-button-open:hover {background-position: -2px -33px;}
+.tree-main-line {background-position: -27px 0;background-repeat: repeat-y;}
+.tree-start-line {background-position: 2px -63px;}
+.tree-middle-line {background-position: 2px -84px;}
+.tree-end-line {background-position: 2px -107px;}
+
+.form-icon {background:url('./images/form-icon.png')}
+.color-input-text {position:relative;width:100%;height:35px;line-height:35px;border:1px solid #e9e7e3;border-left:5px solid #e9e7e3;padding:0 10px;background:#FFFFFF;}
+.color-input-text.disabled input {color:#D1CFCB;;}
+.focus {border:1px solid #2489c5;border-left:5px solid #2489c5;}
+.color-input-text input {border:none;outline:none;background:#FFFFFF;}
+.color-input-text .empty {display:none;width:22px;height:22px;background-position:0 0;position:absolute;top:6px; right:6px;}
+.color-select {width:100%;height:35px;border:1px solid #e9e7e3;border-left:5px solid #e9e7e3;position:relative;background:#ffffff;}
+.color-select.disabled {color:#D1CFCB;}
+.color-select select {filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity: 0;opacity:0;position:absolute;left: 0;top: 0;width:0;height:0;}
+.color-select .indicate {height:10px;width:10px;background-position:0px -205px;position:absolute;top:12px; right:10px;}
+.color-select h3 {width:100%;height:35px;line-height:35px;text-indent:10px;font-size: 15px}
+.color-option { left: -5px;position: absolute;top: 0px;z-index:999;width: 100%;border: 1px solid #E9E7E3;border-left: 5px solid #E9E7E3;border-top: none;display:none;}
+.color-option span {background:#FFFFFF;display: block;height: 25px;line-height: 25px;text-indent: 10px;width: 100%;cursor:default;}
+.color-option span.hover {color:#2489c5;cursor:pointer;background:#e9e7e3}
+.color-radio,.color-checkbox {position:relative;padding:5px;width:100%;}
+.radio-check {height:22px;width:22px;background-position:0px -115px;}
+.color-radio > .hover {background-position:0 -138px;}
+.color-radio > .checked {background-position:0 -161px;}
+.color-radio > .disabled {background-position:0px -115px;}
+.color-radio > .checked-disabled {background-position:0 -184px;}
+.color-radio > input {filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity: 0;opacity:0;position:absolute;left:10px;top:9px;}
+.color-radio > span {color: #555555;font-size: 16px;font-weight: bold;left: 40px;position: absolute;top: 6px;}
+
+.checkbox-check {height:22px;width:22px;background-position:0px -23px;}
+.color-checkbox > .hover {background-position:0 -46px;}
+.color-checkbox > .checked {background-position:0 -69px;}
+.color-checkbox > .disabled {background-position:0px -23px;}
+.color-checkbox > .checked-disabled {background-position:0 -92px;}
+.color-checkbox > input {filter:alpha(opacity=0);-moz-opacity:0;-khtml-opacity: 0;opacity:0;position:absolute;left:10px;top:9px;}
+.color-checkbox > span {color: #555555;font-size: 16px;font-weight: bold;left: 40px;position: absolute;top: 6px;}
+
+
+.right-mouse {position:absolute;top:0;left:0;background: #fff;z-index: 3;border-radius: 2px;width:150px;box-shadow: 3px 3px 3px #ccc;padding:5px 0;}
+.right-mouse a {display: block;color: #333;padding: 5px 8px;}
+.right-mouse a:hover {background: aliceblue;}
+
+.tips-box {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    overflow: hidden;
+}
+
+.tips-target {
+    position: absolute;
+    width: 20px;
+    height: 17px;
+    background-position: -57px -89px;
+    bottom: -17px;
+}
+.tips-page {
+    position: absolute;
+    bottom: 1px;
+    left: 0;
+    width: 100%;
+    height: 7px;
+    text-align: center;
+}
+.tips-page .page {
+    width: 5px;
+    height: 5px;
+    background: #FFFFFF;
+    display: inline-block;
+    border-radius: 100%;
+    border: 1px solid #efefef;
+    margin: 0 2px;
+}
+.tips-page .page.active {
+    background: turquoise;
+    border-color: turquoise;
+}
+.tips-page .page:hover {
+    border-color: turquoise;
+    cursor: default;
+}

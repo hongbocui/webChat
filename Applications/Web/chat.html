@@ -1,0 +1,430 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>demo</title>
+		<meta charset="utf-8" />
+		<link href="css/chat.css" type="text/css" rel="stylesheet">
+		<link href="css/jquery-plugin-v1.0.0.css" type="text/css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<!--联系人-->
+			<div class="contact">
+				<!--搜索框-->
+				<div class="search-box">
+					<div class="search">
+						<i class="chat-icon search-icon"></i>
+						<input type="text" class="search-contact" placeholder="搜索" />
+					</div>
+					<!--搜索结果-->
+					<div class="search-result">
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar no-login" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar no-login" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+					</div>
+				</div>
+				<!--联系人tab页-->
+				<div class="contact-type">
+					<div class="tab active" tab-name="recent" type="default">最近联系人</div>
+					<div class="tab" tab-name="structure">组织架构</div>
+				</div>
+				<!--最近联系人-->
+				<div class="tab-detail recent active">
+					<div class="tree-folders">
+						<span class="no-child" type="personal" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明<b class="unread">9</b></span>
+                        <span class="no-child" type="personal"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书<b class="unread">2</b></span>
+						<span type="group">
+							<div class="group-avatar">
+								<img class="avatar" src="./default_34_34.jpg" width="10px">
+								<img class="avatar no-login" src="./default_34_34.jpg" width="10px">
+								<img class="avatar" src="./default_34_34.jpg" width="10px">
+								<img class="avatar" src="./default_34_34.jpg" width="10px">
+							</div>
+							陈明、刘书
+							<b class="unread">99</b>
+						</span>
+					</div>
+					<div class="tree-files">
+						<span class="no-child" type="member" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
+                        <span class="no-child" type="member"><img class="avatar" src="./default_34_34.jpg" width="22px">刘书</span>
+					</div>
+				</div>
+				<!--组织架构-->
+				<div class="tab-detail structure">
+					<div class="tree-folders">
+								<span type="dept">管理层</span>
+								<span>战略发展与投资部</span>
+								<span class="no-child">视频部</span>
+								<span class="no-child">技术部</span>
+								<span>广告销售部</span>
+								<span class="no-child">人力资源部</span>
+                            </div>
+							<div class="tree-files">
+								<span class="no-child" type="member" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
+                                	<span class="no-child" type="member" data-id="liushu"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书</span>
+                                	<span class="no-child" type="member" data-id="andyxu"><img class="avatar" src="./default_34_34.jpg" width="22px">徐进</span>
+                                	<span class="no-child" type="member" data-id="bettyho"><img class="avatar" src="./default_34_34.jpg" width="22px">何晔</span>
+                           	</div>
+                            <div class="tree-files">
+								
+								<div class="tree-folders">
+									<span>战略BD组</span>
+									<span class="no-child">创新产品组</span>
+								</div>
+								<div class="tree-files">
+									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">邓少玮</span>
+                                	<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">刘鼎森</span>
+								</div>
+                            </div>
+                            <div class="tree-files">
+								<div class="tree-folders">
+									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">范丽茜</span>
+									<span>华北区</span>
+								</div>
+								<div class="tree-files">
+									<div class="tree-folders">
+										<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">池小燕</span>
+										<span>华北业务管理部</span>
+									</div>
+									<div class="tree-files">
+										<div class="tree-folders">
+											<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">卑晓艳</span>
+											<span>华北媒介部</span>
+											<span>内容产品中心</span>
+										</div>
+										<div class="tree-files">
+											<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">解丹</span>
+										</div>
+										<div class="tree-files">
+											<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">宫昊源</span>
+										</div>
+									</div>
+								</div>
+                            </div>
+				</div>
+				<div class="tool"></div>
+			</div>
+			<!--聊天详情-->
+			<div class="detail">
+				<!--当前联系人信息-->
+				<div class="contact-msg">
+					<h1>进展如何了</h1>
+					<p>谢衍鑫创建于2016-01-08 12:15:10</p>
+				</div>
+				<div class="chat-box">
+					<!--联系人群组成员-->
+					<div class="member">
+						<div class="tree-folders">
+							<span type="group">
+								陈明、刘书
+							</span>
+						</div>
+						<div class="tree-files">
+							<span class="no-child" type="member"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
+                        	<span class="no-child" type="member"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书</span>
+						</div>
+					</div>
+					<div class="message">
+						<!--历史消息-->
+						<div class="logs">
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row self">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>&nbsp;</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--消息发送-->
+						<div class="send-msg">
+							<div class="tool">
+								<i class="chat-icon smile"></i>
+								<i class="chat-icon image"></i>
+								<i class="chat-icon audio"></i>
+								<i class="chat-icon remind"></i>
+								<i class="chat-icon history"></i>
+								<div class="pop-smiley">
+									<img src="img/smiley/1.gif">
+									<img src="img/smiley/2.gif">
+									<img src="img/smiley/3.gif">
+									<img src="img/smiley/4.gif">
+									<img src="img/smiley/5.gif">
+									<img src="img/smiley/6.gif">
+									<img src="img/smiley/7.gif">
+									<img src="img/smiley/8.gif">
+									<img src="img/smiley/9.gif">
+									<img src="img/smiley/10.gif">
+									<img src="img/smiley/11.gif">
+									<img src="img/smiley/12.gif">
+									<img src="img/smiley/13.gif">
+									<img src="img/smiley/14.gif">
+									<img src="img/smiley/15.gif">
+									<img src="img/smiley/16.gif">
+									<img src="img/smiley/17.gif">
+									<img src="img/smiley/18.gif">
+									<img src="img/smiley/19.gif">
+									<img src="img/smiley/20.gif">
+									<img src="img/smiley/21.gif">
+									<img src="img/smiley/22.gif">
+									<img src="img/smiley/23.gif">
+									<img src="img/smiley/24.gif">
+									<img src="img/smiley/25.gif">
+									<img src="img/smiley/26.gif">
+									<img src="img/smiley/27.gif">
+									<img src="img/smiley/28.gif">
+									<img src="img/smiley/29.gif">
+									<img src="img/smiley/30.gif">
+									<img src="img/smiley/31.gif">
+									<img src="img/smiley/32.gif">
+									<img src="img/smiley/33.gif">
+									<img src="img/smiley/34.gif">
+									<img src="img/smiley/35.gif">
+									<img src="img/smiley/36.gif">
+									<img src="img/smiley/37.gif">
+									<img src="img/smiley/38.gif">
+									<img src="img/smiley/39.gif">
+									<img src="img/smiley/40.gif">
+									<img src="img/smiley/41.gif">
+									<img src="img/smiley/42.gif">
+									<img src="img/smiley/43.gif">
+									<img src="img/smiley/44.gif">
+									<img src="img/smiley/45.gif">
+									<img src="img/smiley/46.gif">
+									<img src="img/smiley/47.gif">
+									<img src="img/smiley/48.gif">
+									<img src="img/smiley/49.gif">
+									<img src="img/smiley/50.gif">
+									<img src="img/smiley/51.gif">
+									<img src="img/smiley/52.gif">
+									<img src="img/smiley/53.gif">
+									<img src="img/smiley/54.gif">
+									<img src="img/smiley/55.gif">
+									<img src="img/smiley/56.gif">
+									<img src="img/smiley/57.gif">
+									<img src="img/smiley/58.gif">
+									<img src="img/smiley/59.gif">
+									<img src="img/smiley/60.gif">
+									<img src="img/smiley/61.gif">
+									<img src="img/smiley/62.gif">
+									<img src="img/smiley/63.gif">
+									<img src="img/smiley/64.gif">
+								</div>
+							</div>
+							<!--消息输入框-->
+							<div class="chat-input" contenteditable="true"></div>
+							<!--消息发送按钮-->
+							<div class="send-button">
+								<a href="javascript:;" class="chat-icon more">&nbsp;</a>
+								<a href="javascript:;" class="chat-icon button">发送</a>
+								<div class="pop-keys">
+									<p class="active">按Enter键发送消息</p>
+									<p>按Ctrl+Enter键发送消息</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="home"></div>
+			</div>
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery-plugin-v1.0.0.js"></script>
+		<script>
+			$(function(){
+					$('.pop-smiley').tips({'pages':1,'target':['left',5]})
+					$('.pop-keys').tips({'target':['right',3]});
+					//表情、快捷发送浮动层
+					$('.smile').click(function(event){
+						$('.pop-smiley').show();
+						event.stopPropagation(event);
+					});
+					$('.more').click(function(event){
+						$('.pop-keys').show();
+						event.stopPropagation();
+					});
+					$('.pop-smiley').click(function(event){
+						$(this).show();
+						event.stopPropagation();
+					});
+					$('.pop-keys').click(function(event){
+						$(this).show();
+						event.stopPropagation();
+					});
+					
+					//搜索框
+					$('.search').click(function(event){
+						if($(this).find('.empty').length)
+							return false;
+						$(this).animate({'margin':0,'width':'188px','height':'38px','border-radius':'15px','border-radius':0,'line-height':'38px','padding':'0 5px'},'fast').css({'background':'#fff','text-align':'left'}).append($('<div/>').addClass('chat-icon empty')).find('.search-contact').animate({'width':'150px'}).focus();
+						$('.empty').on('click',function(){
+							$(this).siblings('input').val('').focus().parent().siblings('.search-result').hide();
+						});
+						event.stopPropagation();
+					});
+					$('.search-contact').bind('input propertychange',function(){
+						if($(this).val() != '') {
+							//从组织架构中筛选
+							$('.search-result').show();
+						}else{
+							$('.search-result').hide();
+						}
+					});
+
+
+					$('.tab').click(function(){
+						$(this).addClass('active').siblings('.tab').removeClass('active');
+						$(this).parent().siblings('.'+$(this).attr('tab-name')).addClass('active').siblings('.tab-detail').removeClass('active');	
+					});
+					/*$('.tab[tab-name=recent]').bind('mousedown',function(event){
+							var _this = $('.contact-type');
+							if(event.which == 3)
+							_this.rightMouse({'data':{'刷新':'#','清空最近联系人':'#'},'limit':{'default':['刷新','清空最近联系人']},'type':$(this).attr('type')});
+					});*/
+					$('.tab-detail.structure').treeViewModify({});
+					$('.tab-detail.recent').treeViewModify({});
+					//新消息，若最近联系人中存在，则将其移至最近联系人中顶部
+					//$('待移动元素').moveTreeTop($('.recent'));
+					$("body").on('dblclick','.tab-detail.structure span[type=member]',function(){
+						//添加之前先判断是否有这个联系人
+						if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
+							$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
+							return false;
+						}
+						$('.tab-detail.recent').addTree({
+		  					'title'  : $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,''),
+		  					'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src')}]
+		 				});
+						//$('.tab[tab-name=recent]').click();
+						//双击recent中的这个联系人
+						$('.tab-detail.recent span:first').dblclick();
+					})
+					$("body").on('dblclick','.tab-detail.recent span',function(){
+						//$(this).moveTreeTop($('.tab-detail.recent'));
+						//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
+						var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,'');
+						var _member = new Array();
+						$('.home').hide();
+						$('.message').css('margin-right','0px');
+						$('.chat-box .member').hide();
+						//如果是群组，更新群组成员
+						if($(this).attr('type')=='group') {
+							_title = $(this).html().replace(/[\s]*<(\w+\b)[^>]+>(.|[\r\n])*?<\/\1>[\s\r\n]*/g,'');
+							$(this).next('.tree-files').children('span.no-child').each(function(){
+								_member.push({
+									'avatar':$(this).find('.avatar').attr('src'),
+									'username':$(this).html().replace(/<[^>]+>/,'')
+								});
+							})
+							//讨论组成员列表
+							$('.message').css('margin-right','150px');
+							$('.chat-box .member').show().html('').append($('<div/>').addClass('tree-folders')).addTree({
+		  						'title'  : _title,
+		  						'member' : _member
+		 					});
+						}
+						//联系人信息更新
+						$('.contact-msg h1').html(_title)
+						
+					})
+					$("body").on('mouseover','.tab-detail.active span',function(event){
+							var _this = $('.tab-detail.active')
+							if(_this.children('.tree-item-bg').length==0)
+							$('<div/>').addClass('tree-item-bg').appendTo(_this);
+							_this.children('.tree-item-bg').css({'top':$(this).offset().top-_this.offset().top+_this.scrollTop()})
+						}
+					)/*.on('mousedown','.tab-detail.active span',function(event){
+							var _this = $('.tab-detail.active');
+							if(event.which == 3)
+							_this.rightMouse({'data':{'发送消息':'#','从最近联系人中删除':'javascript:$(".tab-detail.recent span:eq('+$(this).prevAll('span').length+')").removeTree();','查看消息记录':'#','查看资料':'#','成员列表':'#'},'limit':{'group':['发送消息','从最近联系人中删除','查看消息记录','成员列表'],'personal':['发送消息','从最近联系人中删除','查看消息记录','查看资料'],'member':['发送消息','查看消息记录','查看资料'],'dept':['成员列表']},'type':$(this).attr('type'),'top':event.pageY-_this.offset().top,'left':event.pageX-_this.offset().left,'event':event});
+					})*/
+					$('.tab-detail,.member').rightMouse({'data':{'发送消息':'#','从最近联系人中删除':'javascript:$(".tab-detail.recent span:eq(eval##$(this).prevAll(\'span\').length##)").removeTree();','查看消息记录':'#','查看资料':'#','成员列表':'#'},'limit':{'group':['发送消息','从最近联系人中删除','查看消息记录','成员列表'],'personal':['发送消息','从最近联系人中删除','查看消息记录','查看资料'],'member':['发送消息','查看消息记录','查看资料'],'dept':['成员列表']},'elem':'span'});
+					
+					$(document).click(function(){
+						$('.pop-smiley').hide();
+						$('.pop-keys').hide();
+						if($('.search .search-contact').val() != "")
+							return false;
+						$('.search').removeAttr('style').find('.search-contact').val('').css({'width':'26px'}).end().find('.empty').remove();
+					})
+			})
+		</script>
+	</body>
+</html>
