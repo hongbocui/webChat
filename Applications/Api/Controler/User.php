@@ -63,12 +63,33 @@
         }
         /**
          * 获取所有用户信息
+         * 仅支持最高6级部门
          */
         public function doAllUsers(){
             $data = Muser::getUserinfo(array());
             $outArr = array();
             foreach((array)$data as $key=>$val) {
-                $outArr[$val['accountid']] = $val;
+                $deptArr = explode(',', trim($val['deptDetail'], ','));
+                $deep = count($deptArr);
+                switch($deep) {
+                    case 1: $outArr[$deptArr[0]][$val['accountid']] = $val['username']; 
+                        break;
+                    case 2:
+                        $outArr[$deptArr[0]][$deptArr[1]][$val['accountid']] = $val['username'];
+                        break;
+                    case 3:
+                        $outArr[$deptArr[0]][$deptArr[1]][$deptArr[2]][$val['accountid']] = $val['username'];
+                        break;
+                    case 4:
+                        $outArr[$deptArr[0]][$deptArr[1]][$deptArr[2]][$deptArr[3]][$val['accountid']] = $val['username'];
+                        break;
+                    case 5:
+                        $outArr[$deptArr[0]][$deptArr[1]][$deptArr[2]][$deptArr[3]][$deptArr[4]][$val['accountid']] = $val['username'];
+                        break;
+                    case 6:
+                        $outArr[$deptArr[0]][$deptArr[1]][$deptArr[2]][$deptArr[3]][$deptArr[4]][$deptArr[5]][$val['accountid']] = $val['username'];
+                        break;
+                }
             }
             $this->_success($outArr);
         }
@@ -82,7 +103,7 @@
             if(!$username) return false;
             $num = $num ? $num-1 : 19;
             $recentUsers = Muser::getRecentMembers($username, $num);
-            echo json_encode($recentUsers);
+            $this->_success($recentUsers);
         }
         /**
          * 获取所有在线用户 账号列表
@@ -91,7 +112,7 @@
             $clientList = Muser::getOnlineUsers();
             if(false === $clientList)
                 return false;
-            echo json_encode($clientList);
+            $this->_success($clientList);
         }
     }
 ?>

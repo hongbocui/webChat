@@ -34,11 +34,21 @@
 					<div class="tab" tab-name="structure">组织架构</div>
 				</div>
 				<!--最近联系人-->
-				<div class="tab-detail recent active">
+				<div id="nearest-contact" class="tab-detail recent active">
 					<div class="tree-folders">
-						<span class="no-child" type="personal" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明<b class="unread">9</b></span>
+						<span class="no-child" type="personal" data-id="xieyx"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">谢衍鑫<b class="unread">9</b></span>
                         <span class="no-child" type="personal"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书<b class="unread">2</b></span>
-						<span type="group">
+						<span type="group" data-id="cuihb-liushu-chenming">
+							<div class="group-avatar">
+								<img class="avatar" src="./default_34_34.jpg" width="10px">
+								<img class="avatar no-login" src="./default_34_34.jpg" width="10px">
+								<img class="avatar" src="./default_34_34.jpg" width="10px">
+								<img class="avatar" src="./default_34_34.jpg" width="10px">
+							</div>
+							陈明、刘书
+							<b class="unread">99</b>
+						</span>
+						<span type="group" data-id="cuihb-liushu-chenming">
 							<div class="group-avatar">
 								<img class="avatar" src="./default_34_34.jpg" width="10px">
 								<img class="avatar no-login" src="./default_34_34.jpg" width="10px">
@@ -50,62 +60,65 @@
 						</span>
 					</div>
 					<div class="tree-files">
-						<span class="no-child" type="member" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
-                        <span class="no-child" type="member"><img class="avatar" src="./default_34_34.jpg" width="22px">刘书</span>
+						<span class="no-child" type="member" data-id="chenming"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">陈明</span>
+                        <span class="no-child" type="member" data-id="cuihb"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">崔洪波</span>
+					</div>
+					<div class="tree-files">
+						<span class="no-child" type="member" data-id="chenming"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">陈明</span>
+                        <span class="no-child" type="member" data-id="cuihb"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">崔洪波</span>
 					</div>
 				</div>
 				<!--组织架构-->
-				<div class="tab-detail structure">
+				<div id="organization-structure" class="tab-detail structure">
 					<div class="tree-folders">
-								<span type="dept">管理层</span>
-								<span>战略发展与投资部</span>
-								<span class="no-child">视频部</span>
-								<span class="no-child">技术部</span>
-								<span>广告销售部</span>
-								<span class="no-child">人力资源部</span>
-                            </div>
+						<span>管理层</span>
+						<span>战略发展与投资部</span>
+						<span class="no-child">视频部</span>
+						<span class="no-child">技术部</span>
+						<span>广告销售部</span>
+						<span class="no-child">人力资源部</span>
+                    </div>
+					<div class="tree-files">
+						<span class="no-child" type="member" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
+                       	<span class="no-child" type="member" data-id="liushu"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书</span>
+                       	<span class="no-child" type="member" data-id="andyxu"><img class="avatar" src="./default_34_34.jpg" width="22px">徐进</span>
+                       	<span class="no-child" type="member" data-id="bettyho"><img class="avatar" src="./default_34_34.jpg" width="22px">何晔</span>
+                    </div>
+                    <div class="tree-files">
+						<div class="tree-folders">
+							<span>战略BD组</span>
+							<span class="no-child">创新产品组</span>
+						</div>
+						<div class="tree-files">
+							<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">邓少玮</span>
+                            <span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">刘鼎森</span>
+						</div>
+                    </div>
+                    <div class="tree-files">
+						<div class="tree-folders">
+							<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">范丽茜</span>
+							<span>华北区</span>
+						</div>
+						<div class="tree-files">
+							<div class="tree-folders">
+								<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">池小燕</span>
+								<span>华北业务管理部</span>
+							</div>
 							<div class="tree-files">
-								<span class="no-child" type="member" data-id="chenming"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
-                                	<span class="no-child" type="member" data-id="liushu"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书</span>
-                                	<span class="no-child" type="member" data-id="andyxu"><img class="avatar" src="./default_34_34.jpg" width="22px">徐进</span>
-                                	<span class="no-child" type="member" data-id="bettyho"><img class="avatar" src="./default_34_34.jpg" width="22px">何晔</span>
-                           	</div>
-                            <div class="tree-files">
-								
 								<div class="tree-folders">
-									<span>战略BD组</span>
-									<span class="no-child">创新产品组</span>
+									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">卑晓艳</span>
+									<span>华北媒介部</span>
+									<span>内容产品中心</span>
 								</div>
 								<div class="tree-files">
-									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">邓少玮</span>
-                                	<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">刘鼎森</span>
-								</div>
-                            </div>
-                            <div class="tree-files">
-								<div class="tree-folders">
-									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">范丽茜</span>
-									<span>华北区</span>
+									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">解丹</span>
 								</div>
 								<div class="tree-files">
-									<div class="tree-folders">
-										<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">池小燕</span>
-										<span>华北业务管理部</span>
-									</div>
-									<div class="tree-files">
-										<div class="tree-folders">
-											<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">卑晓艳</span>
-											<span>华北媒介部</span>
-											<span>内容产品中心</span>
-										</div>
-										<div class="tree-files">
-											<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">解丹</span>
-										</div>
-										<div class="tree-files">
-											<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">宫昊源</span>
-										</div>
-									</div>
+									<span class="no-child"><img class="avatar" src="./default_34_34.jpg" width="22px">宫昊源</span>
 								</div>
-                            </div>
+							</div>
+						</div>
+                     </div>
 				</div>
 				<div class="tool"></div>
 			</div>
@@ -307,6 +320,8 @@
 		</div>
 		<script src="js/jquery.min.js"></script>
 		<script src="js/jquery-plugin-v1.0.0.js"></script>
+		<script type="text/javascript" src="./js/chat.js"></script>
+		<script type="text/javascript" src="./js/chatlazy.js"></script>
 		<script>
 			$(function(){
 					$('.pop-smiley').tips({'pages':1,'target':['left',5]})
@@ -358,7 +373,7 @@
 							if(event.which == 3)
 							_this.rightMouse({'data':{'刷新':'#','清空最近联系人':'#'},'limit':{'default':['刷新','清空最近联系人']},'type':$(this).attr('type')});
 					});*/
-					$('.tab-detail.structure').treeViewModify({});
+					//$('.tab-detail.structure').treeViewModify({});
 					$('.tab-detail.recent').treeViewModify({});
 					//新消息，若最近联系人中存在，则将其移至最近联系人中顶部
 					//$('待移动元素').moveTreeTop($('.recent'));
@@ -394,7 +409,7 @@
 								});
 							})
 							//讨论组成员列表
-							$('.message').css('margin-right','150px');
+							$('.message').css('margin-right','180px');
 							$('.chat-box .member').show().html('').append($('<div/>').addClass('tree-folders')).addTree({
 		  						'title'  : _title,
 		  						'member' : _member

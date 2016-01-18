@@ -45,18 +45,18 @@ class Event
             // 客户端回应服务端的心跳
             case 'pong':
                 return;
-            // 客户端登录 message格式: {type:login, client_name:xx} ，添加到客户端，广播给所有客户端xx上线
+            // 客户端登录 message格式: {type:login, clientName:xx} ，添加到客户端，广播给所有客户端xx上线
             case 'login':
                 // 判断是否有有名字
-                if(!isset($messageData['client_name']))
+                if(!isset($messageData['clientName']))
                 {
-                    throw new \Exception("\$messageData['client_name'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
+                    throw new \Exception("\$messageData['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
                 
-                $client_name = htmlspecialchars($messageData['client_name']);
+                $clientName = htmlspecialchars($messageData['clientName']);
                 
                 //判断数据库中是否存在用户,不存在则关闭链接
-                if(!Muser::getUserinfo(array('accountid'=>$client_name))){
+                if(!Muser::getUserinfo(array('accountid'=>$clientName))){
                     //忽略的消息传给用户
                     Gateway::sendToCurrentClient(json_encode(array('type'=>'error', 'info'=>'erroruser', 'msg'=>'用户名不存在')));
                     Gateway::closeClient($client_id);
@@ -64,14 +64,14 @@ class Event
                 }
                 
                 // 把用户名放到session中
-                $_SESSION['client_name'] = $client_name;
+                $_SESSION['clientName'] = $clientName;
                 
                 //存储用户到在线列表
-                self::addUserToOnlineList($client_id, $client_name);
+                self::addUserToOnlineList($client_id, $clientName);
                 //转播给在线客户，xx上线 message {type:login, client_id:xx, name:xx}
                 $new_message = array(
                     'type' => $messageData['type'],
-                    'client_name' => $client_name,
+                    'clientName' => $clientName,
                     'time'        => date('Y-m-d H:i:s')
                 );
                 Gateway::sendToAll(json_encode($new_message));
@@ -79,19 +79,19 @@ class Event
             // 客户端发言 message: {type:say, touser:xx, content:xx}
             case 'say':
                 // 非法请求
-                if(!isset($_SESSION['client_name']))
+                if(!isset($_SESSION['clientName']))
                 {
-                    throw new \Exception("\$_SESSION['client_name'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                    throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
                 }
-                $client_name = $_SESSION['client_name'];
+                $clientName = $_SESSION['clientName'];
                 
                 if(!is_array($messageData['touser'])) return;
                 //所有消息压入redis队列中，以便存储
-                $pushArr = self::makeMsg($client_name, $messageData['touser'], $messageData['content']);
+                $pushArr = self::makeMsg($clientName, $messageData['touser'], $messageData['content']);
                 self::msgIntoQueue($pushArr);
                 
                 // 聊天内容
-                $new_message = self::makeMsg($client_name, $messageData['touser'], $messageData['content'], 'say');
+                $new_message = self::makeMsg($clientName, $messageData['touser'], $messageData['content'], 'say');
                 $jsonNewMessage = json_encode($new_message);
                 //获取所有存储的在线用户
                 $clientLists = Muser::getOnlineUsers();
@@ -112,18 +112,18 @@ class Event
                 $chatDept = $messageData['touser'];
                 if(!$chatDept) return;
                 // 非法请求
-                if(!isset($_SESSION['client_name'])) {
-                    throw new \Exception("\$_SESSION['client_name'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                if(!isset($_SESSION['clientName'])) {
+                    throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
                 }
-                $client_name = $_SESSION['client_name'];
+                $clientName = $_SESSION['clientName'];
                 if(!is_array($chatDept)) return;
                 
                 //所有消息压入redis队列中，以便存储
-                $pushArr = self::makeMsg($client_name, $chatDept, $messageData['content'], \Config\St\Storekey::BROADCAST_MSG_TYPE);
+                $pushArr = self::makeMsg($clientName, $chatDept, $messageData['content'], \Config\St\Storekey::BROADCAST_MSG_TYPE);
                 self::msgIntoQueue($pushArr);
                 
                 // 聊天内容
-                $new_message = self::makeMsg($client_name, $chatDept, $messageData['content'],'broadcast');
+                $new_message = self::makeMsg($clientName, $chatDept, $messageData['content'],'broadcast');
                 $jsonNewMessage = json_encode($new_message);
                 
                 //获取部门下的用户列表
@@ -170,11 +170,11 @@ class Event
        // debug
        //echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id onClose:''\n";
        //获取clientname
-       $client_name = self::getClientnameFromId($client_id);
+       $clientName = self::getClientnameFromId($client_id);
        //从在线列表中删除一个用户
        self::delUserFromOnline($client_id);
        // 广播 xxx 退出了
-       $new_message = array('type'=>'logout', 'client_name'=>$client_name, 'time'=>date('Y-m-d H:i:s'));
+       $new_message = array('type'=>'logout', 'clientName'=>$clientName, 'time'=>date('Y-m-d H:i:s'));
        Gateway::sendToAll(json_encode($new_message));
    }
    /**
@@ -194,17 +194,17 @@ class Event
        return true;
    }
    /**
-    * 根据client_id获取client_name
+    * 根据clientId获取clientName
     */
-   public static function getClientnameFromId($client_id) {
-       if(!$client_id) return false;
+   public static function getClientnameFromId($clientId) {
+       if(!$clientId) return false;
        $store = Store::instance("gateway");
-       return $store->hGet(\Config\St\Storekey::USER_ONLINE_LIST, $client_id);
+       return $store->hGet(\Config\St\Storekey::USER_ONLINE_LIST, $clientId);
    }
    
    /**
     * 根据所给用户列表，获取在线的clientid列表
-    * @param string $client_name
+    * @param string $clientName
     */
    public static function getClientidsFromUsers($clientsList=array(),$clientNameArr = array()){
        if(!is_array($clientNameArr) || !is_array($clientsList)) return false;
@@ -222,23 +222,23 @@ class Event
    /**
     * 存储用户到在线列表，并返回所有在线用户
     * @param int $client_id
-    * @param string $client_name
+    * @param string $clientName
     */
-   public static function addUserToOnlineList($client_id, $client_name){
+   public static function addUserToOnlineList($clientId, $clientName){
        $key = \Config\St\Storekey::USER_ONLINE_LIST;
        $store = Store::instance("gateway");
        // 获取所有所有在线用户clientid--------------
-       $all_online_client_id = Gateway::getOnlineStatus();
+       $allOnlineClientId = Gateway::getOnlineStatus();
        //获取存储中在线用户列表       
-       $client_list = Muser::getOnlineUsers();
-       if(isset($client_list[$client_id])) return true;
+       $clientList = Muser::getOnlineUsers();
+       if(isset($clientList[$clientId])) return true;
        //是否允许多用户登录,剔除用户的clientid
        if(\Config\St\Status::NOT_ALLOW_CLIENTS)
-           self::notAllowMoreClient($client_list, $client_name);
+           self::notAllowMoreClient($clientList, $clientName);
        // 将存储中不在线用户删除
-       self::deleteOfflineUser($client_list, $all_online_client_id);
+       self::deleteOfflineUser($clientList, $allOnlineClientId);
        // 添加
-       if($store->hSet($key, $client_id, $client_name))
+       if($store->hSet($key, $clientId, $clientName))
            return true;
        return false;
    }
@@ -260,14 +260,14 @@ class Event
     * 不允许多用户登录
     * 剔除存储用户
     */
-   public static function notAllowMoreClient($client_list, $client_name){
-       if(is_array($client_list)){
-           $unsetKey = array_keys($client_list, $client_name);
+   public static function notAllowMoreClient($clientList, $clientName){
+       if(is_array($clientList)){
+           $unsetKey = array_keys($clientList, $clientName);
            if($unsetKey){
                Gateway::sendToAll(json_encode(array('type'=>'error', 'info'=>'loginconflict', 'msg'=>'您已在另一客户端登陆')),$unsetKey);
                $store = Store::instance("gateway");
                foreach($unsetKey as $unkey){
-                   unset($client_list[$unkey]);
+                   unset($clientList[$unkey]);
                    //下线用户
                    Gateway::closeClient($unkey);
                    //删除存储用户

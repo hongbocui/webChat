@@ -13,6 +13,25 @@
 	Autoloader::setRootPath("../../");
 	use Vendors\Redis\Redisq;
 	use Vendors\Redis\RedisModel;
+	use Api\Model\Mmessage;
+	
+	//自动建表
+	Api\Model\Mqueue::createQueueTable();
+	//处理队列
+	deamonStart(array(
+	    'queueType'   => 'RedisQ',      #消息队列名称 默认是MQ RedisQ
+	    'serverName'  => 'webChat',      #ResysQ
+	    'queueName'   => 'chat:msg-list',      #要监听的消息队列名
+	    'jobName'     => 'chat:msg-list',      #当前处理的job名称
+	    'cnName'      => 'itcrm聊天队列',      #中文名称
+	    'function'    => 'doQuene',   #要运行的函数名
+	    'msgNumAtm'   => 2,       #每次处理的消息数，如果是多个会有合并处理
+	    'maxSleep'    => 30,      #没有消息的时候，deamon将sleep，如果队列消息不多，尽量设置大点，减少处理压力20+
+	    'adminMail'   => 'cuihb@ifeng.com',      #接受监控报警的邮件地址，多个地址逗号分割
+	    'msgServer'   => 'webChat',      #要监听的消息队列服务器名
+	    'phpFile'     =>  __FILE__,      #php文件地址
+	    'life'        => 0,       #程序的生命周期，如果0表示是一直循环的Deamon处理，如果设置了时间，必须采用crontab的形式
+	));
 	
 	//消息队列回调函数
 	function doQuene($data){
@@ -28,7 +47,6 @@
 	 */
 	function insertData($data){
 	    if(!$data) return false;
-	    $db = \GatewayWorker\Lib\Db::instance('webChat');
 	    $chatList = $data['touser'];
 	    $chatid = '';
 	    if($data['type'] == \Config\St\Storekey::CHAT_MSG_TYPE) {
@@ -36,7 +54,7 @@
 	        if(!$chatid) return;
 	    }
 	    //自动分表处理
-	    Api\Model\Mmessage::createTable(Api\Model\Mmessage::getTbname());
+	    Mmessage::createTable(Mmessage::getTbname());
 	    //插入聊天数据
 	    $touser = implode(',', $chatList);
 	    $insertData = array(
@@ -47,7 +65,7 @@
 	        'time'     => $data['time'],
 	        'type'     => $data['type'],
 	    );
-	    Api\Model\Mmessage::storeMessage($insertData);
+	    Mmessage::storeMessage($insertData);
 	}
 	
 	/**
@@ -92,22 +110,6 @@
             'len'         => 50,      #结束索引值
         ));
 	}
-	 
-	deamonStart(array(
-            'queueType'   => 'RedisQ',      #消息队列名称 默认是MQ RedisQ
-            'serverName'  => 'webChat',      #ResysQ
-            'queueName'   => 'chat:msg-list',      #要监听的消息队列名
-            'jobName'     => 'chat:msg-list',      #当前处理的job名称
-            'cnName'      => 'itcrm聊天队列',      #中文名称
-            'function'    => 'doQuene',   #要运行的函数名
-            'msgNumAtm'   => 2,       #每次处理的消息数，如果是多个会有合并处理
-            'maxSleep'    => 30,      #没有消息的时候，deamon将sleep，如果队列消息不多，尽量设置大点，减少处理压力20+
-            'adminMail'   => 'cuihb@ifeng.com',      #接受监控报警的邮件地址，多个地址逗号分割
-            'msgServer'   => 'webChat',      #要监听的消息队列服务器名
-            'phpFile'     =>  __FILE__,      #php文件地址
-            'life'        => 0,       #程序的生命周期，如果0表示是一直循环的Deamon处理，如果设置了时间，必须采用crontab的形式
-		));
-	
 	 /**
      *  消息队列Client Deamon程序启动
      */
@@ -181,13 +183,13 @@
                $db      = \GatewayWorker\Lib\Db::instance('webChat'); #便于记录运行状态用
                $startTm = $tm;
                $nowD    = date("d");
-               $sql     = "select * from redisq_deamon_status where job_name = '{$jobName}' and queue_name = '{$queueName}' ";
+               $sql     = "select * from queue_deamon_status where job_name = '{$jobName}' and queue_name = '{$queueName}' ";
                $info    = $db->query($sql);
                if($info && is_array($info)){
                    $info = $info[0];#因为我用的是workerman自带的mysql操作
                    #获得当天处理的消息数量
                    $todaycnt = $info['msgcnt_date'] != $nowD ? $runCnt : 'msgcnt_day + '.$runCnt;
-                   $sql = "update redisq_deamon_status 
+                   $sql = "update queue_deamon_status 
                            set tm = '$tm',server = '{$serverIp}',func='{$function}',filepath='{$phpFile}',admin='{$adminMail}',dostop=0,
                                msgcnt_all = msgcnt_all + {$runCnt} , msgcnt_day = {$todaycnt},msgcnt_date='$nowD',cnname='{$cnName}'
                            where job_name = '{$jobName}' and queue_name = '{$queueName}' ";
@@ -200,7 +202,7 @@
                    }
                    $runCnt = 0;
                }else{
-                   $sql = "insert into redisq_deamon_status(job_name,queue_name,tm,server,func,filepath,admin,msgcnt_date,cnname)
+                   $sql = "insert into queue_deamon_status(job_name,queue_name,tm,server,func,filepath,admin,msgcnt_date,cnname)
                            values('{$jobName}','{$queueName}',$tm,'{$serverIp}','{$function}','{$phpFile}','{$adminMail}','{$nowD}','{$cnName}') ";
                    $db->query($sql);
                    

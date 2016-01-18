@@ -33,7 +33,7 @@
     	  if(reconnect == false)
     	  {
         	  // 登录
-    		  var login_data = JSON.stringify({"type":"login","client_name":name});
+    		  var login_data = JSON.stringify({"type":"login","clientName":name});
     		  console.log("发送登录数据:"+login_data);
   		      ws.send(login_data);
     		  reconnect = true;
@@ -41,7 +41,7 @@
     	  else
     	  {
         	  // 断线重连
-        	  var relogin_data = JSON.stringify({"type":"login","client_name":name});
+        	  var relogin_data = JSON.stringify({"type":"login","clientName":name});
     		  console.log("发送登录数据:"+relogin_data);
     		  ws.send(relogin_data);
     	  }
@@ -57,9 +57,9 @@
                 break;;
               // 登录 更新用户列表
               case 'login':
-                  //{"type":"re_login","client_name":"xxx","client_list":"[...]","all_list":"[...]","time":"xxx"}
-            	  add_online_client(data['client_name']);
-                  console.log(data['client_name']+"登录成功");
+                  //{"type":"re_login","clientName":"xxx","client_list":"[...]","all_list":"[...]","time":"xxx"}
+            	  add_online_client(data['clientName']);
+                  console.log(data['clientName']+"登录成功");
                   break;
               // 发言
               case 'say':
@@ -94,8 +94,8 @@
             	  break; 
              // 用户退出 更新用户列表
               case 'logout':
-            	  //{"type":"logout","client_name":xxx,"time":"xxx"}
-            	 delete_offline_client(data['client_name']);
+            	  //{"type":"logout","clientName":xxx,"time":"xxx"}
+            	 delete_offline_client(data['clientName']);
         }
       };
       ws.onclose = function() {
@@ -212,12 +212,12 @@
         }
     }
     //删除下线用户
-    function delete_offline_client(client_name){
-		$("#"+client_name).remove();
+    function delete_offline_client(clientName){
+		$("#"+clientName).remove();
     }
     //增加一个在线用户
-    function add_online_client(client_name) {
-    	$("#userlist-online").append('<li id="'+client_name+'"><a>'+client_name+'</a></li>');
+    function add_online_client(clientName) {
+    	$("#userlist-online").append('<li id="'+clientName+'"><a>'+clientName+'</a></li>');
     }
     //登陆时加载用户最近的联系人
     function loadRecentMembers(membersList){

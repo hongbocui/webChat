@@ -10,23 +10,6 @@ linux环境下
 
 ##需要的库表 
   库： webChat
-  表： redisq_deamon_status //存储redis队列状态
-  			CREATE TABLE `redisq_deamon_status` (
-			  `id` int(11) NOT NULL AUTO_INCREMENT,
-			  `job_name` varchar(50) NOT NULL COMMENT '队列任务名称',
-			  `queue_name` varchar(50) NOT NULL COMMENT '队列键',
-			  `tm` int(11) NOT NULL DEFAULT '0' COMMENT '由此时间可以知道该队列是否还活着',
-			  `server` char(16) NOT NULL COMMENT '主机ip',
-			  `func` varchar(20) NOT NULL COMMENT '处理该队列的回调函数',
-			  `filepath` varchar(100) NOT NULL COMMENT 'php文件地址',
-			  `msgcnt_date` tinyint(2) NOT NULL DEFAULT '0' COMMENT '月份中第几天',
-			  `admin` varchar(30) NOT NULL COMMENT '队列管理者邮箱',
-			  `cnname` varchar(50) NOT NULL COMMENT '消息队列中文名称',
-			  `dostop` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0表示未停止',
-			  `msgcnt_all` int(11) NOT NULL DEFAULT '0' COMMENT '总共处理消息数',
-			  `msgcnt_day` int(11) NOT NULL DEFAULT '0' COMMENT '该队列今日处理消息数',
-			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8
   表： webchat_user //用来存储用户数据
   		CREATE TABLE `webchat_user` (
 		  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
@@ -42,6 +25,7 @@ linux环境下
 		  PRIMARY KEY (`uid`)
 		) ENGINE=MyISAM AUTO_INCREMENT=10727 DEFAULT CHARSET=utf8
   表：webchat_message年月 //会自动生成，用来存储聊天记录
+  表：queue_deamon_status //用来存储队列状态、自动建立
 ##运行：
 ###一、启动聊天服务。根目录下以debug方式启动  
 	```php start.php start  ```

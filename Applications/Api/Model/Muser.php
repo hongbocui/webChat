@@ -5,6 +5,7 @@
      * // dbobj 中的几个方法 lastInsertId()、single($query = '',$params = null)、
      * row($query)、column($query)、query($query)
      */
+    use \GatewayWorker\Lib\Db;
     class Muser extends Abstractex{
         public static $usertable = 'webchat_user';
         //数据库对象
@@ -15,7 +16,7 @@
         
         public static function dbobj(){
             if(null === self::$db)
-                self::$db = \GatewayWorker\Lib\Db::instance('webChat');
+                self::$db = Db::instance('webChat');
             return self::$db;
         }
         /**
