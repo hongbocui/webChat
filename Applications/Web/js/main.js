@@ -114,7 +114,7 @@ $(function(){
 		//$(this).moveTreeTop($('.tab-detail.recent'));
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
 		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,'');
-		var _member = new Array();
+		var _member = $(this).attr('data-id');
 		$('.home').hide();
 		$('.message').css('margin-right','0px');
 		$('.chat-box .member').hide();
@@ -122,21 +122,10 @@ $(function(){
 		if($(this).attr('type')=='group') {
 			$('.message').css('margin-right','180px');
 			$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
-			//_title = $(this).html().replace(/[\s]*<(\w+\b)[^>]+>(.|[\r\n])*?<\/\1>[\s\r\n]*/g,'');
-			/*$(this).next('.tree-files').children('span.no-child').each(function(){
-				_member.push({
-					'avatar':$(this).find('.avatar').attr('src'),
-					'username':$(this).html().replace(/<[^>]+>/,'')
-				});
-			})
-			//讨论组成员列表
-			$('.message').css('margin-right','150px');
-			$('.chat-box .member').show().html('').append($('<div/>').addClass('tree-folders')).addTree({
-				'title'  : _title,
-				'member' : _member
-			});*/
+			
 		}
 		//联系人信息更新
+		$('.contact-msg').attr('chatuser',_member);
 		$('.contact-msg h1').html(_title);
 		$('.chat-input').focus();
 		

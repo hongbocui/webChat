@@ -223,3 +223,8 @@
     	}
     	return parentObj;
     }
+    //js 将php时间戳转为时间
+    function timestampTodate(timestamp) {
+    	var d = new Date(parseInt(s) * 1000);
+    	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+    }
