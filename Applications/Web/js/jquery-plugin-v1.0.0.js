@@ -236,6 +236,7 @@
 					}else{
 						var _rootIndex = obj.prevAll('span:not(.no-child)').length;
 						$('<div>').append(obj.parent().siblings('.tree-files:eq('+_rootIndex+')').clone()).children().show().insertAfter(obj);
+						obj.parent().siblings('.tree-files:eq('+_rootIndex+')').html('');
 						if(obj.nextAll().length > 1)
 							obj.next().addClass('tree-icon tree-main-line');
 						if(obj.next().children('.tree-folders').length > 0)
@@ -570,7 +571,7 @@
         }
 		$.fn.moveTreeTop = function(obj) {
 			var _this = this,
-				obj = obj.children('.tree-folders');
+				//obj = obj.children('.tree-folders');
 				_prev_icon = 'tree-middle-line',
 				_this_icon = 'tree-middle-line';
 			obj.children('.tree-icon:first').addClass('tree-middle-line');
@@ -605,7 +606,8 @@
 			if(data.member.length >= 2) {
 				var _avatar = $('<div/>');
 				_title.children('span').removeClass('no-child');
-				for(var i=0; i<4&&i<data.member.length; i++) {
+				for(var i=0; i<data.member.length; i++) {
+					if(i<4)
 					$('<img/>').addClass('avatar').attr({'src':data.member[i].avatar,'width':'10px'}).appendTo(_avatar);
 					$('<span/>').addClass('no-child').html(data.member[i].username).append($('<img/>').addClass('avatar').attr({'src':data.member[i].avatar,'width':'22px'})).appendTo(_member);
 				}
