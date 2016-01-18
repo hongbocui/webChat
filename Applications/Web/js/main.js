@@ -134,7 +134,7 @@ $(function(){
 		$('.chat-box .member').hide();
 		//如果是群组，更新群组成员
 		if($(this).attr('type')=='group') {
-			$('.message').css('margin-right','150px');
+			$('.message').css('margin-right','180px');
 			$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
 			//_title = $(this).html().replace(/[\s]*<(\w+\b)[^>]+>(.|[\r\n])*?<\/\1>[\s\r\n]*/g,'');
 			/*$(this).next('.tree-files').children('span.no-child').each(function(){

@@ -11,7 +11,7 @@ p {height:30px;line-height:30px;}
 .contact-msg {width: 100%;height: 69px;background: #FFFFFF;border-bottom:1px solid #EBECED;text-indent:14px;}
 .chat-box {position:absolute;width: 100%;top:70px;background: gold;bottom:0;}
 .message {height: 100%;background: khaki;margin-right:0px;position:relative;}
-.member {width: 149px;height: 100%;border-left:1px solid #EBECED;background: #FFFFFF;float: right;display:none;}
+.member {width: 179px;height: 100%;border-left:1px solid #EBECED;background: #FFFFFF;float: right;display:none;}
 .logs {width: 100%;background: #FFFFFF;position:absolute;top:0;bottom:120px;overflow-y: auto;overflow-x: hidden;padding:10px 0;}
 .send-msg {width: 100%;height: 120px;background: #000;position:absolute;bottom:0;}
 .tool {width: 100%;height: 29px;background: #FFFFFF;border-top:1px solid #EBECED;position:relative;}
