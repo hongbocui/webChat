@@ -571,7 +571,6 @@
         }
 		$.fn.moveTreeTop = function(obj) {
 			var _this = this,
-				//obj = obj.children('.tree-folders');
 				_prev_icon = 'tree-middle-line',
 				_this_icon = 'tree-middle-line';
 			obj.children('.tree-icon:first').addClass('tree-middle-line');
@@ -587,6 +586,29 @@
 				$(_this).next().addClass('tree-icon tree-main-line').prependTo(obj);
 			$(_this).prev().addClass('tree-start-line').removeClass(_this_icon).prependTo(obj);
 			$(_this).insertAfter(obj.children('.tree-icon:first'))
+		}
+		$.fn.moveTree = function(obj, pos, target) {
+			var _this = this,
+				_target = target||0,
+				_prev_icon = 'tree-middle-line',
+				_this_icon = 'tree-middle-line';
+			//确认目标位以及当前位
+			//当前位为首位则下一成首位，否则首位不动
+			//当前位为目标位则不动
+			//目标位为末位则当前位变末位，否则末位不动
+			/*obj.children('.tree-icon:first').addClass('tree-middle-line');
+			if($(_this).nextAll('span').length == 0) {
+				_prev_icon = 'tree-end-line';
+				_this_icon = 'tree-end-line';
+				if($(_this).prevAll('span:first').next('.tree-files').length)
+					$(_this).prevAll('span:first').next('.tree-files').removeClass('tree-icon tree-main-line');
+			}
+			$(_this).prevAll('span:first').prev().removeClass('tree-start-line').removeClass('tree-middle-line').addClass(_prev_icon);
+			
+			if($(_this).next('.tree-files').length)
+				$(_this).next().addClass('tree-icon tree-main-line').prependTo(obj);
+			$(_this).prev().addClass('tree-start-line').removeClass(_this_icon).prependTo(obj);
+			$(_this).insertAfter(obj.children('.tree-icon:first'))*/
 		}
 		/**
 		 * $('.recent').addTree({
@@ -606,8 +628,7 @@
 			if(data.member.length >= 2) {
 				var _avatar = $('<div/>');
 				_title.children('span').removeClass('no-child');
-				for(var i=0; i<data.member.length; i++) {
-					if(i<4)
+				for(var i=0; i<4&&i<data.member.length; i++) {
 					$('<img/>').addClass('avatar').attr({'src':data.member[i].avatar,'width':'10px'}).appendTo(_avatar);
 					$('<span/>').addClass('no-child').html(data.member[i].username).append($('<img/>').addClass('avatar').attr({'src':data.member[i].avatar,'width':'22px'})).appendTo(_member);
 				}
@@ -616,7 +637,7 @@
 			}else{
 				$('<img/>').addClass('avatar').attr({'src':data.member[0].avatar,'width':'22px'}).prependTo(_title.children('span'));
 			}
-			_html.treeViewModify({});
+			_html.treeViewModify({'defaultOpen':1});
 			$(_this).children('.tree-folders').children('.tree-icon:first').addClass('tree-middle-line').removeClass('tree-start-line');
 			_title.children().prependTo($(_this).children('.tree-folders'));
 			if(data.member.length >= 2)
@@ -637,7 +658,7 @@
 				_page = $('<div/>'),
 				_content = $('<div/>'),
 				_target = $('<div/>'),
-				_position = param.target||['left',2];
+				_position = param.target||['left',2],
 				init = function() {
 					createTarget();
 					createContent();
@@ -663,7 +684,7 @@
 					var deviation = 0;
 					_content.children().each(function(){
 						current_height = $(this).offset().top-first_top;
-						//console.log((Math.ceil(current_height/content_height)*content_height-current_height)+','+content_height)
+						console.log((Math.ceil(current_height/content_height)*content_height-current_height)+','+content_height)
 						if(current_height != 0 && (Math.ceil(current_height/content_height)*content_height-current_height)%content_height < $(this).height()){
 							page_num=Math.ceil(current_height/content_height);
 						}
@@ -682,5 +703,8 @@
 					});
 				};
 				init();
+		}
+		$.fn.scrollToBottom = function(){
+			$(this)[0].scrollTop = $(this)[0].scrollHeight;
 		}
 })(jQuery);
