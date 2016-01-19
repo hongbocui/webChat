@@ -573,6 +573,10 @@
 			var _this = this,
 				_prev_icon = 'tree-middle-line',
 				_this_icon = 'tree-middle-line';
+			if(obj.children('.tree-icon').length == 0) {
+				$(_this).prependTo(obj);
+				return false;
+			}
 			obj.children('.tree-icon:first').addClass('tree-middle-line');
 			if($(_this).nextAll('span').length == 0) {
 				_prev_icon = 'tree-end-line';

@@ -96,21 +96,7 @@ $(function(){
 	$('.tab-detail.recent').treeViewModify({});
 	//新消息，若最近联系人中存在，则将其移至最近联系人中顶部
 	//$('待移动元素').moveTreeTop($('.recent'));
-	$("body").on('dblclick','.tab-detail.structure span[type=member]',function(){
-		//添加之前先判断是否有这个联系人
-		if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
-			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
-			return false;
-		}
-		$('.tab-detail.recent').addTree({
-			'title'  : $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,''),
-			'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src'),'attr':{'data-id':$(this).attr('data-id')}}]
-		});
-		//$('.tab[tab-name=recent]').click();
-		//双击recent中的这个联系人
-		$('.tab-detail.recent span:first').dblclick();
-	})
-	$("body").on('dblclick','.member span',function(){
+	$(".tab-detail.structure,.chat-box .member").on('dblclick','span[type=member]',function(){
 		//添加之前先判断是否有这个联系人
 		if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
 			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
