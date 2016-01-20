@@ -709,6 +709,52 @@
 				init();
 		}
 		$.fn.scrollToBottom = function(){
-			$(this)[0].scrollTop = $(this)[0].scrollHeight;
+			//$(this)[0].scrollTop = $(this)[0].scrollHeight;
+			$(this).animate({'scrollTop':$(this)[0].scrollHeight});
+		}
+		$.fn.previewImg = function(file,callback){
+			var _this = this,
+			    filters = {'jpeg':'/9j/4','gif':'R0lGOD','png':'iVBORw'},
+			checkFileType = function(){
+				if(window.FileReader) {
+					for (var i=0, f; f = file.files[i]; i++) {
+						var fr = new FileReader();
+						fr.onload = function(e) {
+							var src = e.target.result;
+							if (validateImg(src)) {
+								callback(src);
+							}
+						}
+						fr.readAsDataURL(f);
+					}
+				} else { // 降级处理
+					if (/\.jpg$|\.png$|\.gif$/i.test(file.value) ) {
+						callback(file.value);
+					}
+				}
+			},
+			validateImg = function(data) {
+				var pos = data.indexOf(",") + 1;
+				for (var e in filters) {
+					if (data.indexOf(filters[e]) === pos) {
+						return e;
+					}
+				}
+				return null;
+			}/*,
+			showPrvImg = function(src) {
+				if($(_this).children().length >= 8) return false;
+				var img = $('<img />');
+				var box = $('<div />');
+				var _t = new Image();
+				img.attr('src',src);
+				_t.src = src;
+				if(_t.width > _t.height)
+					img.attr('width','100%');
+				else
+					img.attr('height','100%');
+				box.addClass('image-msg').append(img).appendTo($(_this));
+			}*/;
+			checkFileType();
 		}
 })(jQuery);

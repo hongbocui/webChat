@@ -113,12 +113,10 @@ p {height:30px;line-height:30px;}
     position: relative;
 }
 .button {
-    width: 50px;
+    width: 40px;
     background: #3390ee;
     border-radius: 5px;
-    float: right;
     margin-right: 10px;
-    text-indent: 6px;
 }
 
 .more {
@@ -177,6 +175,76 @@ p {height:30px;line-height:30px;}
     line-height: 30px;
     text-align: right;
     border-top: 1px solid #efefef;
+}
+.modal {
+    position: fixed;
+    width: 480px;
+    height: 340px;
+    top: 50%;
+    left: 50%;
+    background: #FFFFFF;
+    z-index: 999;
+    border: 5px solid #333;
+    opacity: 0.95;
+    margin: -180px 0 0 -250px;
+    border-radius: 10px;
+    padding: 10px;
+    display:none;
+}
+.modal-bg {
+    display:none;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 998;
+    opacity: .5;
+}
+.button-close {
+    position: absolute;
+    right: 17px;
+    top: 23px;
+    font-size: 20px;
+    color: #cccccc;
+}
+.button-close:hover {
+    color: #333;
+}
+.modal .button {
+    display: block;
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    color: #FFF;
+    margin: 5px 0;
+}
+.modal .button:hover {
+    background: steelblue;
+}
+
+.float-right {
+	float:right;
+}
+.float-left {
+	float:left;
+}
+.image-msg {
+    float: left;
+    width: 98px;
+    height: 94px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 0 -1px -1px 0;
+    text-align: center;
+    position:relative;
+}
+.image-lists {
+    width: 476px;
+    height: 230px;
+    border: 1px solid #cccccc;
 }
 @-moz-document url-prefix() { 
 	.contact .avatar.no-login { 

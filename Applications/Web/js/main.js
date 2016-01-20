@@ -26,7 +26,7 @@ $(function(){
 	}).mouseout(function(){
 		$(this).removeAttr('style');
 	});
-	$('.button').click(function(){
+	$('.send').click(function(){
 		var msg = $('.chat-input').html();
 		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
 		var br_pattern = /<\/div>/g;
@@ -53,7 +53,6 @@ $(function(){
 					return '';
 			}
 		});
-		console.log(msg);
 		$('<div/>').addClass('row self').html(
 			'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
 			<div class="message-detail"> \
