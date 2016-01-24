@@ -27,42 +27,44 @@ $(function(){
 		$(this).removeAttr('style');
 	});
 	$('.send').click(function(){
+//		var msg = $('.chat-input').html();
+//		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
+//		var br_pattern = /<\/div>/g;
+//		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
+//		var compile_pattern = /\[\\([a-z]+)(\d+)?\]/g;
+//		console.log(msg);
+//		//转义
+//		msg = msg.replace(face_pattern, '[\\face$1]');
+//		msg = msg.replace(br_pattern, '[\\br]');
+//		msg = msg.replace(clear_tag_pattern, '$2');
+//		console.log(msg);
+//		//还原
+//		msg = msg.replace(/\[\\([a-z]+)(\d+)?\]/g, function(match, p1, p2, offset, string) {
+//			switch(p1) {
+//				case 'face':
+//					return '<img src="./images/smiley/'+p2+'.gif">';
+//				case 'br':
+//					return '<br />';
+//				case 'image':
+//					//查附件表，id为p2
+//					return '';
+//				case 'file':
+//					//查附件表，id为p2
+//					return '';
+//			}
+//		});
+//		$('<div/>').addClass('row self').html(
+//			'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
+//			<div class="message-detail"> \
+//				<p>&nbsp;</p> \
+//				<div class="message-box"> \
+//					'+msg+'&nbsp; \
+//					<i class="chat-icon message-box-pike"></i> \
+//				</div> \
+//			</div>'
+//		).appendTo($('.logs'));
 		var msg = $('.chat-input').html();
-		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
-		var br_pattern = /<\/div>/g;
-		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
-		var compile_pattern = /\[\\([a-z]+)(\d+)?\]/g;
-		console.log(msg);
-		//转义
-		msg = msg.replace(face_pattern, '[\\face$1]');
-		msg = msg.replace(br_pattern, '[\\br]');
-		msg = msg.replace(clear_tag_pattern, '$2');
-		console.log(msg);
-		//还原
-		msg = msg.replace(/\[\\([a-z]+)(\d+)?\]/g, function(match, p1, p2, offset, string) {
-			switch(p1) {
-				case 'face':
-					return '<img src="./images/smiley/'+p2+'.gif">';
-				case 'br':
-					return '<br />';
-				case 'image':
-					//查附件表，id为p2
-					return '';
-				case 'file':
-					//查附件表，id为p2
-					return '';
-			}
-		});
-		$('<div/>').addClass('row self').html(
-			'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
-			<div class="message-detail"> \
-				<p>&nbsp;</p> \
-				<div class="message-box"> \
-					'+msg+'&nbsp; \
-					<i class="chat-icon message-box-pike"></i> \
-				</div> \
-			</div>'
-		).appendTo($('.logs'));
+		sendToWsMsg(msg);
 		//情况输入框
 		$('.chat-input').html('');
 		$('.logs').scrollToBottom();

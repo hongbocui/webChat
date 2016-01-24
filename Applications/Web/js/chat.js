@@ -52,7 +52,7 @@
 	           // 发言
 	           case 'say':
 	         	  //{"type":"say","fromuser":xxx,"touser":xxx,"message":"xxx","time":"xxx"}
-	         	  //say(data['fromuser'], data['touser'], data['message'], data['time']);
+	        	   recieveMsg(data['fromuser'], data['touser'], data['message'], data['time']);
 	         	  break;
 	           // 发言
 	           case 'broadcast':
@@ -63,7 +63,7 @@
 	           // 加载历史消息
 	           case 'history':
 	         	  //{"type":"history","messageList":"[...]"}
-	         	  //loadHistoryMessage(data['messageList']);
+	         	  loadHistoryMessage(data['messageList']);
 	         	  break;
 	           // 错误处理
 	           case 'error':
@@ -131,15 +131,8 @@
     }
     /*************ws****************/
     //发送消息
-    function sendMsg(msg) {
-    	var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
-		var br_pattern = /<\/div>/g;
-		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
-		console.log(msg);
-		//表情转义
-		msg = msg.replace(face_pattern, '[\\face$1]');
-		msg = msg.replace(br_pattern, '[\\br]');
-		msg = msg.replace(clear_tag_pattern, '$2');
+    function sendToWsMsg(msg) {
+    	msg = encMsg(msg);
 		
 		var nowChatUser = getChatingUsersList();
 		var chatList = nowChatUser.split(',');
@@ -147,20 +140,63 @@
 			chatList.push(wc_loginName);
 			chatList.sort();
 		}
-    	ws.send(JSON.stringify({"type":"say","touser":chatList,"content":msg}));
+		wc_ws.send(JSON.stringify({"type":"say","touser":chatList,"content":msg}));
     }
     //接收消息
     function recieveMsg(fromuser, touser, msg, time) {
     	makeHistoryList(fromuser, touser, msg, time);
     	
     	var nowChatUser = getChatingUsersList();
-		var chatList = nowChatUser.split(',');
+		var nowChatList = nowChatUser.split(',');
 		if(-1 === nowChatUser.indexOf(',')) {
-			chatList.push(wc_loginName);
-			chatList.sort();
+			nowChatList.push(wc_loginName);
+			nowChatList.sort();
 		}
-		//显示为最近联系人
-		var chatUserTmp = touser.join(',');
+		
+		//判断是否在最近联系人中，如没有则显示(个人消息和群消息都判断)
+		var nearestContactContainer = $("#nearest-contact");
+		if(!$('#nearest-contact span[type=personal][data-id='+nowChatUser+']').length && !$('#nearest-contact span[type=group][data-id='+nowChatUser+']').length){
+			loadNearestContactFunc(nearestContactContainer,nowChatList.join(','));
+		}
+    	
+		//判断是否为当前用户，当前用户则append到聊天box里面，否则则将该聊天对话的未读消息+1
+		if(nowChatList.toString() === touser.toString()) {
+			$('.logs').append(decMsg(msg,fromuser,time));
+			$('.logs').scrollToBottom();
+		}else{
+			
+		}
+    }
+    
+    
+    
+    /*******接口函数********/
+    //加载历史消息
+    function loadHistoryMessage(messageList){
+    	for(var p in messageList){
+    		var chatList = messageList[p].touser.sort();
+            var userTOuser = chatList.join('_');
+        	var chatSomeoneHistory = 'chat'+userTOuser+'History';
+        	
+        	if(window[chatSomeoneHistory] == undefined){
+            	window[chatSomeoneHistory] = [];
+            }
+        	window[chatSomeoneHistory].push(messageList[p]);
+        }
+    }
+    //encmsg 原始的msg数据加工成像数据库中存储的数据（return str）
+    function encMsg(msg) {
+    	var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
+		var br_pattern = /<\/div>/g;
+		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
+		//表情转义
+		msg = msg.replace(face_pattern, '[\\face$1]');
+		msg = msg.replace(br_pattern, '[\\br]');
+		msg = msg.replace(clear_tag_pattern, '$2');
+		return msg;
+    }
+    //decMsg 将从数据库中获取的msg，还原成可以向聊天box append的字符串。
+    function decMsg(msg, userid, time) {
     	//消息还原
 		msg = msg.replace(/\[\\([a-z]+)(\d+)?\]/g, function(match, p1, p2, offset, string) {
 			switch(p1) {
@@ -176,21 +212,18 @@
 					return '';
 			}
 		});
-		$('<div/>').addClass('row self').html(
-				'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
+		var selfClass = userid === wc_loginName ? ' self' : ''
+	    var pitem     = wc_allUserArr[userid]+' - '+timestampTodate(time);
+		return '<div class="row'+selfClass+'"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
 				<div class="message-detail"> \
-					<p>&nbsp;</p> \
+					<p>'+pitem+'</p> \
 					<div class="message-box"> \
 						'+msg+'&nbsp; \
 						<i class="chat-icon message-box-pike"></i> \
 					</div> \
-				</div>'
-			).appendTo($('.logs'));
+				</div></div>';
+			
     }
-    
-    
-    
-    /*******接口函数********/
     //组装本地历史消息数组
     function makeHistoryList(fromuser, touser, message, time){
         touser.sort();
@@ -204,7 +237,7 @@
         nowMessage.time = time;
         if(window[chatSomeoneHistory] == undefined){
             //此时应该从redis中取出最新的数据，防止用户点击标红信息的时候只有一条
-        	ws.send(JSON.stringify({"type":"history","fromuser":fromuser,"touser":touser}));
+        	wc_ws.send(JSON.stringify({"type":"history","fromuser":fromuser,"touser":touser}));
         }
 
         //等待redis中数据
@@ -325,6 +358,6 @@
     }
     //js 将php时间戳转为时间
     function timestampTodate(timestamp) {
-    	var d = new Date(parseInt(s) * 1000);
+    	var d = new Date(parseInt(timestamp) * 1000);
     	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
     }
