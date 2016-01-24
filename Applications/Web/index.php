@@ -112,7 +112,6 @@
     }
     function say(fromuser, touser, message, time){
         var nowChatUser = $("#nowChatTo").html();
-        var userlist_online_window = $("#userlist-online");
         makeHistoryList(fromuser, touser, message, time);
         
         var chatList = nowChatUser.split(',');

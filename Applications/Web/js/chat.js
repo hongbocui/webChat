@@ -70,11 +70,11 @@
 	         	  switch(data['info']){
 	       	          case 'erroruser':
 	             	      alert(data['msg']);
-	             	      webChat_errorType = true;wc_loginName = '';
+	             	      wc_errorType = true;wc_loginName = '';
 	             	      break;
 	       	          case 'loginconflict':
 	             	      alert(data['msg']);
-	             	      webChat_errorType = true;
+	             	      wc_errorType = true;
 	             	      break;
 	         	      default:
 	             	      break;
@@ -91,7 +91,7 @@
 	 	  console.log("连接关闭");
 	 	  // 定时重连
 	 	  window.clearInterval(wc_reConnectTimeid);
-	 	  if(!webChat_errorType){
+	 	  if(!wc_errorType){
 	 		  wc_reConnectTimeid = window.setInterval(init, 3000);
 	       }
 	   };
@@ -120,17 +120,107 @@
     function loadNearestContact(data) {
     	var nearestContactContainer = $("#nearest-contact");
     	nearestContactContainer.empty();
-    	loadNearestContactFunc(nearestContactContainer, data);
+    	for(var p in data) {
+    		loadNearestContactFunc(nearestContactContainer, data[p]);
+    	}
     	nearestContactContainer.treeViewModify({});
     }
     //更新在线用户
     function addOnlineList(data) {
     	lightOnlineUserList(data);
     }
+    /*************ws****************/
+    //发送消息
+    function sendMsg(msg) {
+    	var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
+		var br_pattern = /<\/div>/g;
+		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
+		console.log(msg);
+		//表情转义
+		msg = msg.replace(face_pattern, '[\\face$1]');
+		msg = msg.replace(br_pattern, '[\\br]');
+		msg = msg.replace(clear_tag_pattern, '$2');
+		
+		var nowChatUser = getChatingUsersList();
+		var chatList = nowChatUser.split(',');
+		if(-1 === nowChatUser.indexOf(',')) {
+			chatList.push(wc_loginName);
+			chatList.sort();
+		}
+    	ws.send(JSON.stringify({"type":"say","touser":chatList,"content":msg}));
+    }
+    //接收消息
+    function recieveMsg(fromuser, touser, msg, time) {
+    	makeHistoryList(fromuser, touser, msg, time);
+    	
+    	var nowChatUser = getChatingUsersList();
+		var chatList = nowChatUser.split(',');
+		if(-1 === nowChatUser.indexOf(',')) {
+			chatList.push(wc_loginName);
+			chatList.sort();
+		}
+		//显示为最近联系人
+		var chatUserTmp = touser.join(',');
+    	//消息还原
+		msg = msg.replace(/\[\\([a-z]+)(\d+)?\]/g, function(match, p1, p2, offset, string) {
+			switch(p1) {
+				case 'face':
+					return '<img src="./images/smiley/'+p2+'.gif">';
+				case 'br':
+					return '<br />';
+				case 'image':
+					//查附件表，id为p2
+					return '';
+				case 'file':
+					//查附件表，id为p2
+					return '';
+			}
+		});
+		$('<div/>').addClass('row self').html(
+				'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
+				<div class="message-detail"> \
+					<p>&nbsp;</p> \
+					<div class="message-box"> \
+						'+msg+'&nbsp; \
+						<i class="chat-icon message-box-pike"></i> \
+					</div> \
+				</div>'
+			).appendTo($('.logs'));
+    }
     
     
     
     /*******接口函数********/
+    //组装本地历史消息数组
+    function makeHistoryList(fromuser, touser, message, time){
+        touser.sort();
+        //俩通信客户端的唯一历史记录
+        var userTOuser = touser.join('_');
+        var chatSomeoneHistory = 'chat'+userTOuser+'History';
+        var nowMessage = [];
+        nowMessage.fromuser = fromuser;
+        nowMessage.touser = touser;
+        nowMessage.message = message;
+        nowMessage.time = time;
+        if(window[chatSomeoneHistory] == undefined){
+            //此时应该从redis中取出最新的数据，防止用户点击标红信息的时候只有一条
+        	ws.send(JSON.stringify({"type":"history","fromuser":fromuser,"touser":touser}));
+        }
+
+        //等待redis中数据
+        var i = 0;
+        var waitHistory = function(){
+                i++;
+            	if(window["chat"+userTOuser+"History"] != undefined){
+            		window[chatSomeoneHistory].push(nowMessage);
+            		clearInterval(waitTime);
+                }
+        	    if(i>50)
+        	    	clearInterval(waitTime);
+            };
+    	var waitTime = setInterval(waitHistory, 10);
+        
+    }
     //给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
     function lightOnlineUserList(users) {
     	if(!users) return false;
@@ -157,44 +247,50 @@
     		$("#nearest-contact .no-child[data-id='"+users[i]+"']").find('img').addClass('no-login');
     	}
     }
-    //更新最近联系人列表
-    function loadNearestContactFunc(parentObj, recentList) {
+    //获取当前聊天人员 a,b,c
+    function getChatingUsersList() {
+    	return $('.contact-msg').attr('chatuser');
+    }
+    //给出一路对话，更新到最近联系人列表 chatUsersStr = a,b,c
+    function loadNearestContactFunc(parentObj,chatUsersStr) {
     	var innerStr = '';
     	var childfileStr = '';
-    	for(var p in recentList) {
-    		var contactArr = recentList[p].split(',');
-    		//单用户聊天
-    		if(contactArr.length === 2) {
-    			for(var q in contactArr) {
-    				if(contactArr[q] === wc_loginName) continue;
-    				innerStr += '<span class="no-child" type="personal" data-id="'+contactArr[q]+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[q]]+'<b class="unread">0</b></span>';
-    			}
-    		//群用户聊天
-    		} else if(contactArr.length > 2) {
-    			var groupNames = [];
-    			innerStr += '<span type="group" data-id="'+recentList[p]+'">';
-    			innerStr += '<div class="group-avatar">';
-    			
-    			childfileStr += '<div class="tree-files">';
-    			var kk = 0;
-    			for(var r in contactArr) {
-    				if(kk<4) {//限制4个头像
-    					innerStr += '<img class="avatar" src="./default_34_34.jpg" width="10px">';
-    				}
-    				//限制3个人长度
-    				if(kk<3)groupNames.push(wc_allUserArr[contactArr[r]]);
-    				
-    				childfileStr += '<span class="no-child" type="member" data-id="'+contactArr[r]+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[r]]+'</span>';
-    				kk++;
-    			}
-    			childfileStr += '</div>';
-    			
-    			innerStr += '</div>'+groupNames.join(',');
-    			innerStr += '...<b class="unread">0</b></span>';
-    		}
-    	}
-    	innerStr = '<div class="tree-folders">'+innerStr+'</div>';
-    	parentObj.append(innerStr+childfileStr);
+    	
+    	var contactArr = chatUsersStr.split(',');
+		//单用户聊天
+		if(contactArr.length === 2) {
+			for(var q in contactArr) {
+				if(contactArr[q] === wc_loginName) continue;
+				innerStr += '<span class="no-child" type="personal" data-id="'+contactArr[q]+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[q]]+'<b class="unread">0</b></span>';
+			}
+		//群用户聊天
+		} else if(contactArr.length > 2) {
+			var groupNames = [];
+			innerStr += '<span type="group" data-id="'+chatUsersStr+'">';
+			innerStr += '<div class="group-avatar">';
+			
+			childfileStr += '<div class="tree-files">';
+			var kk = 0;
+			for(var r in contactArr) {
+				if(kk<4) {//限制4个头像
+					innerStr += '<img class="avatar" src="./default_34_34.jpg" width="10px">';
+				}
+				//限制3个人长度
+				if(kk<3)groupNames.push(wc_allUserArr[contactArr[r]]);
+				
+				childfileStr += '<span class="no-child" type="member" data-id="'+contactArr[r]+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[r]]+'</span>';
+				kk++;
+			}
+			childfileStr += '</div>';
+			
+			innerStr += '</div>'+groupNames.join(',');
+			innerStr += '...<b class="unread">0</b></span>';
+		}
+		if(parentObj.find('.tree-folders').length <= 0){
+			$("<div/>").addClass('tree-folders').appendTo(parentObj);
+		}
+		parentObj.find('.tree-folders').append(innerStr);
+		parentObj.append(childfileStr);
     }
     //递归更新所有用户列表
     function flushAllListFunc(parentObj, allList){
@@ -222,6 +318,10 @@
     		parentObj.prepend('<div class="tree-folders">'+innerStr+'</div>');
     	}
     	return parentObj;
+    }
+    //前端获取用户在线状态
+    function getUserStatus(accountid){
+    	return $("#organization-structure .no-child[data-id='"+accountid+"']").find('img').hasClass('no-login') ? false : true;
     }
     //js 将php时间戳转为时间
     function timestampTodate(timestamp) {
