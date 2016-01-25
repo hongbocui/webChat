@@ -246,6 +246,14 @@ p {height:30px;line-height:30px;}
     height: 230px;
     border: 1px solid #cccccc;
 }
+.load-upload {
+    width: 98px;
+    height: 94px;
+    position: absolute;
+    background: #333;
+    opacity: 0.9;
+    bottom: 10px;
+}
 @-moz-document url-prefix() { 
 	.contact .avatar.no-login { 
 		filter: grayscale(1); 
