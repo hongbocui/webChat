@@ -445,13 +445,13 @@
 						postData.image.push($(this).find('img').attr('src'));
 					})
 					$.ajax({
-						url: 'upload.php',
+						url: 'chatapi.php?c=file&a=upload',
 						data: postData,
 						dataType: 'JSON',
 						type: 'POST',
 						async : false,
 						success:function(res) {
-							if(res.success) {
+							if(res.code) {
 								$('.image-lists').find('img').each(function(){
 									sendMsg('<img src="'+$(this).attr('src')+'" width=100%>');
 								})
