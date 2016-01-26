@@ -51,7 +51,7 @@ p {height:30px;line-height:30px;}
 
 .self .user-avatar {float:right;}
 .self .message-detail {float:right;}
-.self .message-box {background:#eeeeee;}
+.self .message-box {background:#eeeeee;float-right;}
 .self .message-box-pike {left: inherit;right: -7px;background-position: -182px -163px;}
 .smile,.image,.audio,.remind,.history {display: inline-block;width: 30px;height: 30px;}
 .simile {background-position: 0px 0px;}
