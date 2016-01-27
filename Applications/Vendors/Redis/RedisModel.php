@@ -37,6 +37,22 @@ class RedisModel{
         return self::$redis;
         
     }
+    /**
+     * 判断任意一个类型的key是否存在
+     */
+    public static function exists($server, $key) {
+        if(!Redis::$server[$server] || !$key)return false;
+        self::init($server);
+        return self::$redis->exists($key);
+    }
+    /**
+     * 设置一个key的生存时间
+     */
+    public static function expire($server, $key, $time) {
+        if(!Redis::$server[$server] || !$key || !$time)return false;
+        self::init($server);
+        return self::$redis->expire($key, $time);
+    }
     /*--------------------------------------------------------------------
                             key-value类型
     ---------------------------------------------------------------------*/
@@ -148,6 +164,22 @@ class RedisModel{
         if(false === $subKey)
             return self::$redis->hGetAll($key);
         return self::$redis->hGet($key, $subKey);
+    }
+    /**
+     * 删除
+     */
+    public static function hashDel($server, $key, $subKey) {
+        if(!Redis::$server[$server] || !$key || !$subKey)return false;
+        self::init($server);
+        return self::$redis->hDel($key, $subKey);
+    }
+    /**
+     * 判断hash中某个subkey是否存在
+     */
+    public static function hashExists($server, $key, $subKey) {
+        if(!Redis::$server[$server] || !$key || !$subKey)return false;
+        self::init($server);
+        return self::$redis->hExists($key, $subKey);
     }
 
     /*--------------------------------------------------------------------

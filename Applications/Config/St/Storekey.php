@@ -6,8 +6,8 @@
         
         
         //信息类型状态
-        const CHAT_MSG_TYPE     = 0;
-        const BROADCAST_MSG_TYPE= 1;
+        const CHAT_MSG_TYPE     = 0; //聊天消息
+        const BROADCAST_MSG_TYPE= 1;// 广播消息
         
         
     }

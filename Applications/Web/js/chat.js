@@ -51,8 +51,8 @@
 	        	   break;
 	           // 发言
 	           case 'say':
-	         	  //{"type":"say","fromuser":xxx,"touser":xxx,"message":"xxx","time":"xxx"}
-	        	   recieveMsg(data['fromuser'], data['touser'], data['message'], data['time']);
+	         	  //{"type":"say","fromuser":xxx,"chatid":xxx,"message":"xxx","time":"xxx"}
+	        	   recieveMsg(data['fromuser'], data['chatid'], data['message'], data['time']);
 	         	  break;
 	           // 发言
 	           case 'broadcast':
@@ -120,6 +120,7 @@
     function loadNearestContact(data) {
     	var nearestContactContainer = $("#nearest-contact");
     	nearestContactContainer.empty();
+    	//console.log(data);
     	for(var p in data) {
     		loadNearestContactFunc(nearestContactContainer, data[p]);
     	}
@@ -129,38 +130,34 @@
     function addOnlineList(data) {
     	lightOnlineUserList(data);
     }
+    //更新未读消息
+    function loadUnreadMsg(data) {
+    	for(var q in data) {
+    		loadUnreadMsgFun(q, data[q]);
+    	}
+    }
     /*************ws****************/
     //发送消息
     function sendToWsMsg(msg) {
     	msg = encMsg(msg);
 		
-		var nowChatUser = getChatingUsersList();
-		var chatList = nowChatUser.split(',');
-		if(-1 === nowChatUser.indexOf(',')) {
-			chatList.push(wc_loginName);
-			chatList.sort();
-		}
-		wc_ws.send(JSON.stringify({"type":"say","touser":chatList,"content":msg}));
+		var nowChatId = getChatingUsersList();
+		wc_ws.send(JSON.stringify({"type":"say","chatid":nowChatId,"content":msg}));
     }
     //接收消息
-    function recieveMsg(fromuser, touser, msg, time) {
-    	makeHistoryList(fromuser, touser, msg, time);
+    function recieveMsg(fromuser, chatid, msg, time) {
+    	makeHistoryList(fromuser, chatid, msg, time);
     	
-    	var nowChatUser = getChatingUsersList();
-		var nowChatList = nowChatUser.split(',');
-		if(-1 === nowChatUser.indexOf(',')) {
-			nowChatList.push(wc_loginName);
-			nowChatList.sort();
-		}
-		
+    	var nowChatId = getNowChatId();
 		//判断是否在最近联系人中，如没有则显示(个人消息和群消息都判断)
 		var nearestContactContainer = $("#nearest-contact");
-		if(!$('#nearest-contact span[type=personal][data-id='+nowChatUser+']').length && !$('#nearest-contact span[type=group][data-id='+nowChatUser+']').length){
-			loadNearestContactFunc(nearestContactContainer,nowChatList.join(','));
+		if(!isChatidInContact(chatid)){
+			loadNearestContactFunc(nearestContactContainer,chatid);
+			nearestContactContainer.treeViewModify({});
 		}
     	
 		//判断是否为当前用户，当前用户则append到聊天box里面，否则则将该聊天对话的未读消息+1
-		if(nowChatList.toString() === touser.toString()) {
+		if(nowChatId === chatid) {
 			$('.logs').append(decMsg(msg,fromuser,time));
 			$('.logs').scrollToBottom();
 		}else{
@@ -171,12 +168,16 @@
     
     
     /*******接口函数********/
+    //根据chatid获取userList
+    function getUserListFromChatid (chatid) {
+		return $.getJSON('/chatapi.php?c=group&a=getinfo&chatid='+chatid, function(r) {
+        	return r.data;
+        });
+    }
     //加载历史消息
     function loadHistoryMessage(messageList){
     	for(var p in messageList){
-    		var chatList = messageList[p].touser.sort();
-            var userTOuser = chatList.join('_');
-        	var chatSomeoneHistory = 'chat'+userTOuser+'History';
+        	var chatSomeoneHistory = 'chat'+messageList[p].chatid+'History';
         	
         	if(window[chatSomeoneHistory] == undefined){
             	window[chatSomeoneHistory] = [];
@@ -222,29 +223,55 @@
 						<i class="chat-icon message-box-pike"></i> \
 					</div> \
 				</div></div>';
-			
+    }
+    /**
+     * 判断某一路聊天是否在最近聊天列表中
+     */
+    function isChatidInContact(chatid) {
+    	if(!$('#nearest-contact span[type=personal][data-id='+chatid+']').length && !$('#nearest-contact span[type=group][data-id='+chatid+']').length)
+    		return false;
+    	return true;
+    }
+    /**
+     * 根据未读消息更新最近联系人列表（传入，touserstr，和数量。如果已有该touserstr则加数量）
+     * 如果没有则创建最近联系人并加数量
+     */
+    function loadUnreadMsgFun(chatid, msgNum) {
+    	var nearestContactContainer = $("#nearest-contact");
+		if(!isChatidInContact(chatid)){
+			loadNearestContactFunc(nearestContactContainer,chatid);
+			nearestContactContainer.treeViewModify({});
+		}
+		
+		var itemType = chatid.indexOf('--') > -1 ? 'personal' : 'group';
+    	var chatItem = $('#nearest-contact span[type='+itemType+'][data-id='+chatid+']');
+    	
+    	if(chatItem.find('b').length){
+			unreadNum = chatItem.find('b').html();
+			chatItem.find('b').html(parseInt(unreadNum)+msgNum);
+		}else{
+			chatItem.append('<b class="unread">'+msgNum+'</b>');
+		}
     }
     //组装本地历史消息数组
-    function makeHistoryList(fromuser, touser, message, time){
-        touser.sort();
+    function makeHistoryList(fromuser, chatid, message, time){
         //俩通信客户端的唯一历史记录
-        var userTOuser = touser.join('_');
-        var chatSomeoneHistory = 'chat'+userTOuser+'History';
+        var chatSomeoneHistory = 'chat'+chatid+'History';
         var nowMessage = [];
         nowMessage.fromuser = fromuser;
-        nowMessage.touser = touser;
+        nowMessage.chatid = chatid;
         nowMessage.message = message;
         nowMessage.time = time;
         if(window[chatSomeoneHistory] == undefined){
             //此时应该从redis中取出最新的数据，防止用户点击标红信息的时候只有一条
-        	wc_ws.send(JSON.stringify({"type":"history","fromuser":fromuser,"touser":touser}));
+        	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
         }
 
         //等待redis中数据
         var i = 0;
         var waitHistory = function(){
                 i++;
-            	if(window["chat"+userTOuser+"History"] != undefined){
+            	if(window["chat"+chatid+"History"] != undefined){
             		window[chatSomeoneHistory].push(nowMessage);
             		clearInterval(waitTime);
                 }
@@ -258,66 +285,70 @@
     function lightOnlineUserList(users) {
     	if(!users) return false;
     	for(var i in users) {
+    		var tmpchatid = makeChatIdFromGf(users[i]);
     		//联系人列表处理
-    		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+users[i]+"']");
+    		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
     		userItemObjInUserList.find('img').removeClass('no-login');
     		//userItemObjInUserList.parent().prepend(userItemObjInUserList);
     		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());
-    		//最近联系人处理
-    		$("#nearest-contact .no-child[data-id='"+users[i]+"']").find('img').removeClass('no-login');
+    		//最近联系人处理在线处理
+    		$("#nearest-contact .no-child[data-id='"+tmpchatid+"']").find('img').removeClass('no-login');
     	}
     }
     //给出一个下线用户组，使用户列表和最近联系人中头像变灰
     function lightOfflineUserList(users) {
     	if(!users) return false;
     	for(var i in users) {
+    		var tmpchatid = makeChatIdFromGf(users[i]);
     		//联系人列表处理
-    		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+users[i]+"']");
+    		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
     		userItemObjInUserList.find('img').addClass('no-login');
     		//userItemObjInUserList.parent().append(userItemObjInUserList);
     		
     		//最近联系人处理
-    		$("#nearest-contact .no-child[data-id='"+users[i]+"']").find('img').addClass('no-login');
+    		$("#nearest-contact .no-child[data-id='"+tmpchatid+"']").find('img').addClass('no-login');
     	}
     }
     //获取当前聊天人员 a,b,c
-    function getChatingUsersList() {
-    	return $('.contact-msg').attr('chatuser');
+    function getNowChatId() {
+    	return $('.contact-msg').attr('chatid');
     }
-    //给出一路对话，更新到最近联系人列表 chatUsersStr = a,b,c
-    function loadNearestContactFunc(parentObj,chatUsersStr) {
+    //给出一路对话，更新到最近联系人列表
+    function loadNearestContactFunc(parentObj,chatid) {
     	var innerStr = '';
     	var childfileStr = '';
     	
-    	var contactArr = chatUsersStr.split(',');
 		//单用户聊天
-		if(contactArr.length === 2) {
+		if(chatid.indexOf('--') > -1) {
+			var contactArr = chatid.split('--');
 			for(var q in contactArr) {
 				if(contactArr[q] === wc_loginName) continue;
-				innerStr += '<span class="no-child" type="personal" data-id="'+contactArr[q]+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[q]]+'<b class="unread">0</b></span>';
+				innerStr += '<span class="no-child" type="personal" data-id="'+chatid+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[q]]+'</span>';
 			}
 		//群用户聊天
-		} else if(contactArr.length > 2) {
+		} else {
+			var groupInfo = getUserListFromChatid(chatid);
 			var groupNames = [];
-			innerStr += '<span type="group" data-id="'+chatUsersStr+'">';
+			innerStr += '<span type="group" data-id="'+chatid+'">';
 			innerStr += '<div class="group-avatar">';
 			
 			childfileStr += '<div class="tree-files">';
 			var kk = 0;
-			for(var r in contactArr) {
+			for(var r in groupInfo.members) {
 				if(kk<4) {//限制4个头像
 					innerStr += '<img class="avatar" src="./default_34_34.jpg" width="10px">';
 				}
 				//限制3个人长度
-				if(kk<3)groupNames.push(wc_allUserArr[contactArr[r]]);
+				if(kk<3)groupNames.push(wc_allUserArr[groupInfo.members[r]]);
 				
-				childfileStr += '<span class="no-child" type="member" data-id="'+contactArr[r]+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[contactArr[r]]+'</span>';
+				var tempidstr = makeChatIdFromGf(groupInfo.members[r]);
+				childfileStr += '<span class="no-child" type="member" data-id="'+tempidstr+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+wc_allUserArr[groupInfo.members[r]]+'</span>';
 				kk++;
 			}
 			childfileStr += '</div>';
-			
-			innerStr += '</div>'+groupNames.join(',');
-			innerStr += '...<b class="unread">0</b></span>';
+			var titlestr = groupInfo.info['title'] ? groupInfo.info['title'] : groupNames.join(',');
+			innerStr += '</div>'+titlestr;
+			innerStr += '...</span>';
 		}
 		if(parentObj.find('.tree-folders').length <= 0){
 			$("<div/>").addClass('tree-folders').appendTo(parentObj);
@@ -342,7 +373,8 @@
     			parentObj.append(filesObj);
     		} else {
     			wc_allUserArr[p] = allList[p];
-    			innerStr = '<span class="no-child" type="member" data-id="'+p+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+allList[p]+'</span>'+innerStr;
+    			var tempchatid = makeChatIdFromGf(p);
+    			innerStr = '<span class="no-child" type="member" data-id="'+tempchatid+'"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">'+allList[p]+'</span>'+innerStr;
     		}
     	}
     	if(false === isFolder) {
@@ -360,4 +392,13 @@
     function timestampTodate(timestamp) {
     	var d = new Date(parseInt(timestamp) * 1000);
     	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+    }
+    //根据聊天对象生成单人聊天chatid
+    function makeChatIdFromGf (touserid) {
+    	if(!wc_loginName) return false;
+    	var tomakechatid = [];
+			tomakechatid.push(touserid);
+			tomakechatid.push(wc_loginName);
+			tomakechatid.sort();
+		return tomakechatid.join('--');
     }

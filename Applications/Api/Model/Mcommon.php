@@ -2,17 +2,23 @@
     namespace Api\Model;
     class Mcommon {
         /**
-         * 获取chatid
+         * 单人聊天获取chatid
          * @param array $chatList 聊天人员 域账号数组
          * @return 一组对话的唯一的chatid
          */
-        public static function setChatId($chatList) {
+        public static function singleChatId($chatList) {
             if(!$chatList || !is_array($chatList))
                 return false;
             
             sort($chatList);
-            $chatid = implode('_', $chatList);
-            return md5($chatid);
+            return implode('--', $chatList);
+        }
+        /**
+         * 群组聊天获取chatid
+         */
+        public static function groupChatId($master, $uuid) {
+            if(!$master || !$uuid) return false;
+            return $master.'-'.$uuid;
         }
         
         /**

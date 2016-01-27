@@ -13,7 +13,7 @@
 // 	$res = RedisModel::hashGet('webChat', 'aaa');
 // 	var_dump($res);die;
 	
-	$res = RedisModel::hashget('webChat', 'USER_ONLINE_LIST');
+	$res = RedisModel::hashDel('webChat', 'wangjx:unread:msg', 'bbb');
 	var_dump($res);die;
 	if(null === $res){
 	    var_dump($res);

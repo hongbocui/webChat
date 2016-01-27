@@ -7,11 +7,16 @@ $(function(){
             	
             	//获取最近联系人列表
                 $.getJSON('/chatapi.php?c=user&a=recentcontact&accountid='+wc_loginName, function(r) {
-                	loadNearestContact(r.data);
+                	loadNearestContact(r.data);//chatid列表
                 	
                 	//扫描用户列表，更新在线用户
                     $.getJSON('/chatapi.php?c=user&a=onlineusers', function(r) {
                     	addOnlineList(r.data);
+                    });
+                    
+                    //获取未读消息数量
+                    $.getJSON('/chatapi.php?c=message&a=unreadmsg&accountid='+wc_loginName, function(r) {
+                    	loadUnreadMsg(r.data);
                     });
                 });
             });
