@@ -170,9 +170,16 @@
     /*******接口函数********/
     //根据chatid获取userList
     function getUserListFromChatid (chatid) {
-		return $.getJSON('/chatapi.php?c=group&a=getinfo&chatid='+chatid, function(r) {
-        	return r.data;
-        });
+    	var userInfo = null;
+    	$.ajax({
+    		async:false,
+    		url:'/chatapi.php?c=group&a=getinfo&chatid='+chatid,
+    		dataType:'json',
+    		success:function(r) {
+    			userInfo = r.data;
+    		}
+    	});
+		return userInfo;
     }
     //加载历史消息
     function loadHistoryMessage(messageList){
@@ -334,6 +341,7 @@
 			
 			childfileStr += '<div class="tree-files">';
 			var kk = 0;
+			console.log(groupInfo.members);
 			for(var r in groupInfo.members) {
 				if(kk<4) {//限制4个头像
 					innerStr += '<img class="avatar" src="./default_34_34.jpg" width="10px">';
@@ -346,7 +354,7 @@
 				kk++;
 			}
 			childfileStr += '</div>';
-			var titlestr = groupInfo.info['title'] ? groupInfo.info['title'] : groupNames.join(',');
+			var titlestr = groupInfo.info.title == undefined ? groupNames.join(',') : groupInfo.info['title'];
 			innerStr += '</div>'+titlestr;
 			innerStr += '...</span>';
 		}

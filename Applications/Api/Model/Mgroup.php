@@ -93,7 +93,7 @@
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
             extract($options);
             $key = self::groupMembersKey($master, $uuid);
-            return RedisModel::hashGet(self::$redisServer, $key);
+            return array_keys(RedisModel::hashGet(self::$redisServer, $key));
         }
         
         /**

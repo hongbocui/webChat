@@ -94,8 +94,7 @@
                 $chatList = explode('--', $chatid);
             } elseif (strpos($chatid, '-') > -1) {//非群组聊天
                 $group = explode('-', $chatid);
-                $chatList = Mgroup::getGroupMembers(array($group[0], $group[1]));
-                $chatList = array_keys($chatList);
+                $chatList = Mgroup::getGroupMembers(array('master'=>$group[0], 'uuid'=>$group[1]));
             }
             return $chatList;
         }

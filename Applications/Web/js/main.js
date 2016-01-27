@@ -127,7 +127,7 @@ $(function(){
 			
 		}
 		//联系人信息更新
-		$('.contact-msg').attr('chatuser',_member);
+		$('.contact-msg').attr('chatid',_member);
 		$('.contact-msg h1').html(_title);
 		$('.chat-input').focus();
 		
