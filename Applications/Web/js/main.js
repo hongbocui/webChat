@@ -105,7 +105,8 @@ $(function(){
 		}
 		$('.tab-detail.recent').addTree({
 			'title'  : $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,''),
-			'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src'),'attr':{'data-id':$(this).attr('data-id')}}]
+			'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src'),'attr':{'data-id':$(this).attr('data-id'),'type':'member','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}}],
+			'attr'   : {'data-id':$(this).attr('data-id'),'type':'personal','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}
 		});
 		//$('.tab[tab-name=recent]').click();
 		//双击recent中的这个联系人
@@ -144,8 +145,8 @@ $(function(){
 	})*/
 	$('.tab-detail,.member').rightMouse({
 		'data':{
-			'发送消息':'#',
-			'从最近联系人中删除':'javascript:$(".tab-detail.recent span:eq(eval##$(this).prevAll(\'span\').length##)").removeTree();',
+			'发送消息':'javascript:$(".right-mouse-base").dblclick();',
+			'从最近联系人中删除':'javascript:$(".right-mouse-base").removeTree();',
 			'查看消息记录':'#',
 			'查看资料':'#',
 			'成员列表':'#'

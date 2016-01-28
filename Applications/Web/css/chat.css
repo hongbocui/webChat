@@ -27,7 +27,7 @@ p {height:30px;line-height:30px;}
 .tab-detail.active {display: block;}
 .contact .tool {position: absolute;bottom: 10px;}
 .avatar {border-radius: 11px;float: left;margin-right: 5px;}
-.avatar.no-login {filter:gray;-webkit-filter: grayscale(100%);gray:1;}
+.avatar.no-login,.no-login .avatar {filter:gray;-webkit-filter: grayscale(100%);gray:1;}
 
 .group-avatar {width: 20px;height: 20px;border: 1px solid aliceblue;float: left;margin-right: 5px;border-radius: 5px;}
 .group-avatar .avatar {margin-right: 0;}
@@ -51,7 +51,8 @@ p {height:30px;line-height:30px;}
 
 .self .user-avatar {float:right;}
 .self .message-detail {float:right;}
-.self .message-box {background:#eeeeee;float-right;}
+.self .message-detail p {text-align:right}
+.self .message-box {background:#eeeeee;float:right;}
 .self .message-box-pike {left: inherit;right: -7px;background-position: -182px -163px;}
 .smile,.image,.audio,.remind,.history {display: inline-block;width: 30px;height: 30px;}
 .simile {background-position: 0px 0px;}
@@ -184,22 +185,30 @@ p {height:30px;line-height:30px;}
     left: 50%;
     background: #FFFFFF;
     z-index: 999;
-    border: 5px solid #333;
-    opacity: 0.95;
     margin: -180px 0 0 -250px;
     border-radius: 10px;
     padding: 10px;
-    display:none;
+}
+.modal-border {
+    width: 510px;
+    height: 370px;
+    background: #000000;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: -185px 0 0 -255px;
+    z-index: 998;
+    border-radius: 10px;
+    opacity: .3;
 }
 .modal-bg {
-    display:none;
     width: 100%;
     height: 100%;
     background: #000000;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 998;
+    z-index: 997;
     opacity: .5;
 }
 .button-close {
@@ -213,7 +222,7 @@ p {height:30px;line-height:30px;}
     color: #333;
 }
 .modal .button {
-    display: block;
+    display: inline-block;
     width: 80px;
     height: 30px;
     line-height: 30px;
@@ -254,8 +263,84 @@ p {height:30px;line-height:30px;}
     opacity: 0.9;
     bottom: 10px;
 }
+.contact-tool {
+    position: absolute;
+    right: 0;
+    top: 17px;
+    width: 400px;
+    height: 35px;
+}
+.add-group {
+    background-position: -4px -38px;
+    width: 40px;
+    height: 35px;
+    display: block;
+    float: right;
+    margin-right: 10px;
+}
+.target-right,.target-left {
+    width: 38px;
+    height: 35px;
+    display: block;
+    text-align: center;
+    line-height: 35px;
+    color: #cccccc;
+    font-style: normal;
+}
+.target-right {
+    background-position: -113px -82px;
+}
+.target-left {
+    background-position: -160px -82px;
+}
+.add-group-all {
+    border:block;
+    float: right;
+    border: 1px solid #ccc;
+    color: #ccc;
+    width: 15px;
+    text-align: center;
+    height: 15px;
+    line-height: 16px;
+    border-radius: 5px;
+    margin: 3px 5px 0 0;
+    display:none;
+}
+.add-group-all:hover {
+    color:#777;
+    border-color:#777;
+}
+.add-group-struct {
+    float: left;
+    width: 200px;
+    height: 260px;
+    border: 1px solid #cccccc;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.add-group-tool {
+    width: 38px;
+    float: left;
+    height: 70px;
+    margin: 95px 0 0 20px;
+}
+.group-member {
+    width: 200px;
+    height: 260px;
+    border: 1px solid #cccccc;
+    float: right;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+.group-member span {
+    display:block;
+    height:22px;
+    line-height:22px;
+    padding: 5px 10px;
+    border-bottom: 1px solid #efefef;
+}
 @-moz-document url-prefix() { 
-	.contact .avatar.no-login { 
+	.avatar.no-login,.no-login .avatar, { 
 		filter: grayscale(1); 
 	}
 }

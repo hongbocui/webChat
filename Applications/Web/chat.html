@@ -128,6 +128,9 @@
 				<div class="contact-msg" chatuser="">
 					<h1>进展如何了</h1>
 					<p>谢衍鑫创建于2016-01-08 12:15:10</p>
+					<div class="contact-tool">
+						<i class="chat-icon add-group show-modal" modal-title="添加群成员" modal-data="addgroup.html"></i>
+					</div>
 				</div>
 				<div class="chat-box">
 					<!--联系人群组成员-->
@@ -250,7 +253,7 @@
 						<div class="send-msg">
 							<div class="tool">
 								<a class="chat-icon smile" href="javascript:;"></a>
-								<i class="chat-icon image"></i>
+								<i class="chat-icon image show-modal" modal-title="上传图片" modal-data="upload.html"></i>
 								<i class="chat-icon audio"></i>
 								<i class="chat-icon remind"></i>
 								<i class="chat-icon history"></i>
@@ -379,13 +382,14 @@
 				<div class="home"></div>
 			</div>
 		</div>
-		<div class="modal">
+		<!--<div class="modal">
 			<div class="modal-title">
 				<h1>上传图片</h1>
 				<a href="javascript:;" class="modal-close button-close">&times;</a>
 			</div>
 			<div class="modal-content">
 				<a href="javascript:$('#send-pic').click();" class="button">选择图片</a>
+				<span>（可以使用截图工具截图后在此Ctrl+V）</span>
 				<input type="file" multiple="multiple" name="send-pic" id="send-pic" accept="image/*" style="
     width: 0;
     height: 0;
@@ -397,7 +401,7 @@
 				<a href="javascript:;" class="upload-img button float-right">发送</a>	
 			</div>
 		</div>
-		<div class="modal-bg"></div>
+		<div class="modal-bg"></div>-->
 		<script src="js/jquery.min.js"></script>
 		<script src="js/jquery-plugin-v1.0.0.js"></script>
 		<script src="js/jquery.hotkeys.js"></script>
@@ -406,73 +410,14 @@
 		<script type="text/javascript" src="./js/chatlazy.js"></script>
 		<script src="js/main.js"></script>
 		<script>
-			function paste(src) {
-				if($('.modal .image-lists').children().length >= 8)
-					return false;
-				var image = new Image();
-				var css = "width=100%";
-				image.src = src;
-				if(image.width < image.height)
-					css = "height=100%"
-				$('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append("<img src='" + src + "' "+ css +">").appendTo($('.modal .image-lists'));
-			}
-			function sendMsg(msg) {
-				if(msg == '')
-					return false;
-				$('<div/>').addClass('row self').html(
-                        		'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
-                        		<div class="message-detail"> \
-                                		<p>&nbsp;</p> \
-                                		<div class="message-box"> \
-                                        		'+msg+' \
-                                        		<i class="chat-icon message-box-pike"></i> \
-                                		</div> \
-                        		</div>'
-                		).appendTo($('.logs'));
-				$('.logs').scrollToBottom();
-			}
+			var user = {
+				'name':'谢衍鑫',
+				'dataid':'xieyx',
+				'avatar':'./default_34_34.jpg'
+			};
 			$(function(){
-				$.pasteimage(paste);
-				$('#send-pic').change(function(){
-					$('.image-lists').previewImg(this,paste);
-				})
-				$('.upload-img').click(function(){
-					if($(this).prev('.image-lists').children().length == 0)
-						return false;
-					var postData = {};
-					postData.image = [];
-					$(this).prev('.image-lists').children().each(function(){
-						postData.image.push($(this).find('img').attr('src'));
-					})
-					$.ajax({
-						url: 'chatapi.php?c=file&a=upload',
-						data: postData,
-						dataType: 'JSON',
-						type: 'POST',
-						async : false,
-						success:function(res) {
-							if(res.code) {
-								$('.image-lists').find('img').each(function(){
-									sendMsg('<img src="'+$(this).attr('src')+'" width=100%>');
-								})
-								$('.modal-close').click();
-							}
-						},
-						error:function(){
-							console.log('error');
-						}
-					})
-				})
-				$('.image-lists').on('click','.remove-img',function(){
-					$(this).parent().remove();
-				})
-				$('.modal-close').click(function(){
-					$('.modal').find('.image-lists').html('').end().hide();
-					$('.modal-bg').hide();
-				})
-				$('.tool .image').click(function(){
-					$('.modal').show();
-                                        $('.modal-bg').show();
+				$('.show-modal').click(function(){
+					$(this).modal();
 				})
 			})
 		</script>

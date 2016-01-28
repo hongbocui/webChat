@@ -1,0 +1,74 @@
+<a href="javascript:$('#send-pic').click();" class="button">选择图片</a>
+                                <span>（可以使用截图工具截图后在此Ctrl+V）</span>
+                                <input type="file" multiple="multiple" name="send-pic" id="send-pic" accept="image/*" style="
+    width: 0;
+    height: 0;
+    float: left;
+">
+                                <div class="image-lists" id="image-lists">
+
+                                </div>
+                                <a href="javascript:;" class="upload-img button float-right">发送</a>
+<script>
+	function paste(src) {
+		if($('.image-lists').children().length >= 8)
+			return false;
+		var image = new Image();
+		var css = "width=100%";
+		image.src = src;
+		if(image.width < image.height)
+			css = "height=100%"
+		$('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append("<img src='" + src + "' "+ css +">").appendTo($('.image-lists'));
+	}
+	function sendMsg(msg) {
+		if(msg == '')
+			return false;
+		$('<div/>').addClass('row self').html(
+			'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
+<div class="message-detail"> \
+				<p>&nbsp;</p> \
+				<div class="message-box"> \
+					'+msg+' \
+					<i class="chat-icon message-box-pike"></i> \
+				</div> \
+			</div>'
+		).appendTo($('.logs'));
+		$('.logs').scrollToBottom();
+	}	
+	$(function(){
+		$.pasteimage(paste);
+		$('#send-pic').change(function(){
+			$('.image-lists').previewImg(this,paste);
+		})
+		$('.upload-img').click(function(){
+			if($(this).prev('.image-lists').children().length == 0)
+				return false;
+			var postData = {};
+			postData.image = [];
+			$(this).prev('.image-lists').children().each(function(){
+				postData.image.push($(this).find('img').attr('src'));
+			})
+			$.ajax({
+				url: 'chatapi.php?c=file&a=upload',
+				data: postData,
+				dataType: 'JSON',
+				type: 'POST',
+				async : false,
+				success:function(res) {
+					if(res.code) {
+						$('.image-lists').find('img').each(function(){
+							sendMsg('<img src="'+$(this).attr('src')+'" width=100%>');
+						})
+						$('.modal-close').click();
+					}
+				},
+				error:function(){
+					console.log('error');
+				}
+			})
+		})
+		$('.image-lists .remove-img').click(function(){
+			$(this).parent().remove();
+		})
+	})
+</script>

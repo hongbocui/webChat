@@ -544,6 +544,8 @@
 				if(e.which != 3)
 					return false;
             	$('.right-mouse').remove();
+				$('.right-mouse-base').removeClass('right-mouse-base');
+				$(this).addClass('right-mouse-base');
 				_limit = param.limit[$(this).attr('type')];
 				_html = $('<div/>');
 				for(var x in _limit) {
@@ -617,7 +619,8 @@
 		/**
 		 * $('.recent').addTree({
 		 * 		'title'  : '项目进程如何了',
-		 * 		'member' : [{'username':'谢衍鑫','avatar':'default_34_34.jpg'},{'username':'崔洪波','avatar':'default_34_34.jpg'}]
+		 * 		'member' : [{'username':'谢衍鑫','avatar':'default_34_34.jpg','attr':{'data-id':'xieyx','type':'member'}},{'username':'崔洪波','avatar':'default_34_34.jpg','attr':{'data-id':'xieyx','type':'member'}}],
+		 * 		'attr':{'data-id':'xieyx1234234534534','type':'group'}
 		 * });
 		 *
 		 * 
@@ -626,19 +629,29 @@
 			var _this = this,
 				_title = $('<div/>'),
 				_html = $('<div/>'),
-				_member = $('<div/>');
-			$('<span/>').addClass('no-child').html(data.title).appendTo(_title);
+				_member = $('<div/>'),
+				title_attr = {},
+				member_attr = {};
+			for(var x in data.attr) {
+				title_attr[x] = data.attr[x];
+			}
+			$('<span/>').attr(title_attr).html(data.title).appendTo(_title);
 			_title.addClass('tree-folders').appendTo(_html);
 			if(data.member.length >= 2) {
 				var _avatar = $('<div/>');
-				_title.children('span').removeClass('no-child');
-				for(var i=0; i<4&&i<data.member.length; i++) {
-					$('<img/>').addClass('avatar').attr({'src':data.member[i].avatar,'width':'10px'}).appendTo(_avatar);
-					$('<span/>').addClass('no-child').html(data.member[i].username).append($('<img/>').addClass('avatar').attr({'src':data.member[i].avatar,'width':'22px'})).appendTo(_member);
+				for(var i=0; i<data.member.length; i++) {
+					member_attr = {};
+					for(var x in data.member[i].attr) {
+						member_attr[x] = data.member[i].attr[x];
+					}
+					if(i<4)
+					$('<img/>').attr({'src':data.member[i].avatar,'width':'10px','class':member_attr['class'] == null ? '' : member_attr['class']}).addClass('avatar').appendTo(_avatar);
+					$('<span/>').attr(member_attr).addClass('no-child').html(data.member[i].username).append($('<img/>').attr({'src':data.member[i].avatar,'width':'22px'}).addClass('avatar')).appendTo(_member);
 				}
 				_avatar.addClass('group-avatar').prependTo(_title.children('span'));
 				_member.addClass('tree-files').appendTo(_html);
 			}else{
+				_title.children('span').addClass('no-child');
 				$('<img/>').addClass('avatar').attr({'src':data.member[0].avatar,'width':'22px'}).prependTo(_title.children('span'));
 			}
 			_html.treeViewModify({'defaultOpen':1});
@@ -756,5 +769,21 @@
 				box.addClass('image-msg').append(img).appendTo($(_this));
 			}*/;
 			checkFileType();
+		}
+		$.fn.modal = function() {
+			var _this = this,
+			_title = $('<div/>'),
+			_content = $('<div/>'),
+			_modal = $('<div/>');
+			_title.addClass('modal-title').html('<h1>'+$(_this).attr('modal-title')+'</h1><a href="javascript:;" class="modal-close button-close">&times;</a>').appendTo(_modal);
+			_content.addClass('modal-content').load($(_this).attr('modal-data')).appendTo(_modal);
+			_modal.addClass('modal').appendTo($('body'));
+			$('<div/>').addClass('modal-border').appendTo($('body'));
+			$('<div/>').addClass('modal-bg').appendTo($('body'));
+			$('.modal-close').click(function(){
+				$('.modal').remove();
+				$('.modal-border').remove();
+				$('.modal-bg').remove();
+			})
 		}
 })(jQuery);
