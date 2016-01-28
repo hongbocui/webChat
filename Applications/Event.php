@@ -72,83 +72,82 @@ class Event
                 $new_message = array(
                     'type' => $messageData['type'],
                     'clientName' => $clientName,
-                    'time'        => date('Y-m-d H:i:s')
+                    'time'        => time(),
                 );
                 Gateway::sendToAll(json_encode($new_message));
                 return;
-            // 客户端发言 message: {type:say, touser:xx, content:xx}
             case 'say':
                 // 非法请求
-                if(!isset($_SESSION['clientName']))
-                {
+                if(!isset($_SESSION['clientName'])){
                     throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
                 }
                 $clientName = $_SESSION['clientName'];
+                $chatid = $messageData['chatid'];
+                //获取群成员
+                $chatList = Muser::getChatListFromChatid($messageData['chatid']);
                 
-                if(!is_array($messageData['touser'])) return;
-                //所有消息压入redis队列中，以便存储
-                $pushArr = self::makeMsg($clientName, $messageData['touser'], $messageData['content']);
+                if(!is_array($chatList)) return;
+                //所有单人聊天、群组聊天消息都压入redis队列中，以便存储
+                $pushArr = self::makeMsg($chatid, $clientName, $messageData['content']);
                 self::msgIntoQueue($pushArr);
                 
                 // 聊天内容
-                $new_message = self::makeMsg($clientName, $messageData['touser'], $messageData['content'], 'say');
+                $new_message = self::makeMsg($chatid, $clientName, $messageData['content'], 'say');
                 $jsonNewMessage = json_encode($new_message);
                 //获取所有存储的在线用户
                 $clientLists = Muser::getOnlineUsers();
                 //获取该组用户在线的clientid,并广播
-                $onlineClientIds = self::getClientidsFromUsers($clientLists, $messageData['touser']);
+                $onlineClientIds = self::getClientidsFromUsers($clientLists, $chatList);
                 if($onlineClientIds){
                     Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
                 }
                 //获取该组用户所有不在线的用户,并生成离线消息队列
-                $offlineUsers = self::getOfflineUsers($clientLists, $messageData['touser']);
+                $offlineUsers = self::getOfflineUsers($clientLists, $chatList);
                 if($offlineUsers) {
                     foreach($offlineUsers as $offname) {
-                       self::offlineMsgQueue($offname, $pushArr, ':unread:msg');
+                       self::addOfflineMsgQueue($offname, $chatid, ':unread:msg');
                     }
                 }
                 return;
             case 'broadcast':
-                $chatDept = $messageData['touser'];
-                if(!$chatDept) return;
-                // 非法请求
-                if(!isset($_SESSION['clientName'])) {
-                    throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
-                }
-                $clientName = $_SESSION['clientName'];
-                if(!is_array($chatDept)) return;
+//                 $chatDept = $messageData['touser'];
+//                 if(!$chatDept) return;
+//                 // 非法请求
+//                 if(!isset($_SESSION['clientName'])) {
+//                     throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+//                 }
+//                 $clientName = $_SESSION['clientName'];
+//                 if(!is_array($chatDept)) return;
                 
-                //所有消息压入redis队列中，以便存储
-                $pushArr = self::makeMsg($clientName, $chatDept, $messageData['content'], \Config\St\Storekey::BROADCAST_MSG_TYPE);
-                self::msgIntoQueue($pushArr);
+//                 //所有消息压入redis队列中，以便存储
+//                 $pushArr = self::makeMsg($clientName, $chatDept, $messageData['content'], \Config\St\Storekey::BROADCAST_MSG_TYPE);
+//                 self::msgIntoQueue($pushArr);
                 
-                // 聊天内容
-                $new_message = self::makeMsg($clientName, $chatDept, $messageData['content'],'broadcast');
-                $jsonNewMessage = json_encode($new_message);
+//                 // 聊天内容
+//                 $new_message = self::makeMsg($clientName, $chatDept, $messageData['content'],'broadcast');
+//                 $jsonNewMessage = json_encode($new_message);
                 
-                //获取部门下的用户列表
-                $toUsersList = self::getUsersByDept($chatDept);
-                //获取所有存储的在线用户
-                $clientLists = Muser::getOnlineUsers();
-                //获取该组用户在线的clientid
-                $onlineClientIds = self::getClientidsFromUsers($clientLists, $toUsersList);
-                if($onlineClientIds){
-                    Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
-                }
-                //获取该组用户所有不在线的用户
-                $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
-                if($offlineUsers) {
-                    foreach($offlineUsers as $offname) {
-                        self::offlineMsgQueue($offname, $pushArr, ':unread:broadcast');
-                    }
-                }
-                return;
+//                 //获取部门下的用户列表
+//                 $toUsersList = self::getUsersByDept($chatDept);
+//                 //获取所有存储的在线用户
+//                 $clientLists = Muser::getOnlineUsers();
+//                 //获取该组用户在线的clientid
+//                 $onlineClientIds = self::getClientidsFromUsers($clientLists, $toUsersList);
+//                 if($onlineClientIds){
+//                     Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
+//                 }
+//                 //获取该组用户所有不在线的用户
+//                 $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
+//                 if($offlineUsers) {
+//                     foreach($offlineUsers as $offname) {
+//                         self::addOfflineBroadcastQueue($offname, $pushArr, ':unread:broadcast');
+//                     }
+//                 }
+//                 return;
             case 'history':
-                $chatList = $messageData['touser'];
-                $chatid = \Api\Model\Mcommon::setChatId($chatList);
-                if(!$chatid) return;
+                if(!$messageData['chatid']) return;
                 
-                $historyList = \Api\Model\Mmessage::getHistoryMsg($chatid);
+                $historyList = \Api\Model\Mmessage::getHistoryMsg($messageData['chatid']);
                 if($historyList){
                     $history_message = array(
                         'type' => 'history',
@@ -210,7 +209,6 @@ class Event
        if(!is_array($clientNameArr) || !is_array($clientsList)) return false;
        $clientIds = array_intersect($clientsList, $clientNameArr);
        return array_keys($clientIds);
-       return $clientIds;
    }
    /**
     * 根据用户列表，获取所给用户中不在线的用户
@@ -279,8 +277,23 @@ class Event
    }
    /**
     * 离线聊天数据或广播数据 压入用户离线聊天消息队列
+    * 每个用户有一个离线hash，hash中的键值分别是本路聊天对应的消息数量
     */
-   public static function offlineMsgQueue($username, $msgData, $partkey='') {
+   public static function addOfflineMsgQueue($username, $chatid, $partkey='') {
+       $store = Store::instance("gateway");
+       $store->hIncrBy($username.$partkey, $chatid, 1);
+   }
+   /**
+    * 点击某路对话时清除该对话的离线数量 
+    */
+   public static function delOfflineMsgQueue($username, $touserstr, $partkey=''){
+       $store = Store::instance("gateway");
+       $store->hDel($username.$partkey, $touserstr);
+   }
+   /**
+    * 离线广播数据压入队列
+    */
+   public static function addOfflineBroadcastQueue($username, $msgData, $partkey='') {
        //注意这里是lpush，为了与ltrim一块使用
        Redisq::lpush(array(
            'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
@@ -295,7 +308,6 @@ class Event
            'len'         => 100,      #结束索引值
        ));
    }
-   
    /**
     * 所有聊天消息和广播消息都压入到redis队列中
     */
@@ -309,14 +321,15 @@ class Event
    /**
     * 格式化消息数据
     */
-   private static function makeMsg($from, $to, $content='', $type=0) {
-       return array(
-           'fromuser'    => $from,
-           'touser'      => $to,
+   private static function makeMsg($chatid, $from, $content='', $type=0) {
+       $msg = array(
+           'chatid'  => $chatid,
+           'fromuser'=> $from,
            'message' => nl2br(htmlspecialchars($content)),
            'time'    => time(),
            'type'    => $type,
        );
+       return $msg;
    }
    /**
     * 根据部门获取部门下所有用户，部门之间用,号分割

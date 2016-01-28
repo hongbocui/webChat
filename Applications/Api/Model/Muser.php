@@ -11,9 +11,6 @@
         //数据库对象
         public static $db = null;
         
-        //redis服务器
-        public static $redisServer = 'webChat';
-        
         public static function dbobj(){
             if(null === self::$db)
                 self::$db = Db::instance('webChat');
@@ -87,6 +84,20 @@
                 }
             }
             return $clientList;
+        }
+        /**
+         * 根据chatid获取chatList
+         */
+        public static function getChatListFromChatid ($chatid) {
+            $chatList = array();
+            if(strpos($chatid, '--') > -1) {
+                $chatList = explode('--', $chatid);
+            } elseif (strpos($chatid, '-') > -1) {//非群组聊天
+                $group = explode('-', $chatid);
+                $chatList = Mgroup::getGroupMembers(array($group[0], $group[1]));
+                $chatList = array_keys($chatList);
+            }
+            return $chatList;
         }
     }
 ?>

@@ -5,6 +5,8 @@
      */
     namespace Api\Model;
     abstract class Abstractex {
+         //redis服务器
+         protected static $redisServer = 'webChat';
         
          protected static function setSelectField($fields){
             return self::formatFiledsValue($fields);

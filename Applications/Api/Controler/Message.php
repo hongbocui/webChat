@@ -10,22 +10,30 @@
          * 
          */
         public function doTest(){
-            var_dump(Mmessage::getChatMessage(array(
-                'time'   => 1451932905, //时间戳、根据这个向前查询  必填
-                'chatid' => '994157c8b4188b6f6d2920d0bbb2f28c', //要查询的chatid
-            ))); 
+            var_dump(Mmessage::getUnreadMsg('wangjx')); 
+        }
+        /**
+         * 获取用户每路离线消息的数量
+         */
+        public function doUnreadMsg() {
+            $username = $this->toStr('accountid');
+            $num      = $this->toInt('num');
+            if(!$username) return false;
+            $num = $num ? $num : 100;
+            $unreadMsg = Mmessage::getUnreadMsg($username, $num);
+            $this->_success($unreadMsg);
         }
         
         /**
-         * 获取用户的离线消息
+         * 获取用户的离线广播消息
          */
-        public function doGetUnreadMsg() {
+        public function doGetUnreadBroadcast() {
             $username = $this->toStr('accountid');
             $num      = $this->toInt('num');
             if(!$username) return false;
             $num = $num ? $num : 100;
             
-            $unreadMsg = Mmessage::getUnreadMsg($username, $num);
+            $unreadMsg = Mmessage::getUnreadBroadcast($username, $num);
             echo json_encode($unreadMsg);
         }
     }

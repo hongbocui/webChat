@@ -16,6 +16,8 @@
         /**
          * 获取某路聊天的历史记录
          * time/chatid 必须
+         * 
+         * 注意，如果是群聊天，则需要查到该用户的入群时间，早于该入群时间的消息时不能被查询到的。
          */
         public static function getChatMessage($paramArr) {
             $options = array(
@@ -23,6 +25,7 @@
                 'fields' => array(),//要查询的字段或者以 英文'，'分开
                 'time'   => 0,      //时间戳、根据这个向前查询  必填
                 'chatid' => '',     //要查询的chatid
+                'joinTime'=> '',    //用户的入群时间
                 'order'  => 'order by id desc',
             );
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
@@ -34,6 +37,8 @@
             $tbname = self::getTbname($time);
             $formatData = self::setSelectField($fields);
             $where .= " and time<{$time} ";
+            if($joinTime)//如果是群聊则限制消息记录的时间
+                $where .= " and time > {$joinTime} ";
             
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
             return self::dbobj()->query($sql);
@@ -63,9 +68,9 @@
                           `id` int(11) NOT NULL AUTO_INCREMENT,
                           `chatid` char(32) NOT NULL COMMENT '俩用户间聊天的唯一标示（组合方法：参与用户名排序后MD5），用来查询历史记录',
                           `fromuser` varchar(30) NOT NULL,
-                          `tousers` varchar(500) NOT NULL,
                           `message` varchar(500) NOT NULL,
                           `time` int(11) NOT NULL,
+                          `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:聊天 1：广播',
                           PRIMARY KEY (`id`),
                           KEY `chatidindex` (`chatid`),
                           KEY `timeindex` (`time`)
@@ -90,13 +95,21 @@
          *                redis操作                                   *
          ****************************************/
         /**
-         * 用户离线消息队列中获取离线消息
+         * 获取用户离线消息
          */
-        public static function getUnreadMsg($usernanme,$num=100){
+        public static function getUnreadMsg($username) {
+            if(!$username) return false;
+            $store = \GatewayWorker\Lib\Store::instance("gateway");
+            return $store->hGetAll($username.':unread:msg');
+        }
+        /**
+         * 用户离线广播队列中获取离线消息
+         */
+        public static function getUnreadBroadcast($usernanme,$num=100){
             if(!$usernanme || !$num) return false;
             $msgList = \Vendors\Redis\Redisq::pops(array(
                 'serverName'  => self::$redisServer, #服务器名，参照见Redis的定义 ResysQ
-                'key'         => $usernanme.':unread:msg',  #队列名
+                'key'         => $usernanme.':unread:broadcast',  #队列名
                 'num'         => $num,      #多个数据
             ));
             if($msgList){

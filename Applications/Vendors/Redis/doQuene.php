@@ -47,20 +47,14 @@
 	 */
 	function insertData($data){
 	    if(!$data) return false;
-	    $chatList = $data['touser'];
-	    $chatid = '';
-	    if($data['type'] == \Config\St\Storekey::CHAT_MSG_TYPE) {
-	        $chatid = Api\Model\Mcommon::setChatId($chatList);
-	        if(!$chatid) return;
-	    }
+	    $chatid = $data['chatid'];
+	    
 	    //自动分表处理
 	    Mmessage::createTable(Mmessage::getTbname());
 	    //插入聊天数据
-	    $touser = implode(',', $chatList);
 	    $insertData = array(
 	        'chatid'   => $chatid,
 	        'fromuser' => $data['fromuser'],
-	        'tousers'  => $touser,
 	        'message'  => $data['message'],
 	        'time'     => $data['time'],
 	        'type'     => $data['type'],
@@ -74,12 +68,10 @@
 	function storeRecentMembers($data){
 	    if($data['type'] == \Config\St\Storekey::BROADCAST_MSG_TYPE)
 	        return false;
-	    if(!is_array($data['touser']))
-	        return false;
-	    $chatList = $data['touser'];
-	    $chatStr = implode(',', $chatList);
+
+	    $chatList = Api\Model\Muser::getChatListFromChatid($data['chatid']);
 	    foreach($chatList as $username){
-	        RedisModel::zAdd('webChat', $username.':recentchat:members', $data['time'], $chatStr, 2592000);
+	        RedisModel::zAdd('webChat', $username.':recentchat:members', $data['time'], $data['chatid'], 2592000);
 	        //删除一个月前的最近联系人
 	        RedisModel::zRemRangeByScore('webChat', $username.':recentchat:members', 0,  $data['time']-2592000);
 	    }
@@ -89,23 +81,21 @@
 	 * 保留每路最新的n条message(历史消息),到redis中
 	 */
 	function storeMessageList($data){
+	    if(!$data) return false;
 	    if($data['type'] == \Config\St\Storekey::BROADCAST_MSG_TYPE)
 	        return false;
-	    if(!$data) return false;
 	    
-	    $chatList = $data['touser'];
-	    $chatid = Api\Model\Mcommon::setChatId($chatList);
-	    if(!$chatid) return;
+	    if(!$data['chatid']) return;
 	    
 	    Redisq::lpush(array(
             'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-            'key'      => $chatid.':msg-history',  #队列名
+            'key'      => $data['chatid'].':msg-history',  #队列名
             'value'    => serialize($data),  #插入队列的数据
         ));
 	    //保存最新50条
 	    Redisq::ltrim(array(
             'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
-            'key'         => $chatid.':msg-history',  #队列名
+            'key'         => $data['chatid'].':msg-history',  #队列名
             'offset'      => 0,      #开始索引值
             'len'         => 50,      #结束索引值
         ));
@@ -117,8 +107,8 @@
 		$options = array(
             'queueType'   => 'RedisQ',      #消息队列名称 默认是MQ RedisQ
             'serverName'  => 'webChat',      #ResysQ
-            'queueName'   => 'cui:first:quene',      #要监听的消息队列名
-            'jobName'     => 'cui:first:quene',      #当前处理的job名称
+            'queueName'   => '',      #要监听的消息队列名
+            'jobName'     => '',      #当前处理的job名称
             'cnName'      => '',      #中文名称
             'function'    => 'doQuene',   #要运行的函数名
             'msgNumAtm'   => 2,      #每次处理的消息数，如果是多个会有合并处理

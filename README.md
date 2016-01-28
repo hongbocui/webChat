@@ -1,3 +1,18 @@
+###登录
+wc_ws.send({"type":"login","clientName":wc_loginName})
+
+###前端发送消息机制
+chatid:chatid一共两种情况
+	       如果是单人聊天则chatid就是两个人用‘--’连接的字串（且注意俩名称是经过sort排序的）cuihb--xieyx
+	       如果是群组聊天则chatid就是唯一的字串(例如群组+创建群的时间)cuihb-63756323 根据这个字串可以从redis中获取成员
+wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":msg}));
+
+###前端获取redis历史消息记录
+wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
+
+
+
+/**以下是老版本的说明**/
 ##环境：
 linux环境下
 安装php，php需要的扩展：pcntl、posix、redis、pdo
@@ -45,7 +60,10 @@ linux环境下
 7、支持用户上线提醒
 8、消息队列监控
 
+
+
 ##实现方法：
+
 ###1.消息永久保存
  所有用户聊天消息都会存放到一个消息队列中，处理消息队列的程序采用始终循环的方式，将消息队列数据中的数据弹出并存到数据库表中。
  
