@@ -103,6 +103,14 @@
             return $store->hGetAll($username.':unread:msg');
         }
         /**
+         * 用户点击对话时删除该对话的离线消息
+         */
+        public static function delOneItemUnreadMsg($username, $chatid) {
+            if(!$username || !$chatid) return false;
+            $store = \GatewayWorker\Lib\Store::instance("gateway");
+            return $store->hDel($username.':unread:msg', $chatid);
+        }
+        /**
          * 用户离线广播队列中获取离线消息
          */
         public static function getUnreadBroadcast($usernanme,$num=100){

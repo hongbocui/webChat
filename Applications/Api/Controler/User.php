@@ -6,32 +6,14 @@
      * 聊天系统用户相关
      */
     class User extends Abstractex {
-        public function doTest() {
-            $chatDeptArr = explode(',', trim('技术部,互联网部,',','));
-            $toUserList = array();
-            foreach($chatDeptArr as $key=>$dept) {
-                $userList = Muser::getUserinfo(array(
-                    'fields' => array('accountid'),
-                    'dept'   => $dept,
-                ));
-                $toUserList = array_merge($toUserList, $userList);
-            }
-            foreach($toUserList as $key=>$userval) {
-                $toUserList[$key] = $userval['accountid'];
-            }
-            var_dump($toUserList);die;
-            
-            
-            
-            $a = array();
-            $b = array('d','b', 'c','m');
-            var_dump(array_intersect($a,$b));die;
-            var_dump($this->doDeptUser());
-        }
-        
         /**
          * 登录
-         * @return number
+         * 
+         * 请求参数              是否必须             类型(示例)   说明
+         * accountid   true       string(cuihb)  登录的用户名
+         * pwd         true       string     用户密码
+         * 
+         * @return number 1/0
          */
         public function doLogin(){
             $username = $this->toStr('accounid');
@@ -40,6 +22,14 @@
         }
         /**
          * 获取某个用户信息
+         * 
+         * 请求参数              是否必须             类型(示例)   说明
+         * accountid   true       string(cuihb)  登录的用户名
+         * 
+         * 返回值 json
+         * array(0=>array(
+         *  用户信息
+         * ))
          */
         public  function doOneUser(){
             $accountid = $this->toStr('accountid');
@@ -51,6 +41,12 @@
         }
         /**
          * 获取某个部门用户账号信息
+         * 
+         * 请求参数              是否必须             类型(示例)   说明
+         * dept        true      string(cuihb)  部门名称
+         * 
+         * 返回值 json
+         * 部门所有用户信息 
          */
         public function doDeptUser() {
             $dept = $this->toStr('dept');
@@ -64,6 +60,9 @@
         /**
          * 获取所有用户信息
          * 仅支持最高6级部门
+         * 无参数
+         * 
+         * 返回所有用户
          */
         public function doAllUsers(){
             $data = Muser::getUserinfo(array());
@@ -95,6 +94,16 @@
         }
         /**
          * 获取最近联系人列表
+         * 请求参数           是否必须          类型(示例)   说明
+         * accountid  true     string(cuihb)  用户账号
+         * num        false    int         要获取最近的num个联系人
+         * 
+         * return json
+         * data.data = array(
+         *  chatid1
+         *  chatid2
+         * );
+         * 
          */
         public function doRecentContact() {
             $username = $this->toStr('accountid');
@@ -107,6 +116,10 @@
         }
         /**
          * 获取所有在线用户 账号列表
+         * 
+         * 无参数
+         * 
+         * 返回所有在线用户列表
          */
         public function doOnlineUsers() {
             $clientList = Muser::getOnlineUsers();
