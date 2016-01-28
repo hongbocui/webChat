@@ -148,6 +148,7 @@
 		//判断是否在最近联系人中，如没有则显示(个人消息和群消息都判断)
 		if(!isChatidInContact(chatid)){
 			loadNearestContactFunc(chatid);
+			lightOnlineUserList(new Array(fromuser));
 		}
     	
 		//判断是否为当前用户，当前用户则append到聊天box里面，否则则将该聊天对话的未读消息+1
@@ -170,21 +171,21 @@
             chatInDialogContainer(historyLog);
         //redis中取历史记录
         }else{
-//        	ws.send(JSON.stringify({"type":"history","chatid":chatid}));
-//
-//        	//等待redis中数据
-//            var i = 0;
-//            var waitHistory = function(){
-//            		console.log(222222222);
-//                    i++;
-//                	if(window["chat"+chatid+"History"] != undefined){
-//                		chatInDialogContainer(window["chat"+chatid+"History"], true);
-//                		clearInterval(waitTime);
-//                    }
-//            	    if(i>50)
-//            	    	clearInterval(waitTime);
-//                };
-//        	var waitTime = setInterval(waitHistory, 10);
+        	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
+
+        	//等待redis中数据
+            var i = 0;
+            var waitHistory = function(){
+            		console.log(222222222);
+                    i++;
+                	if(window["chat"+chatid+"History"] != undefined){
+                		chatInDialogContainer(window["chat"+chatid+"History"], true);
+                		clearInterval(waitTime);
+                    }
+            	    if(i>50)
+            	    	clearInterval(waitTime);
+                };
+        	var waitTime = setInterval(waitHistory, 10);
         	
         }
     }
@@ -325,7 +326,7 @@
     		var tmpchatid = makeChatIdFromGf(users[i]);
     		//联系人列表处理
     		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
-    		userItemObjInUserList.find('img').removeClass('no-login');
+    		userItemObjInUserList.removeClass('no-login');
     		//userItemObjInUserList.parent().prepend(userItemObjInUserList);
     		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());
     		//最近联系人处理在线处理
@@ -369,7 +370,7 @@
 			    	'attr':{'data-id':chatid,'type':'member'}
 			    });
 			    treeData.attr = {'data-id':chatid,'type':'personal','class':'no-login'};
-			    $('.recent').addTree(treeData);
+			    $('.recent').children('.tree-folders').addTree(treeData);
 			}
 			
 		//群用户聊天
@@ -385,7 +386,7 @@
 			    });
 			}
 		    treeData.attr = {'data-id':chatid,'type':'group'};
-		    $('.recent').addTree(treeData);
+		    $('.recent').children('.tree-folders').addTree(treeData);
 		}
     	return;
     }
@@ -419,7 +420,7 @@
     }
     //前端获取用户在线状态
     function getUserStatus(chatid){
-    	return $("#organization-structure .no-child[data-id='"+chatid+"']").find('img').hasClass('no-login');
+    	return $("#organization-structure .no-child[data-id='"+chatid+"']").hasClass('no-login');
     }
     //js 将php时间戳转为时间
     function timestampTodate(timestamp) {
