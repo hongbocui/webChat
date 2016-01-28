@@ -324,12 +324,12 @@
     	if(!users) return false;
     	for(var i in users) {
     		var tmpchatid = makeChatIdFromGf(users[i]);
-    		//联系人列表处理
+    		//联系人列表在线处理
     		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
     		userItemObjInUserList.removeClass('no-login');
     		//userItemObjInUserList.parent().prepend(userItemObjInUserList);
     		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());
-    		//最近联系人处理在线处理
+    		//最近联系人在线处理
     		nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
     		nearestContactList.removeClass('no-login');
     		$.each(nearestContactList,function(key,item){
