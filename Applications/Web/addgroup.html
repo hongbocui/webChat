@@ -6,7 +6,7 @@
 <div class="group-member"></div>
 <a href="javascript:;" class="create-group button float-right">确定</a>
 <script>
-	var chatuser = $('.recent span[data-id='+$('.contact-msg').attr('chatid')+']')
+	var chatuser = $('.recent').children('.tree-folders').children('span[data-id='+$('.contact-msg').attr('chatid')+']')
 	if(chatuser.attr('type')=='group') {
 		//group
 		chatuser.next().children('span').clone().appendTo($('.group-member'))
