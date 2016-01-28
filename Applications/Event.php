@@ -145,7 +145,7 @@ class Event
 //                 }
 //                 return;
             case 'history':
-                if(!$messageData['chatid']) return;
+                if(!isset($messageData['chatid'])) return;
                 
                 $historyList = \Api\Model\Mmessage::getHistoryMsg($messageData['chatid']);
                 if($historyList){

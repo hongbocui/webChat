@@ -1,6 +1,6 @@
 $(function(){
 	var loadChatDataTime = setInterval(function(){
-    	if(wc_loginName){
+    	if(wc_loginName){ 
     		//所有用户列表。可定时一小时刷新、之后再标示在线用户
             $.getJSON('/chatapi.php?c=user&a=allusers', function(r) {
             	flushAllList(r.data);
