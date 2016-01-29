@@ -97,22 +97,22 @@ $(function(){
 	$('.tab-detail.recent').treeViewModify({});
 	//新消息，若最近联系人中存在，则将其移至最近联系人中顶部
 	//$('待移动元素').moveTreeTop($('.recent'));
-	$(".tab-detail.structure,.chat-box .member").on('dblclick','span[type=member]',function(){
-		//添加之前先判断是否有这个联系人
-		if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
-			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
-			return false;
-		}
-		$('.tab-detail.recent').children('.tree-folders').addTree({
-			'title'  : $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,''),
-			'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src'),'attr':{'data-id':$(this).attr('data-id'),'type':'member','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}}],
-			'attr'   : {'data-id':$(this).attr('data-id'),'type':'personal','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}
-		});
-		//$('.tab[tab-name=recent]').click();
-		//双击recent中的这个联系人
-		$('.tab-detail.recent span:first').dblclick();
-	})
-	$("body").on('dblclick','.tab-detail.recent span',function(){
+//	$(".tab-detail.structure,.chat-box .member").on('dblclick','span[type=member]',function(){
+//		//添加之前先判断是否有这个联系人
+//		if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
+//			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
+//			return false;
+//		}
+//		$('.tab-detail.recent').addTree({
+//			'title'  : $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,''),
+//			'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src'),'attr':{'data-id':$(this).attr('data-id'),'type':'member','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}}],
+//			'attr'   : {'data-id':$(this).attr('data-id'),'type':'personal','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}
+//		});
+//		//$('.tab[tab-name=recent]').click();
+//		//双击recent中的这个联系人
+//		$('.tab-detail.recent span:first').dblclick();
+//	})
+	$("body").on('dblclick','.tab-detail.active span',function(){
 		//$(this).moveTreeTop($('.tab-detail.recent'));
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
 		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,'');
@@ -125,7 +125,17 @@ $(function(){
 			$('.message').css('margin-right','180px');
 			$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
 			
+			//更新一下群组的生存时间
+			$.get('/chatapi.php?c=group&a=expires');
 		}
+		//未读消息变为0
+		if($(this).find('b').length){
+			loadUnreadMsgFun(_member, 0); //前端
+			//服务端
+			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+_member+'&accountid='+wc_loginName);
+		}
+		//加载本地消息
+		historyInDialog(_member);
 		//联系人信息更新
 		$('.contact-msg').attr('chatid',_member);
 		$('.contact-msg h1').html(_title);

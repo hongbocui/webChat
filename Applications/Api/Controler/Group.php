@@ -14,7 +14,7 @@
          * 返回结果
          * res.code=1 成功 ；res.code=0失败
          */
-        public function doCreate() {
+        public function doSet() {
             $chatid = $this->toStr('chatid');
             $group  = explode('-', $chatid);
             $data = Mgroup::setGroup(array(
@@ -31,7 +31,7 @@
          * 请求参数     是否必须   类型(示例)    说明
          * chatid  true  string(cuihb-165726534)  唯一的groupid,可以是群主-时间戳
          * type    true   string      add/del  添加/删除 成员(成员存在的形式 cuihb=》时间戳)
-         * users true  string      向群中添加或者删除的成员 用‘-’分割，cuihb-xieyx-huocc
+         * users   true  string      向群中添加或者删除的成员 用‘-’分割，cuihb-xieyx-huocc
          * 
          * 返回结果
          * res.code=1 成功 ；res.code=0失败
@@ -50,24 +50,14 @@
         }
         
         /**
-         * 设置群的生存时间  
+         * 获取群的基本信息以及成员信息
          * 
          * 请求参数     是否必须   类型(示例)    说明
          * chatid  true  string(cuihb-165726534)  唯一的groupid,可以是群主-时间戳
          * 
-         * 返回值 ：无返回值
-         */
-        public function doExpires() {
-            $chatid = $this->toStr('chatid');
-            $group  = explode('-', $chatid);
-            Mgroup::setGroupExpire(array(
-                'master' => $group[0],
-                'uuid'   => $group[1],
-            ));
-        }
-        
-        /**
-         * 获取群的基本信息以及成员信息
+         * 返回结果
+         * data.info 群基本信息
+         * data.members 群成员
          */
         public function doGetInfo() {
             $chatid = $this->toStr('chatid');
@@ -86,6 +76,23 @@
                 'uuid'   => $uuid,
             ));
             $this->_success($outArr);
+        }
+        
+        /**
+         * 设置群的生存时间
+         *
+         * 请求参数     是否必须   类型(示例)    说明
+         * chatid  true  string(cuihb-165726534)  唯一的groupid,可以是群主-时间戳
+         *
+         * 返回值 ：无返回值
+         */
+        public function doExpires() {
+            $chatid = $this->toStr('chatid');
+            $group  = explode('-', $chatid);
+            Mgroup::setGroupExpire(array(
+                'master' => $group[0],
+                'uuid'   => $group[1],
+            ));
         }
     }
 ?>

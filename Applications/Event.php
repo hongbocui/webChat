@@ -325,7 +325,7 @@ class Event
        $msg = array(
            'chatid'  => $chatid,
            'fromuser'=> $from,
-           'message' => nl2br(htmlspecialchars($content)),
+           'message' => $content,
            'time'    => time(),
            'type'    => $type,
        );

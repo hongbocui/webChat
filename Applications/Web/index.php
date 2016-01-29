@@ -11,7 +11,7 @@
   <script type="text/javascript" src="./js/web_socket.js"></script>
   <script type="text/javascript" src="./js/json.js"></script>
   <script type="text/javascript" src="./js/jquery.min.js"></script>
-  <script type="text/javascript">
+  <script type="text/javascript" src="./js/webchat.js">
     if (typeof console == "undefined") {    this.console = { log: function (msg) {  } };}
     WEB_SOCKET_SWF_LOCATION = "/swf/WebSocketMain.swf";
     WEB_SOCKET_DEBUG = true;
