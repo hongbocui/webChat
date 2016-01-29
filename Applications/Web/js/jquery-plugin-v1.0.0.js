@@ -236,7 +236,8 @@
 					}else{
 						var _rootIndex = obj.prevAll('span:not(.no-child)').length;
 						$('<div>').append(obj.parent().siblings('.tree-files:eq('+_rootIndex+')').clone()).children().show().insertAfter(obj);
-						obj.parent().siblings('.tree-files:eq('+_rootIndex+')').html('');
+						if(obj.parent().parent().hasClass('tree-files'))
+							obj.parent().siblings('.tree-files:eq('+_rootIndex+')').html('');
 						if(obj.nextAll().length > 1)
 							obj.next().addClass('tree-icon tree-main-line');
 						if(obj.next().children('.tree-folders').length > 0)
