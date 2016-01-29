@@ -16,7 +16,7 @@
 		//chatuser
 		chatuser.clone().addClass('undelete').find('.unread').remove().end().appendTo($('.group-member'))
 	}
-	$('.structure').clone().find('.tree-icon').remove().end().children().appendTo($('.add-group-struct'))
+	$('.structure').clone().find('.tree-icon').remove().end().children(':not(.tree-item-bg)').appendTo($('.add-group-struct'))
 	$('.add-group-struct').treeViewModify({})
 	$('.add-group-struct span:not(.no-child)').append('<a href="javascript:;" class="add-group-all">+</a>')
 	$('.add-group-struct').on('mouseover','span:not(.no-child)',function(){$(this).children('.add-group-all').show()}).on('mouseout','span:not(.no-child)',function(){$(this).children('.add-group-all').hide()})
@@ -34,18 +34,32 @@
 		$(this).remove();
 	})
 	$('.create-group').click(function(){
-		if($('.group-member span').length <= 1)
+		if($('.group-member span').length <= 2)
 			return false;
 		var member = [];
+		if(chatuser.attr('type') == 'group'){
+		//insert
+			chatuser.next().empty();
+$('.group-member span:not(.undelete)').each(function(){
+			chatuser.next().addTree({
+				'title':$(this).html().replace(/<[^>]+>/,''),
+				'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}}],
+				'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}
+			});
+                })
+
+}else{
+		//create
 		$('.group-member span').each(function(){
 			member.push({'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}});
 		})
-		$('.recent').addTree({
+		$('.recent').children('.tree-folders').addTree({
 			'title':$('.group-member').html().replace(/<[^>]+><[^>]+>([^<]*)<\/[^>]+>/g,',$1').substr(1),
 			'member':member,
 			'attr':{'type':'group','data-id':user.dataid+'-'+new Date().getTime()}
 		})
 		$('.recent span:first').dblclick();
+}
 		$('.modal-close').click();
 	})
 </script>

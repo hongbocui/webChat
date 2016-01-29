@@ -324,17 +324,20 @@
     	if(!users) return false;
     	for(var i in users) {
     		var tmpchatid = makeChatIdFromGf(users[i]);
+		$("#organization-structure .no-child[data-id='"+tmpchatid+"']").each(function(){
+			$(this).removeClass('no-login').moveTreeTop($(this).parent());
+		})
     		//联系人列表在线处理
-    		userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
+    		/*userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
     		userItemObjInUserList.removeClass('no-login');
     		//userItemObjInUserList.parent().prepend(userItemObjInUserList);
-    		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());
+    		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());*/
     		//最近联系人在线处理
-    		nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
+    		/*nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
     		nearestContactList.removeClass('no-login');
     		$.each(nearestContactList,function(key,item){
     			$(item).moveTreeTop($(item).parent());
-    		});
+    		});*/
     	}
     }
     //给出一个下线用户组，使用户列表和最近联系人中头像变灰
