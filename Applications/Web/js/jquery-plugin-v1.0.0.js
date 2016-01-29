@@ -645,8 +645,8 @@
 						member_attr[x] = data.member[i].attr[x];
 					}
 					if(i<4)
-					$('<img/>').attr({'src':data.member[i].avatar,'width':'10px','class':member_attr['class'] == null ? '' : member_attr['class']}).addClass('avatar').appendTo(_avatar);
-					$('<span/>').attr(member_attr).addClass('no-child').html(data.member[i].username).append($('<img/>').attr({'src':data.member[i].avatar,'width':'22px'}).addClass('avatar')).appendTo(_member);
+					$('<img/>').attr({'src':data.member[i].avatar,'width':'10px'}).addClass('avatar').appendTo(_avatar);
+					$('<span/>').attr(member_attr).addClass('no-child').html(data.member[i].username).prepend($('<img/>').attr({'src':data.member[i].avatar,'width':'22px'}).addClass('avatar')).appendTo(_member);
 				}
 				_avatar.addClass('group-avatar').prependTo(_title.children('span'));
 				_member.addClass('tree-files').appendTo(_html);
@@ -655,10 +655,10 @@
 				$('<img/>').addClass('avatar').attr({'src':data.member[0].avatar,'width':'22px'}).prependTo(_title.children('span'));
 			}
 			_html.treeViewModify({'defaultOpen':1});
-			$(_this).children('.tree-folders').children('.tree-icon:first').addClass('tree-middle-line').removeClass('tree-start-line');
-			_title.children().prependTo($(_this).children('.tree-folders'));
+			$(_this).children('.tree-icon:first').addClass('tree-middle-line').removeClass('tree-start-line');
+			_title.children().appendTo($(_this));
 			if(data.member.length >= 2)
-				_member.insertAfter($(_this).children('.tree-folders'));
+				_member.appendTo($(_this));
 		}
 		$.fn.removeTree = function() {
 			var _this=this;
