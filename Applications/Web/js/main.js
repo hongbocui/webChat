@@ -103,7 +103,7 @@ $(function(){
 			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
 			return false;
 		}
-		$('.tab-detail.recent').addTree({
+		$('.tab-detail.recent').children('.tree-folders').addTree({
 			'title'  : $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,''),
 			'member' : [{'username':$(this).find('.username').html(),'avatar':$(this).find('.avatar').attr('src'),'attr':{'data-id':$(this).attr('data-id'),'type':'member','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}}],
 			'attr'   : {'data-id':$(this).attr('data-id'),'type':'personal','class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}
