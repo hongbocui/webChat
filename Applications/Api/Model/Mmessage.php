@@ -1,5 +1,6 @@
 <?php 
     namespace Api\Model;
+    use Vendors\Redis\RedisModel;
     class Mmessage extends Abstractex{
         //表前缀
         public static $messagetablePre = 'webchat_message';
@@ -99,16 +100,14 @@
          */
         public static function getUnreadMsg($username) {
             if(!$username) return false;
-            $store = \GatewayWorker\Lib\Store::instance("gateway");
-            return $store->hGetAll($username.':unread:msg');
+            return \Vendors\Redis\RedisModel::hashGet(self::$redisServer, $username.':unread:msg');
         }
         /**
          * 用户点击对话时删除该对话的离线消息
          */
         public static function delOneItemUnreadMsg($username, $chatid) {
             if(!$username || !$chatid) return false;
-            $store = \GatewayWorker\Lib\Store::instance("gateway");
-            return $store->hDel($username.':unread:msg', $chatid);
+            return \Vendors\Redis\RedisModel::hashDel(self::$redisServer, $username.':unread:msg', $chatid);
         }
         /**
          * 用户离线广播队列中获取离线消息

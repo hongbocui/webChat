@@ -15,7 +15,7 @@
  * 主要是处理 onMessage onClose
  */
 use \GatewayWorker\Lib\Gateway;
-use \GatewayWorker\Lib\Store;
+use \Vendors\Redis\RedisModel;
 use \Vendors\Redis\Redisq;
 use \Api\Model\Muser;
 
@@ -182,11 +182,10 @@ class Event
     */
    public static function delUserFromOnline($client_id){
        $key = \Config\St\Storekey::USER_ONLINE_LIST;
-       $store = Store::instance("gateway");
        // 存储驱动是redis
        $try_count = 3;
        while ($try_count--) {
-           if ($store->hDel($key, $client_id)) {
+           if (RedisModel::hashDel('webChat', $key, $client_id)) {
                return true;
            }
        }
@@ -197,8 +196,7 @@ class Event
     */
    public static function getClientnameFromId($clientId) {
        if(!$clientId) return false;
-       $store = Store::instance("gateway");
-       return $store->hGet(\Config\St\Storekey::USER_ONLINE_LIST, $clientId);
+       return RedisModel::hashGet('webChat', \Config\St\Storekey::USER_ONLINE_LIST, $clientId);
    }
    
    /**
@@ -218,13 +216,12 @@ class Event
        return array_diff($clientNameArr, $clientsList);
    }
    /**
-    * 存储用户到在线列表，并返回所有在线用户
+    * 存储用户到在线列表
     * @param int $client_id
     * @param string $clientName
     */
    public static function addUserToOnlineList($clientId, $clientName){
        $key = \Config\St\Storekey::USER_ONLINE_LIST;
-       $store = Store::instance("gateway");
        // 获取所有所有在线用户clientid--------------
        $allOnlineClientId = Gateway::getOnlineStatus();
        //获取存储中在线用户列表       
@@ -235,8 +232,8 @@ class Event
            self::notAllowMoreClient($clientList, $clientName);
        // 将存储中不在线用户删除
        self::deleteOfflineUser($clientList, $allOnlineClientId);
-       // 添加
-       if($store->hSet($key, $clientId, $clientName))
+       // 添加   时间默认是一天
+       if(RedisModel::hashSet('webChat', $key, $clientId, $clientName))
            return true;
        return false;
    }
@@ -263,32 +260,23 @@ class Event
            $unsetKey = array_keys($clientList, $clientName);
            if($unsetKey){
                Gateway::sendToAll(json_encode(array('type'=>'error', 'info'=>'loginconflict', 'msg'=>'您已在另一客户端登陆')),$unsetKey);
-               $store = Store::instance("gateway");
                foreach($unsetKey as $unkey){
                    unset($clientList[$unkey]);
                    //下线用户
                    Gateway::closeClient($unkey);
                    //删除存储用户
-                   $store->hDel(\Config\St\Storekey::USER_ONLINE_LIST, $unkey);
+                   RedisModel::hashDel('webChat', \Config\St\Storekey::USER_ONLINE_LIST, $unkey);
                }
            }
        }
        return;
    }
    /**
-    * 离线聊天数据或广播数据 压入用户离线聊天消息队列
-    * 每个用户有一个离线hash，hash中的键值分别是本路聊天对应的消息数量
+    * 离线聊天数据或广播数据 压入用户离线聊天消息数量队列
+    * 每个用户有一个离线hash，hash中的键值分别是每路聊天对应的消息数量
     */
    public static function addOfflineMsgQueue($username, $chatid, $partkey='') {
-       $store = Store::instance("gateway");
-       $store->hIncrBy($username.$partkey, $chatid, 1);
-   }
-   /**
-    * 点击某路对话时清除该对话的离线数量 
-    */
-   public static function delOfflineMsgQueue($username, $touserstr, $partkey=''){
-       $store = Store::instance("gateway");
-       $store->hDel($username.$partkey, $touserstr);
+       RedisModel::hashIncrBy('webChat', $username.$partkey, $chatid, 1);
    }
    /**
     * 离线广播数据压入队列

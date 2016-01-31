@@ -92,7 +92,7 @@
 	 	  // 定时重连
 	 	  window.clearInterval(wc_reConnectTimeid);
 	 	  if(!wc_errorType){
-	 		  wc_reConnectTimeid = window.setInterval(init, 3000);
+	 		  wc_reConnectTimeid = window.setInterval(init, 10000);
 	       }
 	   };
 	   wc_ws.onerror = function() {

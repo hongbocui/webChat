@@ -73,10 +73,9 @@
          */
         public static function getOnlineUsers () {
             $key = \Config\St\Storekey::USER_ONLINE_LIST;
-            $store = \GatewayWorker\Lib\Store::instance("gateway");
             $tryCount = 3;
             while ($tryCount--) {
-                $clientList = $store->hGetAll($key);
+                $clientList = \Vendors\Redis\RedisModel::hashGet(self::$redisServer, $key);
                 if (false === $clientList) {
                     $clientList = array();
                 } else {

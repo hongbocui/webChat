@@ -154,6 +154,15 @@ class RedisModel{
         }
         return $re;
     }
+    /**
+     * 键值自增
+     */
+    public static function hashIncrBy($server, $key, $subKey, $incrNum=1) {
+        if(!Redis::$server[$server] || !$key)return false;
+        self::init($server);
+        return self::$redis->hIncrBy($key, $subKey, $incrNum);
+    }
+    
 
     /**
      * 取值
