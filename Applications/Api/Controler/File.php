@@ -14,8 +14,8 @@
 				if(!file_exists('./upload/'.date('Ymd'))) {
 					$this->doCreateDir('./upload/'.date('Ymd'));
 				}
-        			file_put_contents('upload/'.date('Ymd').'/'.time().mt_rand(1000,9999).$i.'.'.$file_type,base64_decode($file));
-}
+        		file_put_contents('upload/'.date('Ymd').'/'.time().mt_rand(1000,9999).$i.'.'.$file_type,base64_decode($file));
+            }
 			$this->_success('upload success');
 		}
 		public function doCreateDir($dir, $mode=0777) {

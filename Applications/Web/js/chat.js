@@ -176,7 +176,6 @@
         	//等待redis中数据
             var i = 0;
             var waitHistory = function(){
-            		console.log(222222222);
                     i++;
                 	if(window["chat"+chatid+"History"] != undefined){
                 		chatInDialogContainer(window["chat"+chatid+"History"], true);
@@ -280,7 +279,6 @@
     	var chatItem = $('#nearest-contact span[type='+itemType+'][data-id='+chatid+']');
     	
     	if(msgNum === 0) {
-    		console.log(msgNum);
     		chatItem.find('b').remove();return;
     	}
     	
@@ -324,20 +322,19 @@
     	if(!users) return false;
     	for(var i in users) {
     		var tmpchatid = makeChatIdFromGf(users[i]);
-		$("#organization-structure .no-child[data-id='"+tmpchatid+"']").each(function(){
-			$(this).removeClass('no-login').moveTreeTop($(this).parent());
-		})
+			$("#organization-structure .no-child[data-id='"+tmpchatid+"']").each(function(){
+				$(this).removeClass('no-login').moveTreeTop($(this).parent());
+			})
     		//联系人列表在线处理
     		/*userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
     		userItemObjInUserList.removeClass('no-login');
-    		//userItemObjInUserList.parent().prepend(userItemObjInUserList);
     		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());*/
     		//最近联系人在线处理
-    		/*nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
+    		nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
     		nearestContactList.removeClass('no-login');
     		$.each(nearestContactList,function(key,item){
     			$(item).moveTreeTop($(item).parent());
-    		});*/
+    		});
     	}
     }
     //给出一个下线用户组，使用户列表和最近联系人中头像变灰
@@ -372,12 +369,13 @@
 			    	'avatar':'default_34_34.jpg',
 			    	'attr':{'data-id':chatid,'type':'member'}
 			    });
+			    //var loginClass = getUserStatus(chatid) ? 'no-login' : '';
 			    treeData.attr = {'data-id':chatid,'type':'personal','class':'no-login'};
 			    $('.recent').children('.tree-folders').addTree(treeData);
 			}
 			
 		//群用户聊天
-		} else {
+		} else if (chatid.indexOf('-') > -1) {
 			var groupInfo = getUserListFromChatid(chatid);
 		    treeData.title = groupInfo.info.title;
 		    for(var r in groupInfo.members) {
