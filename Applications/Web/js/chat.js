@@ -134,8 +134,8 @@
     }
     /*************ws****************/
     //发送消息
-    function sendToWsMsg(msg) {
-    	msg = encMsg(msg);
+    function sendToWsMsg(msg, type) {
+    	msg = encMsg(msg, type);
 		
 		var nowChatId = getNowChatId();
 		wc_ws.send(JSON.stringify({"type":"say","chatid":nowChatId,"content":msg}));
@@ -220,14 +220,22 @@
         }
     }
     //encmsg 原始的msg数据加工成像数据库中存储的数据（return str）
-    function encMsg(msg) {
-    	var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
-		var br_pattern = /<\/div>/g;
-		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
-		//表情转义
-		msg = msg.replace(face_pattern, '[\\face$1]');
-		msg = msg.replace(br_pattern, '[\\br]');
-		msg = msg.replace(clear_tag_pattern, '$2');
+    function encMsg(msg, type) {
+    	switch(type) {
+    	case 'image':
+    		break;
+    	case 'file':
+    		break;
+    	default :
+    		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
+			var br_pattern = /<\/div>/g;
+			var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
+			//表情转义
+			msg = msg.replace(face_pattern, '[\\face$1]');
+			msg = msg.replace(br_pattern, '[\\br]');
+			msg = msg.replace(clear_tag_pattern, '$2');	
+    		break;
+    	}
 		return msg;
     }
     //decMsg 将从数据库中获取的msg，还原成可以向聊天box append的字符串。

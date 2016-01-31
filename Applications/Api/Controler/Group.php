@@ -17,6 +17,8 @@
         public function doSet() {
             $chatid = $this->toStr('chatid');
             $group  = explode('-', $chatid);
+            if(strpos($chatid, '--') > -1)
+                $this->_success('-1','error:群chatid不能包含--', '0');
             $data = Mgroup::setGroup(array(
                         'master' => $group[0],
                         'uuid'   => $group[1],

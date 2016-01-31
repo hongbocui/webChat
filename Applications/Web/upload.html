@@ -20,7 +20,7 @@
 			css = "height=100%"
 		$('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append("<img src='" + src + "' "+ css +">").appendTo($('.image-lists'));
 	}
-	function sendMsg(msg) {
+	/*function sendMsg(msg) {
 		if(msg == '')
 			return false;
 		$('<div/>').addClass('row self').html(
@@ -34,7 +34,7 @@
 			</div>'
 		).appendTo($('.logs'));
 		$('.logs').scrollToBottom();
-	}	
+	}	*/
 	$(function(){
 		$.pasteimage(paste);
 		$('#send-pic').change(function(){
@@ -57,7 +57,8 @@
 				success:function(res) {
 					if(res.code) {
 						$('.image-lists').find('img').each(function(){
-							sendMsg('<img src="'+$(this).attr('src')+'" width=100%>');
+							sendToWsMsg('<img src="'+res.data+'" width=100%>', 'image');
+							//sendMsg('<img src="'+$(this).attr('src')+'" width=100%>');
 						})
 						$('.modal-close').click();
 					}
