@@ -95,9 +95,9 @@
 	 	  console.log("连接关闭");
 	 	  // 定时重连
 	 	  window.clearInterval(wc_reConnectTimeid);
-	 	  if(!wc_errorType){
-	 		  wc_reConnectTimeid = window.setInterval(init, 10000);
-	       }
+	 	  //if(!wc_errorType){
+	 		  wc_reConnectTimeid = window.setInterval(init, 3000);
+	       //}
 	   };
 	   wc_ws.onerror = function() {
 	 	  console.log("出现错误");
@@ -141,11 +141,12 @@
     function sendToWsMsg(msg, type) {
     	msg = encMsg(msg, type);
 		
-		var nowChatId = getNowChatId();
+		var nowChatId = make___ToDot(getNowChatId());
 		wc_ws.send(JSON.stringify({"type":"say","chatid":nowChatId,"content":msg}));
     }
     //接收消息
     function recieveMsg(fromuser, chatid, msg, time) {
+    	chatid = makeDotTo___(chatid);
     	makeHistoryList(fromuser, chatid, msg, time);
     	
     	var nowChatId = getNowChatId();
@@ -265,7 +266,7 @@
 				<div class="message-detail"> \
 					<p>'+pitem+'</p> \
 					<div class="message-box"> \
-						'+msg+'&nbsp; \
+						'+msg+'\
 						<i class="chat-icon message-box-pike"></i> \
 					</div> \
 				</div></div>';
@@ -283,6 +284,7 @@
      * 如果没有则创建最近联系人并加数量
      */
     function loadUnreadMsgFun(chatid, msgNum) {
+    	chatid = makeDotTo___(chatid);
 		if(!isChatidInContact(chatid)){
 			loadNearestContactFunc(chatid);
 		}
@@ -368,24 +370,22 @@
     }
     //给出一路对话，更新到最近联系人列表
     function loadNearestContactFunc(chatid) {
+    	chatid = makeDotTo___(chatid);
     	//单用户聊天
     	var treeData = {};
     		treeData.member = [];
 		if(chatid.indexOf('--') > -1) {
-			var contactArr = chatid.split('--');
-			for(var q in contactArr) {
-				if(contactArr[q] === wc_loginName) continue;
-			    treeData.title = wc_allUserArr[contactArr[q]];
-			    treeData.member.push({
-			    	'username':wc_allUserArr[contactArr[q]],
-			    	'avatar':'default_34_34.jpg',
-			    	'attr':{'data-id':chatid,'type':'member'}
-			    });
-			    var loginClass = getUserStatus(chatid) ? 'no-login' : '';
-			    treeData.attr = {'data-id':chatid,'type':'personal','class':loginClass};
-			    $('.recent').children('.tree-folders').addTree(treeData);
-			}
-			
+			var cuid = makeChatidToUserid(chatid);
+			if(cuid === wc_loginName) return;
+		    treeData.title = wc_allUserArr[cuid];
+		    treeData.member.push({
+		    	'username':wc_allUserArr[cuid],
+		    	'avatar':'default_34_34.jpg',
+		    	'attr':{'data-id':chatid,'type':'member'}
+		    });
+		    var loginClass = getUserStatus(chatid) ? 'no-login' : '';
+		    treeData.attr = {'data-id':chatid,'type':'personal','class':loginClass};
+		    $('.recent').children('.tree-folders').addTree(treeData);
 		//群用户聊天
 		} else if (chatid.indexOf('-') > -1) {
 			var groupInfo = getUserListFromChatid(chatid);
@@ -438,9 +438,6 @@
     }
     //更新群的时候 逻辑处理
     function groupUpdate(data) {
-    	console.log(data.fromuser);
- 	    console.log(data.delMember);
- 	    console.log(data.addMember);
  	    if(wc_loginName === data.fromuser) return;
  	    var groupObj = $('.recent').children('.tree-folders').children('span[data-id='+data.chatid+']');
  	    //对于删除的用户，将最近联系人的列表中该群删除
@@ -477,15 +474,34 @@
     	var d = new Date(parseInt(timestamp) * 1000);
     	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
     }
-    //根据聊天对象生成单人聊天chatid
+    //根据聊天对象生成 chatid 替换 . 为 ___
     function makeChatIdFromGf (touserid) {
-    	if(!wc_loginName) return false;
+    	if(!wc_loginName || !touserid) return false;
+    	if(touserid.indexOf('.') > -1) {
+    		touserid = touserid.replace('.', '___');
+    	} 
+    	var tempLoginName = wc_loginName;
+    	if(tempLoginName.indexOf('.') > -1) {
+    		tempLoginName = tempLoginName.replace('.', '___');
+    	} 
     	var tomakechatid = [];
 			tomakechatid.push(touserid);
-			tomakechatid.push(wc_loginName);
+			tomakechatid.push(tempLoginName);
 			tomakechatid.sort();
 		return tomakechatid.join('--');
     }
+    //根据chatid生成，对方正常的userid
     function makeChatidToUserid(chatid) {
+    	if(chatid.indexOf('___') > -1) {
+    		chatid = chatid.replace('___', '.');
+    	}  
     	return chatid.replace(new RegExp('--'+wc_loginName+'|'+wc_loginName+'--'),'');
+    }
+    //将正常chatid转为替换后的chatid
+    function makeDotTo___(chatid) {
+    	return chatid.replace('.', '___');
+    }
+    //将非正常chatid替换为正常chatid
+    function make___ToDot(chatid) {
+    	return chatid.replace('___', '.');
     }

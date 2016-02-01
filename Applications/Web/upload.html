@@ -56,10 +56,14 @@
 				async : false,
 				success:function(res) {
 					if(res.code) {
-						$('.image-lists').find('img').each(function(){
-							sendToWsMsg('<img src="'+res.data+'" width=100%>', 'image');
+						var picArr = eval("("+res.data+")");
+						for(var pp in picArr) {
+							sendToWsMsg('<img src="'+picArr[pp]+'" width=100%>', 'image');
+						}
+						//$('.image-lists').find('img').each(function(){
+							//sendToWsMsg('<img src="'+res.data+'" width=100%>', 'image');
 							//sendMsg('<img src="'+$(this).attr('src')+'" width=100%>');
-						})
+						//})
 						$('.modal-close').click();
 					}
 				},

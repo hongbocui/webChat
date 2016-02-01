@@ -171,13 +171,15 @@ class Event
                     'uuid'   => $chatInfo[1],
                     'title'  => $messageData['title'],
                 ));
-                if(!$setRes) return false;
+                if(!$setRes) return;
                 
                 //获取已有群成员信息
                 $originalMembers = \Api\Model\Mgroup::getGroupMembers(array(
                     'master' => $chatInfo[0],
                     'uuid'   => $chatInfo[1]
                 ));
+                //如果本身不在群里则禁止修改群信息
+                if(!in_array($clientName, $originalMembers));
                 
                 //根据  $originalMembers 和 $messageData['members'] 获取分别要添加和减少的成员
                 $addMembers = array_diff($messageData['members'], $originalMembers);

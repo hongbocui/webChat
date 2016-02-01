@@ -4,6 +4,7 @@
 
 		public function doUpload() {
 			$images = $this->toStr('image');
+			$fileNameArr = array();
 			for($i=0; $i<count($images); $i++) {
         			$file_type = 'jpg';
         			$file = preg_replace_callback('/data:image\/(\w+);base64,/',function($matches) use (&$file_type){
@@ -15,9 +16,10 @@
 					$this->doCreateDir('./upload/'.date('Ymd'));
 				}
 				$fileName = 'upload/'.date('Ymd').'/'.time().mt_rand(1000,9999).$i.'.'.$file_type;
+				$fileNameArr[] = $fileName;
         		file_put_contents($fileName, base64_decode($file));
             }
-			$this->_success($fileName);
+			$this->_success(json_encode($fileNameArr));
 		}
 		public function doCreateDir($dir, $mode=0777) {
 			if(!@mkdir($dir, $mode)) {
