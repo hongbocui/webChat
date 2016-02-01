@@ -12,7 +12,7 @@
 		chatuser.next().children('span').clone().appendTo($('.group-member'))
 	}else{
 		//self
-		$('<span/>').addClass('no-child undelete').attr({'type':'personal','data-id':user.dataid}).html('<img class="avatar" width="22px" src='+user.avatar+'>'+user.name).appendTo($('.group-member'))
+		$('<span/>').addClass('no-child undelete').attr({'type':'personal','data-id':wc_loginName+'--'+wc_loginName}).html('<img class="avatar" width="22px" src="./default_34_34.jpg">'+wc_allUserArr[wc_loginName]).appendTo($('.group-member'))
 		//chatuser
 		chatuser.clone().addClass('undelete').find('.unread').remove().end().appendTo($('.group-member'))
 	}
@@ -37,29 +37,42 @@
 		if($('.group-member span').length <= 2)
 			return false;
 		var member = [];
+		//用于向后台请求数据
+		var chatid = '',memberids = [], groupTitle = '';
+		
 		if(chatuser.attr('type') == 'group'){
-		//insert
+			//insert
 			chatuser.next().empty();
-$('.group-member span:not(.undelete)').each(function(){
-			chatuser.next().addTree({
-				'title':$(this).html().replace(/<[^>]+>/,''),
-				'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}}],
-				'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}
-			});
-                })
-
-}else{
-		//create
-		$('.group-member span').each(function(){
-			member.push({'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}});
-		})
-		$('.recent').children('.tree-folders').addTree({
-			'title':$('.group-member').html().replace(/<[^>]+><[^>]+>([^<]*)<\/[^>]+>/g,',$1').substr(1),
-			'member':member,
-			'attr':{'type':'group','data-id':user.dataid+'-'+new Date().getTime()}
-		}).moveTreeTop($('.recent').children('.tree-folders'))
-}
+			chatid = chatuser.attr('data-id');
+			//groupTitle 
+			$('.group-member span').each(function(){
+				memberids.push(makeChatidToUserid($(this).attr('data-id')));
+				chatuser.next().addTree({
+					'title':$(this).html().replace(/<[^>]+>/,''),
+					'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}}],
+					'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}
+				});
+		    })
+		
+		}else{
+			//create
+			chatid = wc_loginName+'-'+new Date().getTime();
+			var ii=0;
+			$('.group-member span').each(function(){
+				var username=$(this).html().replace(/<[^>]+>/,'');
+				if(ii<3) groupTitle += username+',';
+				memberids.push(makeChatidToUserid($(this).attr('data-id')));
+				member.push({'username':username,'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}});
+				ii++;
+			})
+			$('.recent').children('.tree-folders').addTree({
+				'title':$('.group-member').html().replace(/<[^>]+><[^>]+>([^<]*)<\/[^>]+>/g,',$1').substr(1),
+				'member':member,
+				'attr':{'type':'group','data-id':chatid}
+			}).moveTreeTop($('.recent').children('.tree-folders'))
+		}
 		$('.recent span:first').dblclick();
 		$('.modal-close').click();
+		wc_ws.send(JSON.stringify({"type":"groupset","chatid":chatid,"title":groupTitle,"members":memberids}));
 	})
 </script>

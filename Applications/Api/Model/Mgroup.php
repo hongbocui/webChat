@@ -18,9 +18,11 @@
             extract($options);
             //群基本信息key
             $key = self::groupInfoKey($master, $uuid);
+            if(!$key) return false;
             RedisModel::hashSet(self::$redisServer, $key, 'master', $master, 0);
             RedisModel::hashSet(self::$redisServer, $key, 'uuid', $uuid, 0);
-            RedisModel::hashSet(self::$redisServer, $key, 'title', $title, 0);
+            if($title)
+                RedisModel::hashSet(self::$redisServer, $key, 'title', $title, 0);
             if(!RedisModel::hashExists(self::$redisServer, $key, 'ctime'))
                 RedisModel::hashSet(self::$redisServer, $key, 'ctime', time(), 0);//创建时间
             RedisModel::hashSet(self::$redisServer, $key, 'mtime', time(), self::$groupLife); //修改时间
@@ -43,6 +45,7 @@
             extract($options);
             if(!is_array($userList)) return false;
             $key = self::groupMembersKey($master, $uuid);
+            if(!$key) return false;
                        
             foreach($userList as $user) {
                 if($type === 'add'){
@@ -95,19 +98,29 @@
             $key = self::groupMembersKey($master, $uuid);
             return array_keys(RedisModel::hashGet(self::$redisServer, $key));
         }
+        /**
+         * 给出一个用户名（用户名组）和一个chatid，将属于该用户名下最近联系人为chatid的都删除掉（踢出群）
+         */
+        public static function remRecentMembers($chatid, $userList) {
+            if(!is_array($userList)) return false;
+            foreach($userList as $userid) {
+                RedisModel::zRem(self::$redisServer, $userid.':recentchat:members', $chatid);
+            }
+            return true;
+        }
         
         /**
          * 生成群基本信息存储的redis键值
          * @return boolean|string
          */
-        private static function groupInfoKey($master, $uuid) {
+        public static function groupInfoKey($master, $uuid) {
             if(!$master || !$uuid) return false;
             return 'group:'.$master.$uuid.':info';
         }
         /**
          * 生成群成员信息存储的redis键值
          */
-        private static function groupMembersKey($master, $uuid) {
+        public static function groupMembersKey($master, $uuid) {
             if(!$master || !$uuid) return false;
             return 'group:'.$master.$uuid.':members';
         }

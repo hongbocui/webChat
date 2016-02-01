@@ -340,6 +340,14 @@ class RedisModel{
         return $re;
     }
     /**
+     * 删除键为key下面的值为value的某个元素
+     */
+    public static function zRem ($server, $key, $value) {
+        if(!Redis::$server[$server] || !$key || !$value) return false;
+        self::init($server);
+        return self::$redis->zRem($key, $value);
+    }
+    /**
      * 删除名称为key的zset中score >= star且score <= end的所有元素，返回删除个数
      */
     public static function zRemRangeByScore($server, $key, $start, $end){

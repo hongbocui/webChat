@@ -157,6 +157,67 @@ class Event
                     Gateway::sendToCurrentClient(json_encode($history_message));
                 }
                 return;
+            case 'groupset':
+                // 非法请求
+                if(!isset($_SESSION['clientName'])){
+                    throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                }
+                $clientName = $_SESSION['clientName'];
+                //修改群组成员
+                $chatInfo = explode('-', $messageData['chatid']);//master=$chatInfo[0],uuid=$chatInfo[1]
+                
+                $setRes = \Api\Model\Mgroup::setGroup(array(
+                    'master' => $chatInfo[0],
+                    'uuid'   => $chatInfo[1],
+                    'title'  => $messageData['title'],
+                ));
+                if(!$setRes) return false;
+                
+                //获取已有群成员信息
+                $originalMembers = \Api\Model\Mgroup::getGroupMembers(array(
+                    'master' => $chatInfo[0],
+                    'uuid'   => $chatInfo[1]
+                ));
+                
+                //根据  $originalMembers 和 $messageData['members'] 获取分别要添加和减少的成员
+                $addMembers = array_diff($messageData['members'], $originalMembers);
+                $delMembers = array_diff($originalMembers, $messageData['members']);
+                if(!is_array($addMembers) || !is_array($delMembers) || !is_array($originalMembers))
+                    return;
+                //删除用户
+                \Api\Model\Mgroup::setGroupMembers(array(
+                    'master'  => $chatInfo[0],//群主账号
+                    'uuid'    => $chatInfo[1],//唯一的id标示,可以是时间戳
+                    'type'    => 'del', //add、del 向群众添加或者删除用户
+                    'userList'=> $delMembers,//群中删除的用户
+                ));
+                //把删除用户的该chatid的最近联系人删除
+                \Api\Model\Mgroup::remRecentMembers($messageData['chatid'], $delMembers);
+                //添加用户
+                \Api\Model\Mgroup::setGroupMembers(array(
+                    'master'  => $chatInfo[0],//群主账号
+                    'uuid'    => $chatInfo[1],//唯一的id标示,可以是时间戳
+                    'type'    => 'add', //add、del 向群众添加或者删除用户
+                    'userList'=> $addMembers,//要向群中添加的用户
+                ));
+                //要广播的信息
+                $broadMsg = array(
+                    'type'     => $messageData['type'],
+                    'chatid'   => $messageData['chatid'],
+                    'fromuser' => $clientName,
+                    'delMember'=> $delMembers,
+                    'addMember'=> $addMembers,
+                );
+                
+                //获取所有存储的在线的用户
+                $clientLists = Muser::getOnlineUsers();
+                //获取该组原本用户在线的clientid,并广播
+                if($originalMembers)
+                    $onlineClientIds = self::getClientidsFromUsers($clientLists, $originalMembers);
+                if(isset($onlineClientIds) && $onlineClientIds){
+                    Gateway::sendToAll(json_encode($broadMsg), $onlineClientIds);
+                }
+                return;
         }
    }
    

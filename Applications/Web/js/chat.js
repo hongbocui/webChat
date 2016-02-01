@@ -65,6 +65,10 @@
 	         	  //{"type":"history","messageList":"[...]"}
 	         	  loadHistoryMessage(data['messageList']);
 	         	  break;
+	           //拉人或者踢人时的提醒
+	           case 'groupset':
+	        	   groupUpdate(data);
+	        	   break;
 	           // 错误处理
 	           case 'error':
 	         	  switch(data['info']){
@@ -285,7 +289,7 @@
 		
 		var itemType = chatid.indexOf('--') > -1 ? 'personal' : 'group';
     	var chatItem = $('#nearest-contact span[type='+itemType+'][data-id='+chatid+']');
-    	
+    	chatItem.moveTreeTop(chatItem.parent());
     	if(msgNum === 0) {
     		chatItem.find('b').remove();return;
     	}
@@ -377,8 +381,8 @@
 			    	'avatar':'default_34_34.jpg',
 			    	'attr':{'data-id':chatid,'type':'member'}
 			    });
-			    //var loginClass = getUserStatus(chatid) ? 'no-login' : '';
-			    treeData.attr = {'data-id':chatid,'type':'personal','class':'no-login'};
+			    var loginClass = getUserStatus(chatid) ? 'no-login' : '';
+			    treeData.attr = {'data-id':chatid,'type':'personal','class':loginClass};
 			    $('.recent').children('.tree-folders').addTree(treeData);
 			}
 			
@@ -388,10 +392,11 @@
 		    treeData.title = groupInfo.info.title;
 		    for(var r in groupInfo.members) {
 				var tempidstr = makeChatIdFromGf(groupInfo.members[r]);
+				var loginClass = getUserStatus(tempidstr) ? 'no-login' : '';
 				treeData.member.push({
 			    	'username':wc_allUserArr[groupInfo.members[r]],
 			    	'avatar':'default_34_34.jpg',
-			    	'attr':{'data-id':tempidstr,'type':'member','class':'no-login'}
+			    	'attr':{'data-id':tempidstr,'type':'member','class':loginClass}
 			    });
 			}
 		    treeData.attr = {'data-id':chatid,'type':'group'};
@@ -406,7 +411,7 @@
     	for(var p in allList) {
     		if(typeof(allList[p]) === 'object') {
     			isFolder = true;
-    			innerStr += '<span>'+p+'</span>';
+    			innerStr += '<span type="dept">'+p+'</span>';
     			
     			var filesObj = document.createElement('div');
     				filesObj.className = "tree-files";
@@ -431,6 +436,42 @@
     function getUserStatus(chatid){
     	return $("#organization-structure .no-child[data-id='"+chatid+"']").hasClass('no-login');
     }
+    //更新群的时候 逻辑处理
+    function groupUpdate(data) {
+    	console.log(data.fromuser);
+ 	    console.log(data.delMember);
+ 	    console.log(data.addMember);
+ 	    if(wc_loginName === data.fromuser) return;
+ 	    var groupObj = $('.recent').children('.tree-folders').children('span[data-id='+data.chatid+']');
+ 	    //对于删除的用户，将最近联系人的列表中该群删除
+ 	    var tempMode = false;
+ 	    for(var p in data.delMember) {
+ 	    	if(data.delMember[p] === wc_loginName){
+ 	    		tempMode = true;break;
+ 	    	}
+ 	    }
+ 	    if(tempMode) {
+ 	    	groupObj.removeTree()
+ 	    }
+ 	    	
+ 	    if(groupObj.length) {
+ 	    	for(var i in data.delMember) {
+ 	    		var tempChatid = makeChatIdFromGf(data.delMember[i]);
+ 	 	    	//对于没有删除的用户，从群列表删除 删除的人
+ 	 	    	groupObj.next().find(".no-child[data-id='"+tempChatid+"']").removeTree();
+ 	    	}
+ 	    	for(var j in data.addMember) {
+ 	    		var tempChatid = makeChatIdFromGf(data.addMember[j]);
+ 	    		var loginClass = getUserStatus(tempChatid) ? 'no-login' : '';
+ 	    		//对于没有删除的人,添加新增的人到列表
+ 	 	    	groupObj.next().addTree({
+					'title':wc_allUserArr[data.addMember[j]],
+					'member':[{'username':wc_allUserArr[data.addMember[j]],'avatar':"default_34_34.jpg",'attr':{'type':'member','data-id':tempChatid,'class':loginClass}}],
+					'attr':{'type':'member','data-id':tempChatid,'class':loginClass}
+				});
+ 	    	}
+ 	    }
+    }
     //js 将php时间戳转为时间
     function timestampTodate(timestamp) {
     	var d = new Date(parseInt(timestamp) * 1000);
@@ -444,4 +485,7 @@
 			tomakechatid.push(wc_loginName);
 			tomakechatid.sort();
 		return tomakechatid.join('--');
+    }
+    function makeChatidToUserid(chatid) {
+    	return chatid.replace(new RegExp('--'+wc_loginName+'|'+wc_loginName+'--'),'');
     }
