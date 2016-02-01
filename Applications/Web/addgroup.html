@@ -43,23 +43,23 @@
 $('.group-member span:not(.undelete)').each(function(){
 			chatuser.next().addTree({
 				'title':$(this).html().replace(/<[^>]+>/,''),
-				'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}}],
-				'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}
+				'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}}],
+				'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}
 			});
                 })
 
 }else{
 		//create
 		$('.group-member span').each(function(){
-			member.push({'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login') ? 'no-login' : ''}});
+			member.push({'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}});
 		})
 		$('.recent').children('.tree-folders').addTree({
 			'title':$('.group-member').html().replace(/<[^>]+><[^>]+>([^<]*)<\/[^>]+>/g,',$1').substr(1),
 			'member':member,
 			'attr':{'type':'group','data-id':user.dataid+'-'+new Date().getTime()}
-		})
-		$('.recent span:first').dblclick();
+		}).moveTreeTop($('.recent').children('.tree-folders'))
 }
+		$('.recent span:first').dblclick();
 		$('.modal-close').click();
 	})
 </script>
