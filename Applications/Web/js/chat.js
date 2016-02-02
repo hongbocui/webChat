@@ -289,7 +289,7 @@
 		
 		var itemType = chatid.indexOf('--') > -1 ? 'personal' : 'group';
     	var chatItem = $('#nearest-contact span[type='+itemType+'][data-id='+chatid+']');
-    	chatItem.moveTreeTop(chatItem.parent());
+    	chatItem.moveTreeTop();
     	if(msgNum === 0) {
     		chatItem.find('b').remove();return;
     	}
@@ -335,7 +335,7 @@
     	for(var i in users) {
     		var tmpchatid = makeChatIdFromGf(users[i]);
 			$("#organization-structure .no-child[data-id='"+tmpchatid+"']").each(function(){
-				$(this).removeClass('no-login').moveTreeTop($(this).parent());
+				$(this).removeClass('no-login').moveTreeTop();
 			})
     		//联系人列表在线处理
     		/*userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
@@ -345,7 +345,7 @@
     		nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
     		nearestContactList.removeClass('no-login');
     		$.each(nearestContactList,function(key,item){
-    			$(item).moveTreeTop($(item).parent());
+    			$(item).moveTreeTop();
     		});
     	}
     }

@@ -373,8 +373,8 @@
 								<a href="javascript:;" class="chat-icon more">&nbsp;</a>
 								<a href="javascript:;" class="chat-icon button send">发送</a>
 								<div class="pop-keys">
-									<p class="active">按Enter键发送消息</p>
-									<p>按Ctrl+Enter键发送消息</p>
+									<p data-keys="return">按Enter键发送消息</p>
+									<p data-keys="Ctrl+return" class="active">按Ctrl+Enter键发送消息</p>
 								</div>
 							</div>
 						</div>
@@ -396,10 +396,20 @@
 				'dataid':'xieyx',
 				'avatar':'./default_34_34.jpg'
 			};
+			function hotkeysbind(event){
+				$('.send').click();
+				return false;
+			}
 			$(function(){
 				$('.show-modal').click(function(){
 					$(this).modal();
 				})
+				$('.pop-keys p').click(function(){
+					$(this).addClass('active').siblings().removeClass('active');
+					$('.chat-input').unbind('keydown',hotkeysbind)
+					$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
+				})
+				$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
 			})
 		</script>
 		<script>

@@ -69,7 +69,7 @@
 				'title':$('.group-member').html().replace(/<[^>]+><[^>]+>([^<]*)<\/[^>]+>/g,',$1').substr(1),
 				'member':member,
 				'attr':{'type':'group','data-id':chatid}
-			}).moveTreeTop($('.recent').children('.tree-folders'))
+			}).moveTreeTop()
 		}
 		$('.recent span:first').dblclick();
 		$('.modal-close').click();

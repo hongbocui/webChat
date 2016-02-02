@@ -572,10 +572,11 @@
 				$('.right-mouse').remove();
 			})
         }
-		$.fn.moveTreeTop = function(obj) {
+		$.fn.moveTreeTop = function() {
 			var _this = this,
-				_prev_icon = 'tree-middle-line',
-				_this_icon = 'tree-middle-line';
+			obj = $(_this).parent(),
+			_prev_icon = 'tree-middle-line',
+			_this_icon = 'tree-middle-line';
 			if(obj.children('.tree-icon').length == 0) {
 				$(_this).prependTo(obj);
 				return false;

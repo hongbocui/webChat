@@ -112,7 +112,7 @@ $(function(){
 //		//双击recent中的这个联系人
 //		$('.tab-detail.recent span:first').dblclick();
 //	})
-	$("body").on('dblclick','.tab-detail.active span',function(){
+	$("body").on('dblclick','.tab-detail.active span:not([type=dept])',function(){
 		//$(this).moveTreeTop($('.tab-detail.recent'));
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
 		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,'');
