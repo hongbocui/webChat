@@ -9,8 +9,8 @@
 	function init() {
 	    // 创建websocket
 	 	wc_ws = new WebSocket("ws://"+document.domain+":7272");
-	   // 当socket连接打开时，输入用户名
-	   wc_ws.onopen = function() {
+	    // 当socket连接打开时，输入用户名
+	    wc_ws.onopen = function() {
 	 	  wc_reConnectTimeid && window.clearInterval(wc_reConnectTimeid);
 	 	  if(!wc_loginName)
 	 	  {
@@ -176,7 +176,8 @@
             chatInDialogContainer(historyLog);
         //redis中取历史记录
         }else{
-        	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
+        	var dotChatid = make___ToDot(chatid);
+        	wc_ws.send(JSON.stringify({"type":"history","chatid":dotChatid}));
 
         	//等待redis中数据
             var i = 0;
@@ -202,10 +203,11 @@
     }
     //根据chatid获取userList
     function getUserListFromChatid (chatid) {
+    	var dotChatid = make___ToDot(chatid);
     	var userInfo = null;
     	$.ajax({
     		async:false,
-    		url:'/chatapi.php?c=group&a=getinfo&chatid='+chatid,
+    		url:'/chatapi.php?c=group&a=getinfo&chatid='+dotChatid,
     		dataType:'json',
     		success:function(r) {
     			userInfo = r.data;
@@ -216,7 +218,8 @@
     //加载历史消息
     function loadHistoryMessage(messageList){
     	for(var p in messageList){
-        	var chatSomeoneHistory = 'chat'+messageList[p].chatid+'History';
+    		var ___Chatid = makeDotTo___(messageList[p].chatid);
+        	var chatSomeoneHistory = 'chat'+___Chatid+'History';
         	
         	if(window[chatSomeoneHistory] == undefined){
             	window[chatSomeoneHistory] = [];
@@ -314,7 +317,8 @@
         nowMessage.time = time;
         if(window[chatSomeoneHistory] == undefined){
             //此时应该从redis中取出最新的数据，防止用户点击标红信息的时候只有一条
-        	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
+        	var dotChatid = make___ToDot(chatid);
+        	wc_ws.send(JSON.stringify({"type":"history","chatid":dotChatid}));
         }
 
         //等待redis中数据
@@ -390,6 +394,7 @@
 		} else if (chatid.indexOf('-') > -1) {
 			var groupInfo = getUserListFromChatid(chatid);
 		    treeData.title = groupInfo.info.title;
+		    if(groupInfo.members.length < 3) return;
 		    for(var r in groupInfo.members) {
 				var tempidstr = makeChatIdFromGf(groupInfo.members[r]);
 				var loginClass = getUserStatus(tempidstr) ? 'no-login' : '';
@@ -400,6 +405,7 @@
 			    });
 			}
 		    treeData.attr = {'data-id':chatid,'type':'group'};
+		    console.log(treeData.member);
 		    $('.recent').children('.tree-folders').addTree(treeData);
 		}
     	return;
@@ -474,7 +480,7 @@
     	var d = new Date(parseInt(timestamp) * 1000);
     	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
     }
-    //根据聊天对象生成 chatid 替换 . 为 ___
+    //根据聊天对象userid, 生成 chatid 替换 . 为 ___
     function makeChatIdFromGf (touserid) {
     	if(!wc_loginName || !touserid) return false;
     	if(touserid.indexOf('.') > -1) {
@@ -490,7 +496,7 @@
 			tomakechatid.sort();
 		return tomakechatid.join('--');
     }
-    //根据chatid生成，对方正常的userid
+    //根据双方对话chatid，生成对方正常的userid
     function makeChatidToUserid(chatid) {
     	if(chatid.indexOf('___') > -1) {
     		chatid = chatid.replace('___', '.');

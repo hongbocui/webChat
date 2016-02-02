@@ -117,6 +117,7 @@ $(function(){
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
 		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,'');
 		var _member = $(this).attr('data-id');
+		var dotChatid = make___ToDot(_member);
 		$('.home').hide();
 		$('.message').css('margin-right','0px');
 		$('.chat-box .member').hide();
@@ -126,13 +127,13 @@ $(function(){
 			$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
 			
 			//更新一下群组的生存时间
-			$.get('/chatapi.php?c=group&a=expires');
+			$.get('/chatapi.php?c=group&a=expires&chatid='+dotChatid);
 		}
 		//未读消息变为0
 		if($(this).find('b').length){
 			loadUnreadMsgFun(_member, 0); //前端
 			//服务端
-			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+_member+'&accountid='+wc_loginName);
+			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+dotChatid+'&accountid='+wc_loginName);
 		}
 		//加载本地消息
 		historyInDialog(_member);
