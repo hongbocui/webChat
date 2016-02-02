@@ -728,8 +728,9 @@
 				init();
 		}
 		$.fn.scrollToBottom = function(){
-			//$(this)[0].scrollTop = $(this)[0].scrollHeight;
-			$(this).animate({'scrollTop':$(this)[0].scrollHeight});
+			var logObj = $(this)[0];
+			setTimeout(function(){logObj.scrollTop = logObj.scrollHeight;}, 50);
+			//$(this).animate({'scrollTop':$(this)[0].scrollHeight});
 		}
 		$.fn.previewImg = function(file,callback){
 			var _this = this,

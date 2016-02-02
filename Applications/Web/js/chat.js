@@ -499,8 +499,8 @@
     //根据双方对话chatid，生成对方正常的userid
     function makeChatidToUserid(chatid) {
     	if(chatid.indexOf('___') > -1) {
-    		chatid = chatid.replace('___', '.');
-    	}  
+    		chatid = chatid.replace(/___/g, '.');
+    	}
     	return chatid.replace(new RegExp('--'+wc_loginName+'|'+wc_loginName+'--'),'');
     }
     //将正常chatid转为替换后的chatid
