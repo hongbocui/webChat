@@ -16,19 +16,19 @@ linux环境
 - 表：webchat_message年月       //（自动生成）用来存储聊天记录
 - 表：queue_deamon_status  //（自动生成）用来存储队列状态
 - 表： webchat_user		 //（手动建立）用来存储用户数据
--  		CREATE TABLE `webchat_user` (
--		  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
--		  `accountid` varchar(40) NOT NULL COMMENT '域账户',
--		  `pwd` varchar(40) NOT NULL,
--		  `username` varchar(40) NOT NULL COMMENT '姓名',
--		  `dept` varchar(40) NOT NULL COMMENT '部门',
--		  `tel` varchar(40) NOT NULL COMMENT '分机号',
--		  `mobile` varchar(100) NOT NULL COMMENT '移动电话（用,分隔）',
--		  `email` varchar(255) NOT NULL COMMENT '邮箱',
--		  `deptDetail` varchar(128) NOT NULL DEFAULT '' COMMENT '详细部门从一级到n级，用英文,号分割',
--		  `updateTime` int(11) NOT NULL DEFAULT '0',
--		  PRIMARY KEY (`uid`)
--		) ENGINE=MyISAM AUTO_INCREMENT=10727 DEFAULT CHARSET=utf8
+  		CREATE TABLE `webchat_user` (\n
+		  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',\n
+		  `accountid` varchar(40) NOT NULL COMMENT '域账户',
+		  `pwd` varchar(40) NOT NULL,
+		  `username` varchar(40) NOT NULL COMMENT '姓名',
+		  `dept` varchar(40) NOT NULL COMMENT '部门',
+		  `tel` varchar(40) NOT NULL COMMENT '分机号',
+		  `mobile` varchar(100) NOT NULL COMMENT '移动电话（用,分隔）',
+		  `email` varchar(255) NOT NULL COMMENT '邮箱',
+		  `deptDetail` varchar(128) NOT NULL DEFAULT '' COMMENT '详细部门从一级到n级，用英文,号分割',
+		  `updateTime` int(11) NOT NULL DEFAULT '0',
+		  PRIMARY KEY (`uid`)
+		) ENGINE=MyISAM AUTO_INCREMENT=10727 DEFAULT CHARSET=utf8
 
 ##运行：
 ###一、启动聊天服务。根目录下
