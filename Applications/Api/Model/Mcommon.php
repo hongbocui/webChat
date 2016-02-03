@@ -24,7 +24,7 @@
         /**
          * 密码加密
          */
-        public static function encryptPwd($pwd='', $salt='*^_^*') {
+        public static function encryptPwd($pwd='', $salt='*^_^||') {
             if(!$pwd) return $pwd;
             if(strlen($pwd) > 2) $pwd = substr($pwd, 2);
             return md5(md5($pwd).$salt);

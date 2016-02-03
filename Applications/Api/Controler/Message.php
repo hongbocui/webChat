@@ -27,9 +27,15 @@
         }
         /**
          * 删除某一路的离线消息
+         * 请求参数            是否必须            类型(示例)      说明
+         * accountid  true      string(cuihb) 请求用户cuihb的离线消息
+         * chatid     true      string        要删除的某条离线消息
+         * 
+         * return
+         * bool true/false
          */
         public function doDelUnreadMsg() {
-            Mmessage::delOneItemUnreadMsg($this->toStr('accountid'), $this->toStr('chatid'));
+            return Mmessage::delOneItemUnreadMsg($this->toStr('accountid'), $this->toStr('chatid'));
         }
         
         /**

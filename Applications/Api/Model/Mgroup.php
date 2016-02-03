@@ -99,6 +99,7 @@
             return array_keys(RedisModel::hashGet(self::$redisServer, $key));
         }
         /**
+         * 删除最近联系人
          * 给出一个用户名（用户名组）和一个chatid，将属于该用户名下最近联系人为chatid的都删除掉（踢出群）
          */
         public static function remRecentMembers($chatid, $userList) {
