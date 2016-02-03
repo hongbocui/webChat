@@ -16,10 +16,9 @@ linux环境
 - 表：webchat_message年月       //（自动生成）用来存储聊天记录
 - 表：queue_deamon_status  //（自动生成）用来存储队列状态
 - 表： webchat_user		 //（手动建立）用来存储用户数据
+
   		CREATE TABLE `webchat_user` (
-  		
 		  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
-		  
 		  `accountid` varchar(40) NOT NULL COMMENT '域账户',
 		  `pwd` varchar(40) NOT NULL,
 		  `username` varchar(40) NOT NULL COMMENT '姓名',
