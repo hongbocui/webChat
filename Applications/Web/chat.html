@@ -404,6 +404,9 @@
 				$('.send').click();
 				return false;
 			}
+			function systemLogs(msg) {
+				$('.logs').append('<div class="row system"><span>'+msg+'</span></div>').scrollToBottom();
+			}
 			$(function(){
 				$('.show-modal').click(function(){
 					$(this).modal();
