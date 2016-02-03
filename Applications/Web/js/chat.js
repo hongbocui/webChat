@@ -368,7 +368,7 @@
     		$("#nearest-contact .no-child[data-id='"+tmpchatid+"']").addClass('no-login');
     	}
     }
-    //获取当前聊天人员 a,b,c
+    //获取当前聊天人员 
     function getNowChatId() {
     	return $('.contact-msg').attr('chatid');
     }
@@ -404,8 +404,7 @@
 			    	'attr':{'data-id':tempidstr,'type':'member','class':loginClass}
 			    });
 			}
-		    treeData.attr = {'data-id':chatid,'type':'group'};
-		    console.log(treeData.member);
+		    treeData.attr = {'data-id':chatid,'type':'group','ctime':groupInfo.info.ctime};
 		    $('.recent').children('.tree-folders').addTree(treeData);
 		}
     	return;
