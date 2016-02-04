@@ -656,14 +656,14 @@
 				_title.children('span').addClass('no-child');
 				$('<img/>').addClass('avatar').attr({'src':data.member[0].avatar,'width':'22px'}).prependTo(_title.children('span'));
 			}
-			_html.treeViewModify({'defaultOpen':1});
+			_html.treeViewModify({});
 			_title.children().appendTo($(_this));
 			if($(_this).children('.tree-icon').length >= 2) {
 				$(_this).children('.tree-icon:eq(-2)').addClass('tree-middle-line').removeClass('tree-end-line');
 				$(_this).children('.tree-icon:eq(-1)').addClass('tree-end-line').removeClass('tree-start-line');
 			}
 			if(data.member.length >= 2)
-				_member.appendTo($(_this));
+				_member.appendTo($(_this).parent());
 			return $(_this).children('span:last');
 		}
 		$.fn.removeTree = function() {

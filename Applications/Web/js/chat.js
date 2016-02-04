@@ -140,7 +140,7 @@
     //发送消息
     function sendToWsMsg(msg, type) {
     	msg = encMsg(msg, type);
-		
+	if(msg == '') return false;	
 		var nowChatId = make___ToDot(getNowChatId());
 		wc_ws.send(JSON.stringify({"type":"say","chatid":nowChatId,"content":msg}));
     }
@@ -236,7 +236,7 @@
     		break;
     	default :
     		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
-			var br_pattern = /<\/div>/g;
+			var br_pattern = /<(?:\/div|br)>/g;
 			var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
 			//表情转义
 			msg = msg.replace(face_pattern, '[\\face$1]');

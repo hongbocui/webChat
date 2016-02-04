@@ -123,8 +123,8 @@ $(function(){
 		$('.chat-box .member').hide();
 		//如果是群组，更新群组成员
 		if($(this).attr('type')=='group') {
-			$('.message').css('margin-right','180px');
-			$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
+			//$('.message').css('margin-right','180px');
+			//$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
 			
 			//更新一下群组的生存时间
 			$.get('/chatapi.php?c=group&a=expires&chatid='+dotChatid);
@@ -160,10 +160,11 @@ $(function(){
 			'从最近联系人中删除':'javascript:$(".right-mouse-base").removeTree();',
 			'查看消息记录':'#',
 			'查看资料':'#',
-			'成员列表':'#'
+			'成员列表':'#',
+			'更改群名称':'javascript:editGroupName();'
 		},
 		'limit':{
-			'group':['发送消息','从最近联系人中删除','查看消息记录','成员列表'],
+			'group':['发送消息','从最近联系人中删除','查看消息记录','成员列表','更改群名称'],
 			'personal':['发送消息','从最近联系人中删除','查看消息记录','查看资料'],
 			'member':['发送消息','查看消息记录','查看资料'],
 			'dept':['成员列表']
@@ -178,3 +179,6 @@ $(function(){
 		$('.search').removeAttr('style').find('.search-contact').val('').css({'width':'26px'}).end().find('.empty').remove();
 	})
 })
+function editGroupName() {
+	console.log('wait')	
+}
