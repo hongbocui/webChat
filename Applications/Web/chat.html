@@ -529,12 +529,30 @@
                                                         </div>');
 						},
 						complete:function(ret){
-							if(ret.status != 200) console.log('error');
-							$('.attach-upload').hide();
-							$('.file-tool a').attr('data-name',ret.responseJSON.info).parent().show();
+							$('.attach-upload:last').hide();
+							if(ret.status != 200){
+								console.log('error');
+								$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
+								return;
+							} 
+							if(ret.responseJSON.status === true) {
+								$('.file-msg:last').parents('.row').remove();
+								sendToWsMsg('<div class="files"> \
+		                                        <div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"> \
+			                                        <p class="text-cut">'+fileName+'</p> \
+			                                        <p>'+fileSize+'</p> \
+		                                        </div> \
+		                                        <div class="file-tool"><a href="javascript:;" data-name='+ret.responseJSON.info+'>保存</a></div> \
+		                                     </div>', "file");
+							}else{
+								$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
+							}
+							
 						},
 						error:function(){
+							$('.attach-upload:last').hide();
 							console.log('error');
+							$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
 						}
 					})
 				});

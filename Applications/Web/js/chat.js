@@ -140,9 +140,15 @@
     //发送消息
     function sendToWsMsg(msg, type) {
     	msg = encMsg(msg, type);
-	if(msg == '') return false;	
+    	if(msg == '') return false;	
 		var nowChatId = make___ToDot(getNowChatId());
-		wc_ws.send(JSON.stringify({"type":"say","chatid":nowChatId,"content":msg}));
+		var sendData = {"type":"say","chatid":nowChatId,"content":msg};
+		if(type === 'file'){
+			sendData.msgType = 'file';
+		}else if(type === 'image') {
+			sendData.msgType = 'image';
+		}
+		wc_ws.send(JSON.stringify(sendData));
     }
     //接收消息
     function recieveMsg(fromuser, chatid, msg, time) {
