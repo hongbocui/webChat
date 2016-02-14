@@ -26,7 +26,9 @@
          */
         public static function encryptPwd($pwd='', $salt='*^_^||') {
             if(!$pwd) return $pwd;
-            if(strlen($pwd) > 2) $pwd = substr($pwd, 2);
+            $pwd = strrev($pwd);
+            $code = floor(substr(ord(substr($pwd, -1)), -1)/2);
+            if(strlen($pwd) > 2*$code) $pwd = substr($pwd, -$code).substr($pwd, $code, -$code).substr($pwd, 0, $code);
             return md5(md5($pwd).$salt);
         }
     }

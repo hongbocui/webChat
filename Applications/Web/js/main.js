@@ -125,7 +125,7 @@ $(function(){
 		if($(this).attr('type')=='group') {
 			//$('.message').css('margin-right','180px');
 			//$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
-			
+			$('.contact-msg p').html(getAdminByChatid(dotChatid)+' 创建于'+timestampTodate($(this).attr('ctime')));
 			//更新一下群组的生存时间
 			$.get('/chatapi.php?c=group&a=expires&chatid='+dotChatid);
 		}
