@@ -475,6 +475,7 @@
 					$('input[name=attach]').click();
 				})
 				$('input[name=attach]').change(function(e){
+					$('.logs').scrollToBottom();
 					e = e || window.event;
 					var target = e.target;
 					var file = target.files[0];
@@ -542,16 +543,15 @@
 			                                        <p class="text-cut">'+fileName+'</p> \
 			                                        <p>'+fileSize+'</p> \
 		                                        </div> \
-		                                        <div class="file-tool"><a href="javascript:;" data-name='+ret.responseJSON.info+'>保存</a></div> \
+		                                        <div class="file-tool"><a href="/chatapi.php?c=file&a=download&srcname='+fileName+'&desname='+ret.responseJSON.info+'" data-name='+ret.responseJSON.info+'>保存</a></div> \
 		                                     </div>', "file");
 							}else{
-								$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
+								$('.file-tool:last a').css('color','red').html(ret.responseJSON.info).parent().show();
 							}
 							
 						},
-						error:function(){
+						error:function(ret){
 							$('.attach-upload:last').hide();
-							console.log('error');
 							$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
 						}
 					})

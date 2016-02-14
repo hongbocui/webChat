@@ -326,26 +326,28 @@
         	var dotChatid = make___ToDot(chatid);
         	wc_ws.send(JSON.stringify({"type":"history","chatid":dotChatid}));
         }
-
-        //等待redis中数据
-        var i = 0;
-        var waitHistory = function(){
-                i++;
-            	if(window[chatSomeoneHistory] != undefined){
-            		window[chatSomeoneHistory].push(nowMessage);
-            		clearInterval(waitTime);
-                }
-        	    if(i>50)
-        	    	clearInterval(waitTime);
-            };
-    	var waitTime = setInterval(waitHistory, 10);
-    	
-    	//如果没有等到也要压入本地
-    	if(window[chatSomeoneHistory] == undefined) {
-    		window[chatSomeoneHistory] = [];
-    		window[chatSomeoneHistory].push(nowMessage);
-    	}
         
+        //判断fromuser是否在最近联系人列表中，如果在则等redis，如果不在则直接push到本地
+        if(isChatidInContact(chatid)) {
+        	//等待redis中数据
+            var i = 0;
+            var waitHistory = function(){
+                    i++;
+                	if(window[chatSomeoneHistory] != undefined){
+                		window[chatSomeoneHistory].push(nowMessage);
+                		clearInterval(waitTime);
+                    }
+            	    if(i>50)
+            	    	clearInterval(waitTime);
+                };
+        	var waitTime = setInterval(waitHistory, 10);
+        }else {
+        	//如果不在最近联系人中则不需要等
+        	if(window[chatSomeoneHistory] == undefined) {
+        		window[chatSomeoneHistory] = [];
+        		window[chatSomeoneHistory].push(nowMessage);
+        	}
+        }
     }
     //给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
     function lightOnlineUserList(users) {
