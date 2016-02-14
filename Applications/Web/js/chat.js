@@ -331,7 +331,7 @@
         var i = 0;
         var waitHistory = function(){
                 i++;
-            	if(window["chat"+chatid+"History"] != undefined){
+            	if(window[chatSomeoneHistory] != undefined){
             		window[chatSomeoneHistory].push(nowMessage);
             		clearInterval(waitTime);
                 }
@@ -339,6 +339,12 @@
         	    	clearInterval(waitTime);
             };
     	var waitTime = setInterval(waitHistory, 10);
+    	
+    	//如果没有等到也要压入本地
+    	if(window[chatSomeoneHistory] == undefined) {
+    		window[chatSomeoneHistory] = [];
+    		window[chatSomeoneHistory].push(nowMessage);
+    	}
         
     }
     //给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
