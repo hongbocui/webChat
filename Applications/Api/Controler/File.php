@@ -5,6 +5,7 @@
 		public function doUpload() {
 			$images = $this->toStr('image');
 			$fileNameArr = array();
+			$dir = 'upload/'.self::_getDir(time());
 			for($i=0; $i<count($images); $i++) {
         			$file_type = 'jpg';
         			$file = preg_replace_callback('/data:image\/(\w+);base64,/',function($matches) use (&$file_type){
@@ -12,20 +13,23 @@
                 			$file_type=$type[$matches[1]];
                 			return '';
         			},$images[$i]);
-				if(!file_exists('./upload/'.date('Ymd'))) {
-					$this->doCreateDir('./upload/'.date('Ymd'));
+				if(!file_exists($dir)) {
+					$this->doCreateDir($dir);
 				}
-				$fileName = 'upload/'.date('Ymd').'/'.time().mt_rand(1000,9999).$i.'.'.$file_type;
+				$fileName = $dir.'/'.time().mt_rand(1000,9999).$i.'.'.$file_type;
 				$fileNameArr[] = $fileName;
-        			file_put_contents($fileName, base64_decode($file));
-            		}
+        		file_put_contents($fileName, base64_decode($file));
+            }
 			$this->_success(json_encode($fileNameArr));
 		}
 		public function doAttach() {
-			if(!file_exists('./upload/'.date('Ymd'))) {
-                        	$this->doCreateDir('./upload/'.date('Ymd'));
-                        }
-			$fileInfo = $this->_uploadFile($_FILES['file'], './upload/'.date('Ymd'),array(),8*1024*1024);
+		    $dir = './upload/'.self::_getDir(time());
+			if(!file_exists($dir)) {
+            	$this->doCreateDir($dir);
+            }
+			$fileInfo = $this->_uploadFile($_FILES['file'], $dir,array(),8*1024*1024);
+			if($fileInfo['status'])
+			    $fileInfo['info'] = $dir.'/'.$fileInfo['info'];
 			echo json_encode($fileInfo);
 		}
 		public function doCreateDir($dir, $mode=0777) {
@@ -34,6 +38,14 @@
 				self::doCreateDir($sundir, $mode);
 			}
 			@mkdir($dir, $mode);
+		}
+		/**
+		 * 获取上传目录
+		 */
+		private function _getDir($time = 0) {
+		    if($time)
+		        return date('Ym/d', $time);
+		    return date('Ym/d', time());
 		}
 		/**
 		 * 自定义一个文件上传函数
