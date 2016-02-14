@@ -487,9 +487,9 @@
  	    		systemLogs(systemLogAdd);
  	    }
     }
-    //js 将php时间戳转为时间
+    //js 将 php或js 时间戳转为时间
     function timestampTodate(timestamp) {
-    	var d = new Date(parseInt(timestamp) * 1000);
+    	var d = timestamp.length > 10 ? new Date(parseInt(timestamp)) : new Date(parseInt(timestamp) * 1000);
     	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
     }
     //根据聊天对象userid, 生成 chatid 替换 . 为 ___

@@ -68,7 +68,7 @@
 			$('.recent').children('.tree-folders').addTree({
 				'title':groupTitle,
 				'member':member,
-				'attr':{'type':'group','data-id':chatid}
+				'attr':{'type':'group','data-id':chatid,'ctime' : new Date().getTime(),}
 			}).moveTreeTop()
 		}
 		$('.recent span:first').dblclick();
