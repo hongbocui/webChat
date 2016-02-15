@@ -54,18 +54,62 @@ p {height:30px;line-height:30px;}
 .self .message-detail p {text-align:right}
 .self .message-box {background:#eeeeee;float:right;}
 .self .message-box-pike {left: inherit;right: -7px;background-position: -182px -163px;}
-.smile,.image,.audio,.remind,.history {display: inline-block;width: 30px;height: 30px;}
+.smile,.image,.audio,.remind,.history,.attach {display: inline-block;width: 30px;height: 30px;}
 .simile {background-position: 0px 0px;}
 .image {background-position: -62px 0px;}
 .audio {background-position: -91px 0px;}
 .remind {background-position: -121px 0px;}
 .history {background-position: -30px 0px;}
+.attach {background-position: -156px 0px;}
 
 .contact .tool {background:gainsboro;}
 .more {background-position: -104px -85px;}
 .button {background-position: -56px -85px;}
+.text-cut {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
 
-
+.attach-upload {
+    position: absolute;
+    width: 200px;
+    background: #ffffff;
+    height: 29px;
+}
+.progress {
+    width: 100%;
+    height: 5px;
+    background: whitesmoke;
+}
+.loaded {
+    width: 0;
+    height: 5px;
+    background: yellowgreen;
+    top: 0;
+    position: absolute;
+}
+.loaded-persent {
+    float: right;
+    line-height: 24px;
+    height: 24px;
+}
+.attach-upload-start,.attach-upload-stop,.attach-upload-end,.attach-upload-close {
+    display:block;
+    float:left;
+    width: 20px;
+    height: 24px;
+    background:url('../images/video.png') no-repeat;
+}
+.attach-upload-start {
+    background-position: -19px -3px;
+}
+.attach-upload-stop {
+    background-position: -2px -3px;
+    display:none;
+}
+.attach-upload-end {
+    background-position: -36px -4px;
+}
+.attach-upload-close {
+    background-position: -53px -4px;
+}
 .pop-smiley {
     position: absolute;
     width: 435px;

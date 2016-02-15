@@ -244,7 +244,20 @@
 								<div class="message-detail">
 									<p>崔洪波 - 2016-01-08 12:16:11</p>
 									<div class="message-box">
-										<div class="files"><div class="file-msg"><p>会议.docx</p><p>10.5kb</p></div><div class="file-tool"><a href="javascript:;">保存</a></div></div>
+										<div class="files">
+											<div class="file-msg">
+												<p>会议.docx</p>
+												<p>10.5kb</p>
+											</div>
+											<div class="attach-upload">
+												<div class="progress"></div>
+												<div class="loaded"></div>
+												<div class="attach-upload-control"><i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i><span>0%</span></div>
+											</div>
+											<div class="file-tool">
+												<a href="javascript:;">保存</a>
+											</div>
+										</div>
 										<i class="chat-icon message-box-pike"></i>
 									</div>
 								</div>
@@ -259,9 +272,11 @@
 							<div class="tool">
 								<a class="chat-icon smile" href="javascript:;"></a>
 								<i class="chat-icon image show-modal" modal-title="上传图片" modal-data="upload.html"></i>
+								<i class="chat-icon attach"></i>
 								<i class="chat-icon audio"></i>
 								<i class="chat-icon remind"></i>
 								<i class="chat-icon history"></i>
+								<input type="file" name="attach" style="width:0;height:0;float:left;" />
 								<div class="pop-smiley" id="demo">
 									<a href="javascript:;" data-face="face0" title="微笑"></a>	
 									<a href="javascript:;" data-face="face1" title="撇嘴"></a>	
@@ -395,12 +410,56 @@
 		<script type="text/javascript" src="./js/chatlazy.js"></script>
 		<script src="js/main.js"></script>
 		<script>
+			function file_size_format(size, dec) {
+				size = size||0;
+				dec = dec||2;
+    				var unit = ["B", "KB", "MB", "GB", "TB", "PB"];
+    				var pos = 0;
+    				while (size >= 1024) {
+        				size /= 1024;
+        				pos++;
+    				}
+				var result = {
+					'size' : Math.round(size, dec),
+					'unit' : unit[pos],
+					'all' : Math.round(size, dec)+unit[pos]
+				}
+    				return result;
+			}
+			function fileIcon(type) {
+				var typeLimit = [
+					'aep','ai','as','avi','css','doc','eps',
+					'epub','fla','flv','gif','html','indd','jpg',
+					'js','midi','mkv','mov','mp3','mp4','mpg',
+					'ogg','otf','pdf','php','png','psd','rar',
+					'rtf','svg','swc','swf','tif','ttf','txt',
+					'wav','wma','wmv','xls','xml','zip'
+				];
+				var typeReplace = {
+					'docx':'xls','xlsx':'xls'
+				};
+				if(type in typeReplace) {
+					return typeReplace[type];
+				}else{
+					for(var x in typeLimit) {
+						if(typeLimit[x] == type)
+							return type
+					}
+				}
+				return 'blanc';
+			}
 			function hotkeysbind(event){
 				$('.send').click();
 				return false;
 			}
 			function systemLogs(msg) {
 				$('.logs').append('<div class="row system"><span>'+msg+'</span></div>').scrollToBottom();
+			}
+			function onprogress(evt){
+				if(evt.lengthComputable) {
+					$('.loaded').css({'width':Math.floor(evt.loaded/evt.total*$('.progress').width())});
+					$('.loaded-persent').html(Math.floor(evt.loaded/evt.total*100)+'%');
+				}
 			}
 			$(function(){
 				$('.show-modal').click(function(){
@@ -412,6 +471,73 @@
 					$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
 				})
 				$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
+				$('.attach').click(function(){
+					$('input[name=attach]').click();
+				})
+				$('input[name=attach]').change(function(e){
+					e = e || window.event;
+					var target = e.target;
+					var file = target.files[0];
+					var formData = new FormData();
+					if(file == null) return false;
+					//if(file.size > 8*1024*1024) alert('file size limit 8M');
+					formData.append('file',file);
+					var fileSize = file_size_format(file.size)['all'];
+					var fileType = file.type;
+					var fileName = file.name;
+		            		var ext = fileName.match(/\.(\w+)$/);
+		            		if (ext && (ext = ext[1])) {
+		                		fileType = ext.toLowerCase();
+		            		}
+					$.ajax({
+						url:'chatapi.php?c=file&a=attach',
+						data:formData,
+						processData : false,
+						contentType: false,
+						dataType:'JSON',
+						type:'POST',
+						xhr: function(){
+                					var xhr = $.ajaxSettings.xhr();
+                					if(xhr.upload) {
+                    						xhr.upload.addEventListener("progress" , onprogress, false);
+                    					}
+							return xhr;
+            					},
+						beforeSend: function() {
+							$('.logs').append('<div class="row self"> \
+                                                                <div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
+                                                                <div class="message-detail"> \
+                                                                        <p>&nbsp;</p> \
+                                                                        <div class="message-box"> \
+                                                                                <div class="files"> \
+                                                                                        <div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"> \
+                                                                                                <p class="text-cut">'+fileName+'</p> \
+                                                                                                <p>'+fileSize+'</p> \
+                                                                                        </div> \
+                                                                                        <div class="attach-upload"> \
+                                                                                                <div class="progress"></div> \
+                                                                                                <div class="loaded"></div> \
+                                                                                                <div class="attach-upload-control"><!--<i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i>--><span class="loaded-persent">0%</span></div> \
+                                                                                        </div> \
+                                                                                        <div class="file-tool" style="display:none;"> \
+                                                                                                <a href="javascript:;">保存</a> \
+                                                                                        </div> \
+                                                                                </div> \
+                                                                                <i class="chat-icon message-box-pike"></i> \
+                                                                        </div> \
+                                                                </div> \
+                                                        </div>');
+						},
+						complete:function(ret){
+							if(ret.status != 200) console.log('error');
+							$('.attach-upload').hide();
+							$('.file-tool a').attr('data-name',ret.responseJSON.info).parent().show();
+						},
+						error:function(){
+							console.log('error');
+						}
+					})
+				});
 			})
 		</script>
 		<script>
