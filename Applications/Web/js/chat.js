@@ -206,7 +206,10 @@
     //向聊天容器中放数据都走这个
     function chatInDialogContainer(msgList) {
     	for(var i in msgList){
-    		$('.logs').append(decMsg(msgList[i].message,msgList[i].fromuser,msgList[i].time));
+    		if(msgList[i].time === 'groupNoticeType')
+    			systemLogs(msgList[i].message);
+    		else
+    			$('.logs').append(decMsg(msgList[i].message,msgList[i].fromuser,msgList[i].time));
     	}
 		$('.logs').scrollToBottom();
     }
@@ -461,7 +464,8 @@
     //更新群的时候 逻辑处理
     function groupUpdate(data) {
  	    if(wc_loginName === data.fromuser) return;
- 	    var groupObj = $('.recent').children('.tree-folders').children('span[data-id='+data.chatid+']');
+ 	    var __Chatid = makeDotTo___(data.chatid);
+ 	    var groupObj = $('.recent').children('.tree-folders').children('span[data-id='+__Chatid+']');
  	    //对于删除的用户，将最近联系人的列表中该群删除
  	    var tempMode = false;
  	    for(var p in data.delMember) {
@@ -473,8 +477,8 @@
  	    	groupObj.removeTree()
  	    }
  	    if(groupObj.length) {
- 	    	var systemLogDel = wc_allUserArr[data.fromuser]+'踢出：';
- 	    	var systemLogAdd = wc_allUserArr[data.fromuser]+'邀请：';
+ 	    	var systemLogDel = wc_allUserArr[data.fromuser]+'将 ';
+ 	    	var systemLogAdd = wc_allUserArr[data.fromuser]+'邀请 ';
  	    	for(var i in data.delMember) {
  	    		systemLogDel += wc_allUserArr[data.delMember[i]]+',';
  	    		var tempChatid = makeChatIdFromGf(data.delMember[i]);
@@ -492,10 +496,24 @@
 					'attr':{'type':'member','data-id':tempChatid,'class':loginClass}
 				});
  	    	}
- 	    	if(data.delMember.length !== 0)
- 	    		systemLogs(systemLogDel);
+ 	    	
+ 	    	//将通知信息放入本地消息历史
+ 	    	var chatSomeoneHistory = 'chat'+__Chatid+'History'
+ 	    	if(window[chatSomeoneHistory] == undefined) {
+        		window[chatSomeoneHistory] = [];
+        	}
  	    	if(data.addMember.length !== 0)
- 	    		systemLogs(systemLogAdd);
+ 	    		window[chatSomeoneHistory].push({"message":systemLogAdd+" 加入群聊", "time":"groupNoticeType"});
+ 	    	if(data.delMember.length !== 0)
+ 	    		window[chatSomeoneHistory].push({"message":systemLogDel+" 踢出群聊", "time":"groupNoticeType"});
+ 	    	//判断是否为当前用户,如果是当前用户则直接通知
+ 	    	var nowChatId = getNowChatId();
+ 	    	if(nowChatId === __Chatid) {
+ 	    		if(data.delMember.length !== 0)
+ 	 	    		systemLogs(systemLogDel+" 踢出群聊");
+ 	 	    	if(data.addMember.length !== 0)
+ 	 	    		systemLogs(systemLogAdd+" 加入群聊");
+ 			}
  	    }
     }
     //js 将 php或js 时间戳转为时间
