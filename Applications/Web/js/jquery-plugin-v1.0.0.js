@@ -592,6 +592,9 @@
 			
 			if($(_this).next('.tree-files').length)
 				$(_this).next().addClass('tree-icon tree-main-line').prependTo(obj);
+			else {
+				obj.nextAll('.tree-files').eq($(_this).prevAll('span:not(.no-child)').length).insertAfter(obj);
+			}
 			$(_this).prev().addClass('tree-start-line').removeClass(_this_icon).prependTo(obj);
 			$(_this).insertAfter(obj.children('.tree-icon:first'))
 		}
