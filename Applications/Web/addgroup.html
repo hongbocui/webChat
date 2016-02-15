@@ -42,12 +42,18 @@
 		
 		if(chatuser.attr('type') == 'group'){
 			//insert
-			chatuser.next().empty();
+			var member = null;
+			if(chatuser.next('.tree-files').length == 0) {
+				member = chatuser.parent().nextAll('.tree-files').eq(chatuser.prevAll('span:not(.no-child)').length)
+			}else{
+				member = chatuser.next();
+			}
+			member.empty();
 			chatid = chatuser.attr('data-id');
 			//groupTitle 
 			$('.group-member span').each(function(){
 				memberids.push(makeChatidToUserid($(this).attr('data-id')));
-				chatuser.next().addTree({
+				member.addTree({
 					'title':$(this).html().replace(/<[^>]+>/,''),
 					'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}}],
 					'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}
@@ -71,7 +77,7 @@
 				'attr':{'type':'group','data-id':chatid,'ctime' : new Date().getTime(),}
 			}).moveTreeTop()
 		}
-		$('.recent span:first').dblclick();
+		//chatuser.dblclick();
 		$('.modal-close').click();
 		var dotChatid = make___ToDot(chatid);
 		wc_ws.send(JSON.stringify({"type":"groupset","chatid":dotChatid,"title":groupTitle,"members":memberids}));
