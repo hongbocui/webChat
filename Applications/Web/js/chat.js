@@ -455,14 +455,17 @@
  	    if(tempMode) {
  	    	groupObj.removeTree()
  	    }
- 	    	
  	    if(groupObj.length) {
+ 	    	var systemLogDel = wc_allUserArr[data.fromuser]+'踢出：';
+ 	    	var systemLogAdd = wc_allUserArr[data.fromuser]+'邀请：';
  	    	for(var i in data.delMember) {
+ 	    		systemLogDel += wc_allUserArr[data.delMember[i]]+',';
  	    		var tempChatid = makeChatIdFromGf(data.delMember[i]);
- 	 	    	//对于没有删除的用户，从群列表删除 删除的人
+ 	 	    	//对于没有删除的用户，通知从群列表 删除其他成员
  	 	    	groupObj.next().find(".no-child[data-id='"+tempChatid+"']").removeTree();
  	    	}
  	    	for(var j in data.addMember) {
+ 	    		systemLogAdd += wc_allUserArr[data.addMember[j]]+',';
  	    		var tempChatid = makeChatIdFromGf(data.addMember[j]);
  	    		var loginClass = getUserStatus(tempChatid) ? 'no-login' : '';
  	    		//对于没有删除的人,添加新增的人到列表
@@ -472,6 +475,10 @@
 					'attr':{'type':'member','data-id':tempChatid,'class':loginClass}
 				});
  	    	}
+ 	    	if(data.delMember.length !== 0)
+ 	    		systemLogs(systemLogDel);
+ 	    	if(data.addMember.length !== 0)
+ 	    		systemLogs(systemLogAdd);
  	    }
     }
     //js 将php时间戳转为时间
@@ -495,6 +502,14 @@
 			tomakechatid.sort();
 		return tomakechatid.join('--');
     }
+    //根据群的chatid，生成群主姓名
+    function getAdminByChatid(chatid) {
+    	if(chatid.indexOf('___') > -1) {
+    		chatid = chatid.replace(/___/g, '.');
+    	}
+    	chatid = chatid.replace(/-[0-9]+/, '');
+    	return wc_allUserArr[chatid];
+    }
     //根据双方对话chatid，生成对方正常的userid
     function makeChatidToUserid(chatid) {
     	if(chatid.indexOf('___') > -1) {
@@ -502,11 +517,11 @@
     	}
     	return chatid.replace(new RegExp('--'+wc_loginName+'|'+wc_loginName+'--'),'');
     }
-    //将正常chatid转为替换后的chatid
+    //将正常dotchatid转为替换后的___chatid
     function makeDotTo___(chatid) {
     	return chatid.replace('.', '___');
     }
-    //将非正常chatid替换为正常chatid
+    //将___chatid替换为正常dotchatid
     function make___ToDot(chatid) {
     	return chatid.replace('___', '.');
     }

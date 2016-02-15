@@ -5,6 +5,10 @@
      * 群相关
      */
     class Group extends Abstractex {
+        public function doTest() {
+            $str = $this->toStr('pwd');
+            var_dump(\Api\Model\Mcommon::encryptPwd($str));
+        }
         /**
          * 建群  'group:'.$master.$uuid.':info'
          * 请求参数  是否必须  类型(示例)  说明
