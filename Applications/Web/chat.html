@@ -27,6 +27,7 @@
 		    	var onVisibilityChange = function(){
 		    		if (!document[hiddenProperty]) {
 		    			clearInterval(newMsgNotinceTimer);
+		    			newMsgNotinceTimer = null;
 		    			document.title='beta-即时消息系统';//窗口没有消息的时候默认的title内容
 		    		}
 		    	}

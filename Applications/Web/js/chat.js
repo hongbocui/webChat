@@ -52,6 +52,8 @@
 	           // 发言
 	           case 'say':
 	        	   //标签非活动时才有新消息提醒
+	        	   console.log(document[hiddenProperty]);
+	        	   console.log(newMsgNotinceTimer);
 	        	   if(document[hiddenProperty] && !newMsgNotinceTimer) 
 	        		   newMsgNotinceTimer = setInterval("newMsgCount()", 200);
 	         	  //{"type":"say","fromuser":xxx,"chatid":xxx,"message":"xxx","time":"xxx"}
