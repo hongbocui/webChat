@@ -18,6 +18,7 @@ use \GatewayWorker\Lib\Gateway;
 use \Vendors\Redis\RedisModel;
 use \Vendors\Redis\Redisq;
 use \Api\Model\Muser;
+use \Config\St\Storekey;
 
 class Event
 {
@@ -87,8 +88,18 @@ class Event
                 $chatList = Muser::getChatListFromChatid($messageData['chatid']);
                 
                 if(!is_array($chatList)) return;
+                
+                //判断消息类型
+                $msgType = Storekey::CHAT_MSG_TYPE;
+                if(isset($messageData['msgType'])) {
+                    if($messageData['msgType']==='file'){
+                        $msgType = Storekey::ATTACH_MSG_TYPE;
+                    } elseif ($messageData['msgType'] === 'image'){
+                        $msgType = Storekey::IMAGE_MSG_TYPE;
+                    }
+                }
                 //所有单人聊天、群组聊天消息都压入redis队列中，以便存储
-                $pushArr = self::makeMsg($chatid, $clientName, $messageData['content']);
+                $pushArr = self::makeMsg($chatid, $clientName, $messageData['content'], $msgType);
                 self::msgIntoQueue($pushArr);
                 
                 // 聊天内容
@@ -120,7 +131,7 @@ class Event
 //                 if(!is_array($chatDept)) return;
                 
 //                 //所有消息压入redis队列中，以便存储
-//                 $pushArr = self::makeMsg($clientName, $chatDept, $messageData['content'], \Config\St\Storekey::BROADCAST_MSG_TYPE);
+//                 $pushArr = self::makeMsg($clientName, $chatDept, $messageData['content'], Storekey::BROADCAST_MSG_TYPE);
 //                 self::msgIntoQueue($pushArr);
                 
 //                 // 聊天内容

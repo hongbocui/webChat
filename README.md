@@ -33,29 +33,32 @@ linux环境
 
 ##运行：
 ###一、启动聊天服务。根目录下
+
 	（以debug方式启动 ） 
-	```php start.php start  ```
+	php start.php start
 	（以daemon方式启动  ）
-	```php start.php start -d ```
+	php start.php start -d
 	还可以使用 stop reload status 等命令
 	
 ###二、聊天数据保存永久保存。/Vendors/Redis/ 下运行
-           临时运行    	``` php doQuene ```
-	daemon方式运行	```nohub php doQuene &```
+
+           临时运行    	  php doQuene 
+	daemon方式运行     nohub php doQuene &
 
 
 ##消息发送和接受机制
 ###登录
-wc_ws.send({"type":"login","clientName":wc_loginName})
+	wc_ws.send({"type":"login","clientName":wc_loginName})
 
 ###前端发送消息机制
 - chatid:chatid一共两种情况
--	       如果是单人聊天则chatid就是两个人用‘--’连接的字串（且注意俩名称是经过sort排序的）cuihb--xieyx
--	       如果是群组聊天则chatid就是唯一的字串(例如群组+创建群的时间)cuihb-63756323 根据这个字串可以从redis中获取成员
+
+	       如果是单人聊天则chatid就是两个人用‘--’连接的字串（且注意俩名称是经过sort排序的）cuihb--xieyx
+	       如果是群组聊天则chatid就是唯一的字串(例如群组+创建群的时间)cuihb-63756323 根据这个字串可以从redis中获取成员
 - wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":msg}));
 
 ###前端获取redis历史消息记录
-wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
+	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
 
 
 ##实现的功能：

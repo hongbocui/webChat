@@ -5,6 +5,7 @@
 		public function doUpload() {
 			$images = $this->toStr('image');
 			$fileNameArr = array();
+			$dir = 'upload/'.self::_getDir(time());
 			for($i=0; $i<count($images); $i++) {
         			$file_type = 'jpg';
         			$file = preg_replace_callback('/data:image\/(\w+);base64,/',function($matches) use (&$file_type){
@@ -12,21 +13,32 @@
                 			$file_type=$type[$matches[1]];
                 			return '';
         			},$images[$i]);
-				if(!file_exists('./upload/'.date('Ymd'))) {
-					$this->doCreateDir('./upload/'.date('Ymd'));
+				if(!file_exists($dir)) {
+					$this->doCreateDir($dir);
 				}
-				$fileName = 'upload/'.date('Ymd').'/'.time().mt_rand(1000,9999).$i.'.'.$file_type;
+				$fileName = $dir.'/'.time().mt_rand(1000,9999).$i.'.'.$file_type;
 				$fileNameArr[] = $fileName;
-        			file_put_contents($fileName, base64_decode($file));
-            		}
+        		file_put_contents($fileName, base64_decode($file));
+            }
 			$this->_success(json_encode($fileNameArr));
 		}
 		public function doAttach() {
-			if(!file_exists('./upload/'.date('Ymd'))) {
-                        	$this->doCreateDir('./upload/'.date('Ymd'));
-                        }
-			$fileInfo = $this->_uploadFile($_FILES['file'], './upload/'.date('Ymd'),array(),8*1024*1024);
+		    $dir = './upload/'.self::_getDir(time());
+			if(!file_exists($dir)) {
+            	$this->doCreateDir($dir);
+            }
+			$fileInfo = $this->_uploadFile($_FILES['file'], $dir,array(),8*1024*1024);
 			echo json_encode($fileInfo);
+		}
+		public function doDownload() {
+		    $desname = $this->toStr('desname');
+		    $srcname = $this->toStr('srcname');
+		    
+		    $time = intval(substr($desname, 0, 10));
+		    $file = './upload/'.self::_getDir($time).'/'.$desname;
+		    header('Content-type: text/plain');
+		    header('Content-Disposition: attachment; filename="'.$srcname.'"');
+		    readfile($file);
 		}
 		public function doCreateDir($dir, $mode=0777) {
 			if(!@mkdir($dir, $mode)) {
@@ -34,6 +46,14 @@
 				self::doCreateDir($sundir, $mode);
 			}
 			@mkdir($dir, $mode);
+		}
+		/**
+		 * 获取上传目录
+		 */
+		private function _getDir($time = 0) {
+		    if($time)
+		        return date('Ym/d', $time);
+		    return date('Ym/d', time());
 		}
 		/**
 		 * 自定义一个文件上传函数
@@ -84,9 +104,10 @@
 			}
 
 			//4. 上传文件名处理（随机名字,后缀名不变）
+			$extname = pathinfo($upfile['name'],PATHINFO_EXTENSION);
 			do{
 				//随机一个文件名，格式：时间戳+4位随机数+源后缀名
-				$newname = time().rand(1000,9999).".".pathinfo($upfile['name'],PATHINFO_EXTENSION);
+				$newname = $extname ? time().rand(1000,9999).'.'.$extname : time().rand(1000,9999);
 			}while(file_exists($path.$newname)); //判断随机的文件名是否存在。
 
 			//5. 判断并执行文件上传。

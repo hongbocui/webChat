@@ -140,9 +140,15 @@
     //发送消息
     function sendToWsMsg(msg, type) {
     	msg = encMsg(msg, type);
-	if(msg == '') return false;	
+    	if(msg == '') return false;	
 		var nowChatId = make___ToDot(getNowChatId());
-		wc_ws.send(JSON.stringify({"type":"say","chatid":nowChatId,"content":msg}));
+		var sendData = {"type":"say","chatid":nowChatId,"content":msg};
+		if(type === 'file'){
+			sendData.msgType = 'file';
+		}else if(type === 'image') {
+			sendData.msgType = 'image';
+		}
+		wc_ws.send(JSON.stringify(sendData));
     }
     //接收消息
     function recieveMsg(fromuser, chatid, msg, time) {
@@ -320,20 +326,28 @@
         	var dotChatid = make___ToDot(chatid);
         	wc_ws.send(JSON.stringify({"type":"history","chatid":dotChatid}));
         }
-
-        //等待redis中数据
-        var i = 0;
-        var waitHistory = function(){
-                i++;
-            	if(window["chat"+chatid+"History"] != undefined){
-            		window[chatSomeoneHistory].push(nowMessage);
-            		clearInterval(waitTime);
-                }
-        	    if(i>50)
-        	    	clearInterval(waitTime);
-            };
-    	var waitTime = setInterval(waitHistory, 10);
         
+        //判断fromuser是否在最近联系人列表中，如果在则等redis，如果不在则直接push到本地
+        if(isChatidInContact(chatid)) {
+        	//等待redis中数据
+            var i = 0;
+            var waitHistory = function(){
+                    i++;
+                	if(window[chatSomeoneHistory] != undefined){
+                		window[chatSomeoneHistory].push(nowMessage);
+                		clearInterval(waitTime);
+                    }
+            	    if(i>50)
+            	    	clearInterval(waitTime);
+                };
+        	var waitTime = setInterval(waitHistory, 10);
+        }else {
+        	//如果不在最近联系人中则不需要等
+        	if(window[chatSomeoneHistory] == undefined) {
+        		window[chatSomeoneHistory] = [];
+        		window[chatSomeoneHistory].push(nowMessage);
+        	}
+        }
     }
     //给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
     function lightOnlineUserList(users) {
@@ -481,9 +495,9 @@
  	    		systemLogs(systemLogAdd);
  	    }
     }
-    //js 将php时间戳转为时间
+    //js 将 php或js 时间戳转为时间
     function timestampTodate(timestamp) {
-    	var d = new Date(parseInt(timestamp) * 1000);
+    	var d = timestamp.length > 10 ? new Date(parseInt(timestamp)) : new Date(parseInt(timestamp) * 1000);
     	return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
     }
     //根据聊天对象userid, 生成 chatid 替换 . 为 ___
