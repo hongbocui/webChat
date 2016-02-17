@@ -38,7 +38,7 @@ linux环境
 	php start.php start
 	（以daemon方式启动  ）
 	php start.php start -d
-	还可以使用 stop reload status 等命令
+	还可以使用 stop restart reload status 等命令
 	
 ###二、聊天数据保存永久保存。/Vendors/Redis/ 下运行
 

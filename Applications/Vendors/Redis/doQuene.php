@@ -55,7 +55,7 @@
 	    $insertData = array(
 	        'chatid'   => $chatid,
 	        'fromuser' => $data['fromuser'],
-	        'message'  => $data['message'],
+	        'message'  => addslashes($data['message']),
 	        'time'     => $data['time'],
 	        'type'     => $data['type'],
 	    );
