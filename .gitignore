@@ -2,3 +2,4 @@ dump.rdb
 workerman.log
 Applications/Vendors/Redis/dump.rdb
 Applications/Web/upload/
+Applications/Config/Redis.php

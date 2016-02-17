@@ -51,11 +51,13 @@
 	        	   break;
 	           // 发言
 	           case 'say':
-	        	   //标签非活动时才有新消息提醒
-	        	   console.log(document[hiddenProperty]);
-	        	   console.log(newMsgNotinceTimer);
-	        	   if(document[hiddenProperty] && !newMsgNotinceTimer) 
-	        		   newMsgNotinceTimer = setInterval("newMsgCount()", 200);
+	        	 //标签非活动时才有新消息提醒
+	        	   if(document[hiddenProperty]){
+	        		   playAudio();
+		        	   palyDeskNotice(wc_allUserArr[data['fromuser']]+"说：",{body:data['message'],icon:"images/default_34_34.jpg"});
+		        	   if(!newMsgNotinceTimer)
+		        		   newMsgNotinceTimer = setInterval("newMsgCount()", 200);
+	        	   }
 	         	  //{"type":"say","fromuser":xxx,"chatid":xxx,"message":"xxx","time":"xxx"}
 	        	   recieveMsg(data['fromuser'], data['chatid'], data['message'], data['time']);
 	         	  break;
@@ -479,20 +481,26 @@
  	    	groupObj.removeTree()
  	    }
  	    if(groupObj.length) {
+ 	    	var memberObj = null;
+ 	    	if(groupObj.next('.tree-files').length == 0) {
+ 	    		memberObj = groupObj.parent().nextAll('.tree-files').eq(groupObj.prevAll('span:not(.no-child)').length)
+			}else{
+				memberObj = groupObj.next();
+			}
  	    	var systemLogDel = wc_allUserArr[data.fromuser]+'将 ';
  	    	var systemLogAdd = wc_allUserArr[data.fromuser]+'邀请 ';
  	    	for(var i in data.delMember) {
  	    		systemLogDel += wc_allUserArr[data.delMember[i]]+',';
  	    		var tempChatid = makeChatIdFromGf(data.delMember[i]);
  	 	    	//对于没有删除的用户，通知从群列表 删除其他成员
- 	 	    	groupObj.next().find(".no-child[data-id='"+tempChatid+"']").removeTree();
+ 	    		memberObj.find(".no-child[data-id='"+tempChatid+"']").removeTree();
  	    	}
  	    	for(var j in data.addMember) {
  	    		systemLogAdd += wc_allUserArr[data.addMember[j]]+',';
  	    		var tempChatid = makeChatIdFromGf(data.addMember[j]);
  	    		var loginClass = getUserStatus(tempChatid) ? 'no-login' : '';
  	    		//对于没有删除的人,添加新增的人到列表
- 	 	    	groupObj.next().addTree({
+ 	    		memberObj.addTree({
 					'title':wc_allUserArr[data.addMember[j]],
 					'member':[{'username':wc_allUserArr[data.addMember[j]],'avatar':"default_34_34.jpg",'attr':{'type':'member','data-id':tempChatid,'class':loginClass}}],
 					'attr':{'type':'member','data-id':tempChatid,'class':loginClass}

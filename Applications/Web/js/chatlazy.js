@@ -22,3 +22,60 @@ $(function(){
         }
     },500);
 });
+/*************
+ * 用于消息提醒*
+ ************/
+var NewMsgNoticeflag = false,newMsgNotinceTimer = null;
+function newMsgCount() {
+    if (NewMsgNoticeflag) {
+    	NewMsgNoticeflag = false;
+        document.title = '【☏新消息】您有新的即时消息';
+    } else {
+    	NewMsgNoticeflag = true;
+        document.title = '【　　　】您有新的即时消息';
+    }
+}
+var hiddenProperty = 'hidden' in document ? 'hidden' :    
+    'webkitHidden' in document ? 'webkitHidden' :    
+    'mozHidden' in document ? 'mozHidden' :    
+    null;
+	var visibilityChangeEvent = hiddenProperty.replace(/hidden/i, 'visibilitychange');
+	var onVisibilityChange = function(){
+		if (!document[hiddenProperty]) {
+			clearInterval(newMsgNotinceTimer);
+			newMsgNotinceTimer = null;
+			document.title='beta-即时消息系统';//窗口没有消息的时候默认的title内容
+		}
+	}
+document.addEventListener(visibilityChangeEvent, onVisibilityChange);
+
+//声音提示
+function playAudio() {
+	var audioElement = document.createElement('audio');
+    audioElement.setAttribute('src', 'audio/system.wav');
+    audioElement.load;
+    audioElement.play();
+}
+//桌面弹窗与消息提示
+function palyDeskNotice(theTitle,options) {
+    if(Notification.permission !== "granted"){
+    	window.Notification.requestPermission(function(permission){
+    		if (permission === "granted")
+    			showNotice(theTitle,options);
+    	});
+    }else{
+    	showNotice(theTitle,options);
+    }
+}
+function showNotice(theTitle,options){
+	var desknotice = new Notification(theTitle, options);
+    desknotice.onclick = function() {
+    	window.focus();
+    	desknotice.close();
+    };
+    //页面退出时关闭提醒
+    window.onbeforeunload = function() {
+    	desknotice.close();
+    }
+    setTimeout(desknotice.close.bind(desknotice), 3000);
+}

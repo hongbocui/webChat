@@ -7,32 +7,6 @@
 		<link href="css/jquery-plugin-v1.0.0.css" type="text/css" rel="stylesheet">
 	</head>
 	<body>
-		<script>
-			//用于消息提醒
-		    var NewMsgNoticeflag = false,newMsgNotinceTimer = null;
-		    function newMsgCount() {
-		        if (NewMsgNoticeflag) {
-		        	NewMsgNoticeflag = false;
-		            document.title = '【☏新消息】您有新的即时消息';
-		        } else {
-		        	NewMsgNoticeflag = true;
-		            document.title = '【　　　】您有新的即时消息';
-		        }
-		    }
-		    var hiddenProperty = 'hidden' in document ? 'hidden' :    
-		        'webkitHidden' in document ? 'webkitHidden' :    
-		        'mozHidden' in document ? 'mozHidden' :    
-		        null;
-		    	var visibilityChangeEvent = hiddenProperty.replace(/hidden/i, 'visibilitychange');
-		    	var onVisibilityChange = function(){
-		    		if (!document[hiddenProperty]) {
-		    			clearInterval(newMsgNotinceTimer);
-		    			newMsgNotinceTimer = null;
-		    			document.title='beta-即时消息系统';//窗口没有消息的时候默认的title内容
-		    		}
-		    	}
-	    	document.addEventListener(visibilityChangeEvent, onVisibilityChange);
-		</script>
 		<div class="container">
 			<!--联系人-->
 			<div class="contact">
