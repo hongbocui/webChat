@@ -11,6 +11,12 @@ linux环境
 ##注意事项
 用户账号仅支持 字母、数字、下划线、英文.  例如(cui_hong.bo)
 
+chatid一共有三种形式
+- 1. xieyx--cuihb  用户--用户   这是双人聊天的chatid
+- 2. cuihb-1234567 用户-唯一码   这是群聊天的信息
+- 3. cuihb         用户                 说明是广播消息。这个用户名是一个接受者
+
+
 ##需要的库表 
 - 库： webChat （需要手动建立）
 - 表：webchat_message年月       //（自动生成）用来存储聊天记录
@@ -59,6 +65,9 @@ linux环境
 
 ###前端获取redis历史消息记录
 	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
+	
+###发送广播消息
+	wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":"cuihb","touser":'cuihb-wangjx',"title":"aaa","content":"bbbb"}));
 
 
 ##实现的功能：

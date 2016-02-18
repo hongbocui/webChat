@@ -20,13 +20,14 @@
          * 
          * 注意，如果是群聊天，则需要查到该用户的入群时间，早于该入群时间的消息时不能被查询到的。
          */
-        public static function getChatMessage($paramArr) {
+        public static function getMsgList($paramArr) {
             $options = array(
                 'limit'  => 20,     //limit
-                'fields' => array(),//要查询的字段或者以 英文'，'分开
                 'time'   => 0,      //时间戳、根据这个向前查询  必填
                 'chatid' => '',     //要查询的chatid
                 'joinTime'=> '',    //用户的入群时间
+                'type'    => 0,     //消息类型  Storekey::CHAT_MSG_TYPE
+                'fields' => array(),//要查询的字段或者以 英文'，'分开
                 'order'  => 'order by id desc',
             );
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
@@ -40,6 +41,8 @@
             $where .= " and time<{$time} ";
             if($joinTime)//如果是群聊则限制消息记录的时间
                 $where .= " and time > {$joinTime} ";
+            if($type)
+                $where .= " and type = {$type} ";
             
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
             return self::dbobj()->query($sql);
@@ -50,7 +53,7 @@
          */
         public static function storeMessage($data = array()) {
             $formatData = self::setInsertCondition($data);
-            $sql = "insert into ".self::getTbname()."({$formatData['fileds']}) values({$formatData['values']})";
+            $sql = "insert into ".self::getTbname($data['time'])."({$formatData['fileds']}) values({$formatData['values']})";
             return self::dbobj()->query($sql);
         }
         
@@ -100,35 +103,17 @@
          */
         public static function getUnreadMsg($username) {
             if(!$username) return false;
-            return \Vendors\Redis\RedisModel::hashGet(self::$redisServer, $username.':unread:msg');
+            return RedisModel::hashGet(self::$redisServer, $username.':unread:msg');
         }
         /**
          * 用户点击对话时删除该对话的离线消息
          */
         public static function delOneItemUnreadMsg($username, $chatid) {
             if(!$username || !$chatid) return false;
-            return \Vendors\Redis\RedisModel::hashDel(self::$redisServer, $username.':unread:msg', $chatid);
+            return RedisModel::hashDel(self::$redisServer, $username.':unread:msg', $chatid);
         }
         /**
-         * 用户离线广播队列中获取离线消息
-         */
-        public static function getUnreadBroadcast($usernanme,$num=100){
-            if(!$usernanme || !$num) return false;
-            $msgList = \Vendors\Redis\Redisq::pops(array(
-                'serverName'  => self::$redisServer, #服务器名，参照见Redis的定义 ResysQ
-                'key'         => $usernanme.':unread:broadcast',  #队列名
-                'num'         => $num,      #多个数据
-            ));
-            if($msgList){
-                $msgList = array_reverse($msgList, false);//反序，并丢弃原键名
-                foreach($msgList as $key=>$val){
-                    $msgList[$key] = unserialize($val);
-                }
-            }
-            return $msgList;
-        }
-        /**
-         * 获取某路聊天的最近的历史消息
+         * 获取某路聊天的最近的历史消息 
          */
         public static function getHistoryMsg($chatid){
             $historyList = \Vendors\Redis\Redisq::range(array(

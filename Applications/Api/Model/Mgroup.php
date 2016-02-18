@@ -99,6 +99,21 @@
             return array_keys(RedisModel::hashGet(self::$redisServer, $key));
         }
         /**
+         * 获取群中某个成员的入群时间
+         */
+        public static function getJoinTime($paramArr) {
+            $options = array(
+                'master'    => '',
+                'uuid'      => '',
+                'accountid' => ''
+            );
+            if (is_array($paramArr))$options = array_merge($options, $paramArr);
+            extract($options);
+            if(!$accountid || !$master || !$uuid) return false;
+            $key = self::groupMembersKey($master, $uuid);
+            return RedisModel::hashGet(self::$redisServer, $key, $accountid);
+        }
+        /**
          * 删除最近联系人
          * 给出一个用户名（用户名组）和一个chatid，将属于该用户名下最近联系人为chatid的都删除掉（踢出群）
          */

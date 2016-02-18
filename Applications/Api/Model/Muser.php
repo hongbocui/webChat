@@ -69,6 +69,13 @@
             return \Vendors\Redis\RedisModel::zrevrange(self::$redisServer, $username.':recentchat:members', 0, $num);
         }
         /**
+         * 删除一个最近联系人
+         */
+        public static function delRecentMembers($username, $chatid) {
+            if(!$username || !$chatid) return false;
+            return \Vendors\Redis\RedisModel::zRem(self::$redisServer, $username.':recentchat:members', $chatid);
+        }
+        /**
          * 获取所有在线用户列表 clientid=>name
          */
         public static function getOnlineUsers () {

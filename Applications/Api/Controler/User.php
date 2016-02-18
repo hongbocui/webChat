@@ -115,6 +115,14 @@
             $this->_success($recentUsers);
         }
         /**
+         * 删除一个最近联系人
+         */
+        public function doDelRecentContact() {
+            $accountid = $this->toStr('accountid');
+            $chatid    = $this->toStr('chatid');
+            return Muser::delRecentMembers($accountid, $chatid);
+        }
+        /**
          * 获取所有在线用户 账号列表
          * 
          * 无参数
