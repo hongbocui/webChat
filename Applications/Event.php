@@ -121,40 +121,45 @@ class Event
                 }
                 return;
             case 'broadcast':
-//                 $chatDept = $messageData['touser'];
-//                 if(!$chatDept) return;
-//                 // 非法请求
-//                 if(!isset($_SESSION['clientName'])) {
-//                     throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
-//                 }
-//                 $clientName = $_SESSION['clientName'];
-//                 if(!is_array($chatDept)) return;
+                $toUsersList = explode('-', $messageData['touser']);
+                if(!$toUsersList || !is_array($toUsersList)) return;
+                // 非法请求
+                if(!isset($_SESSION['clientName'])) {
+                    throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
+                }
+                $clientName = $_SESSION['clientName'];
                 
-//                 //所有消息压入redis队列中，以便存储
-//                 $pushArr = self::makeMsg($clientName, $chatDept, $messageData['content'], Storekey::BROADCAST_MSG_TYPE);
-//                 self::msgIntoQueue($pushArr);
+                //makeMsg($chatid, $from, $content='', $type=0)
+                //所有广播消息压入redis队列中，以便存储
+                $pushArr = array(
+                    'fromuser' => $clientName,
+                    'touser'   => $messageData['touser'],
+                    'title'    => addslashes($messageData['title']),
+                    'content'  => addslashes($messageData['content']),
+                    'time'     => time(),
+                    'type'     => Storekey::BROADCAST_MSG_TYPE,
+                );
+                self::msgIntoQueue($pushArr);
                 
-//                 // 聊天内容
-//                 $new_message = self::makeMsg($clientName, $chatDept, $messageData['content'],'broadcast');
-//                 $jsonNewMessage = json_encode($new_message);
+                // 聊天内容
+                $pushArr['type'] = 'broadcast';
+                $jsonNewMessage = json_encode($pushArr);
                 
-//                 //获取部门下的用户列表
-//                 $toUsersList = self::getUsersByDept($chatDept);
-//                 //获取所有存储的在线用户
-//                 $clientLists = Muser::getOnlineUsers();
-//                 //获取该组用户在线的clientid
-//                 $onlineClientIds = self::getClientidsFromUsers($clientLists, $toUsersList);
-//                 if($onlineClientIds){
-//                     Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
-//                 }
-//                 //获取该组用户所有不在线的用户
-//                 $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
-//                 if($offlineUsers) {
-//                     foreach($offlineUsers as $offname) {
-//                         self::addOfflineBroadcastQueue($offname, $pushArr, ':unread:broadcast');
-//                     }
-//                 }
-//                 return;
+                //获取所有存储的在线用户
+                $clientLists = Muser::getOnlineUsers();
+                //获取该组用户在线的clientid
+                $onlineClientIds = self::getClientidsFromUsers($clientLists, $toUsersList);
+                if($onlineClientIds){
+                    Gateway::sendToAll($jsonNewMessage, $onlineClientIds);
+                }
+                //获取该组用户所有不在线的用户
+                $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
+                if($offlineUsers) {
+                    foreach($offlineUsers as $offname) {
+                        self::addOfflineBroadcastQueue($offname, ':unread:broadcast');
+                    }
+                }
+                return;
             case 'history':
                 if(!isset($messageData['chatid'])) return;
                 
@@ -353,22 +358,11 @@ class Event
        RedisModel::hashIncrBy('webChat', $username.$partkey, $chatid, 1);
    }
    /**
-    * 离线广播数据压入队列
+    * 离线广播数据 
+    * 每个用户都有一个string类型的  键值 用来保存离线广播数量
     */
-   public static function addOfflineBroadcastQueue($username, $msgData, $partkey='') {
-       //注意这里是lpush，为了与ltrim一块使用
-       Redisq::lpush(array(
-           'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-           'key'      => $username.$partkey,  #离线消息队列名
-           'value'    => serialize($msgData),  #插入队列的数据
-       ));
-       //保存最新100条
-       Redisq::ltrim(array(
-           'serverName'  => 'webChat',     #服务器名，参照见Redis的定义 ResysQ
-           'key'         => $username.$partkey,  #队列名
-           'offset'      => 0,      #开始索引值
-           'len'         => 100,      #结束索引值
-       ));
+   public static function addOfflineBroadcastQueue($username, $partkey='') {
+       RedisModel::increment('webChat', $username.$partkey);
    }
    /**
     * 所有聊天消息和广播消息都压入到redis队列中

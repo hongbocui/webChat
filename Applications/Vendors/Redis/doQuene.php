@@ -14,6 +14,7 @@
 	use Vendors\Redis\Redisq;
 	use Vendors\Redis\RedisModel;
 	use Api\Model\Mmessage;
+	use Api\Model\Mbroadcast;
 	
 	//自动建表
 	Api\Model\Mqueue::createQueueTable();
@@ -37,23 +38,40 @@
 	function doQuene($data){
 		if(!$data) return false;
 		$data = unserialize($data);
+		if($data['type'] === \Config\St\Storekey::BROADCAST_MSG_TYPE) {
+		    insertBroadcastData($data);
+		    return;
+		}
 	    //数据库中插入消息
-	    insertData($data);
+	    insertMsgData($data);
 	    storeMessageList($data);
 	    storeRecentMembers($data);
 	}
 	/**
+	 * 所有广播消息，到mysql中
+	 */
+	function insertBroadcastData($data) {
+	    //自动分表处理
+	    Mbroadcast::createTable(Mbroadcast::getTbname($data['time']));
+	    //广播消息入库
+	    $insertData = array(
+	        'fromuser' => $data['fromuser'],
+	        'touser'   => $data['touser'],
+	        'title'    => $data['title'],
+	        'content'  => $data['content'],
+	        'time'     => $data['time'],
+	    );
+	    Mbroadcast::storeBroadcast($insertData);
+	}
+	/**
 	 * 所有对话message数据,到mysql中
 	 */
-	function insertData($data){
-	    if(!$data) return false;
-	    $chatid = $data['chatid'];
-	    
+	function insertMsgData($data){
 	    //自动分表处理
-	    Mmessage::createTable(Mmessage::getTbname());
+	    Mmessage::createTable(Mmessage::getTbname($data['time']));
 	    //插入聊天数据
 	    $insertData = array(
-	        'chatid'   => $chatid,
+	        'chatid'   => $data['chatid'],
 	        'fromuser' => $data['fromuser'],
 	        'message'  => addslashes($data['message']),
 	        'time'     => $data['time'],
@@ -81,12 +99,8 @@
 	 * 保留每路最新的n条message(历史消息),到redis中
 	 */
 	function storeMessageList($data){
-	    if(!$data) return false;
 	    if($data['type'] == \Config\St\Storekey::BROADCAST_MSG_TYPE)
 	        return false;
-	    
-	    if(!$data['chatid']) return;
-	    
 	    Redisq::lpush(array(
             'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
             'key'      => $data['chatid'].':msg-history',  #队列名
