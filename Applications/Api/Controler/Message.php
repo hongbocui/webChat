@@ -88,21 +88,5 @@
             Mmessage::delOneItemUnreadMsg($accoutid, $chatid);
             $this->_success('ok');
         }
-        
-        /**
-         * 获取用户的离线广播消息
-         *  请求参数            是否必须            类型(示例)      说明
-         * accountid   true       string(cuihb) 请求用户cuihb的离线广播消息
-         * num         false      int           要取的条数
-         */
-        public function doGetUnreadBroadcast() {
-            $username = $this->toStr('accountid');
-            $num      = $this->toInt('num');
-            if(!$username) return false;
-            $num = $num ? $num : 100;
-            
-            $unreadMsg = Mmessage::getUnreadBroadcast($username, $num);
-            $this->_success($unreadMsg);
-        }
     }
 ?>
