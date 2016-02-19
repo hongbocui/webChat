@@ -178,7 +178,7 @@
         //         'openTpye'    : 1 // 打开类型: 1 下滑 ……
         //         'openNum'     : 1 // 1 只打开一个，2 打开多个
         // }
-        $.fn.treeView      = function(param){
+        /*$.fn.treeView      = function(param){
             var _this    = this,
             defaultOpen  = param.defaultOpen||1,
             openTpye     = param.openTpye||1,
@@ -224,7 +224,7 @@
                     return false;
                 $(_this).find('.file:visible').slideUp('fast',animateSettings(_folderIndex));
             });
-        }
+        }*/
 		$.fn.treeViewModify = function(param) {
 			var _this=this,
 				_open = param.defaultOpen||0,
@@ -572,114 +572,6 @@
 				$('.right-mouse').remove();
 			})
         }
-		$.fn.moveTreeTop = function() {
-			var _this = this,
-			obj = $(_this).parent(),
-			_prev_icon = 'tree-middle-line',
-			_this_icon = 'tree-middle-line';
-			if(obj.children('.tree-icon').length == 0) {
-				$(_this).prependTo(obj);
-				return false;
-			}
-			obj.children('.tree-icon:first').addClass('tree-middle-line');
-			if($(_this).nextAll('span').length == 0) {
-				_prev_icon = 'tree-end-line';
-				_this_icon = 'tree-end-line';
-				if($(_this).prevAll('span:first').next('.tree-files').length)
-					$(_this).prevAll('span:first').next('.tree-files').removeClass('tree-icon tree-main-line');
-			}
-			$(_this).prevAll('span:first').prev().removeClass('tree-start-line').removeClass('tree-middle-line').addClass(_prev_icon);
-			
-			if($(_this).next('.tree-files').length)
-				$(_this).next().addClass('tree-icon tree-main-line').prependTo(obj);
-			else {
-				if($(_this).attr('type') == 'group')
-				obj.nextAll('.tree-files').eq($(_this).prevAll('span:not(.no-child)').length).insertAfter(obj);
-			}
-			$(_this).prev().addClass('tree-start-line').removeClass(_this_icon).prependTo(obj);
-			$(_this).insertAfter(obj.children('.tree-icon:first'))
-		}
-		$.fn.moveTree = function(obj, pos, target) {
-			var _this = this,
-				_target = target||0,
-				_prev_icon = 'tree-middle-line',
-				_this_icon = 'tree-middle-line';
-			//确认目标位以及当前位
-			//当前位为首位则下一成首位，否则首位不动
-			//当前位为目标位则不动
-			//目标位为末位则当前位变末位，否则末位不动
-			/*obj.children('.tree-icon:first').addClass('tree-middle-line');
-			if($(_this).nextAll('span').length == 0) {
-				_prev_icon = 'tree-end-line';
-				_this_icon = 'tree-end-line';
-				if($(_this).prevAll('span:first').next('.tree-files').length)
-					$(_this).prevAll('span:first').next('.tree-files').removeClass('tree-icon tree-main-line');
-			}
-			$(_this).prevAll('span:first').prev().removeClass('tree-start-line').removeClass('tree-middle-line').addClass(_prev_icon);
-			
-			if($(_this).next('.tree-files').length)
-				$(_this).next().addClass('tree-icon tree-main-line').prependTo(obj);
-			$(_this).prev().addClass('tree-start-line').removeClass(_this_icon).prependTo(obj);
-			$(_this).insertAfter(obj.children('.tree-icon:first'))*/
-		}
-		/**
-		 * $('.recent').addTree({
-		 * 		'title'  : '项目进程如何了',
-		 * 		'member' : [{'username':'谢衍鑫','avatar':'default_34_34.jpg','attr':{'data-id':'xieyx','type':'member'}},{'username':'崔洪波','avatar':'default_34_34.jpg','attr':{'data-id':'xieyx','type':'member'}}],
-		 * 		'attr':{'data-id':'xieyx1234234534534','type':'group'}
-		 * });
-		 *
-		 * 
-		 **/
-		$.fn.addTree = function(data) {
-			var _this = this,
-				_title = $('<div/>'),
-				_html = $('<div/>'),
-				_member = $('<div/>'),
-				title_attr = {},
-				member_attr = {};
-			for(var x in data.attr) {
-				title_attr[x] = data.attr[x];
-			}
-			$('<span/>').attr(title_attr).html(data.title).appendTo(_title);
-			_title.addClass('tree-folders').appendTo(_html);
-			if(data.member.length >= 2) {
-				var _avatar = $('<div/>');
-				for(var i=0; i<data.member.length; i++) {
-					member_attr = {};
-					for(var x in data.member[i].attr) {
-						member_attr[x] = data.member[i].attr[x];
-					}
-					if(i<4)
-					$('<img/>').attr({'src':data.member[i].avatar,'width':'10px'}).addClass('avatar').appendTo(_avatar);
-					$('<span/>').attr(member_attr).addClass('no-child').html(data.member[i].username).prepend($('<img/>').attr({'src':data.member[i].avatar,'width':'22px'}).addClass('avatar')).appendTo(_member);
-				}
-				_avatar.addClass('group-avatar').prependTo(_title.children('span'));
-				_member.addClass('tree-files').appendTo(_html);
-			}else{
-				_title.children('span').addClass('no-child');
-				$('<img/>').addClass('avatar').attr({'src':data.member[0].avatar,'width':'22px'}).prependTo(_title.children('span'));
-			}
-			_html.treeViewModify({});
-			_title.children().appendTo($(_this));
-			if($(_this).children('.tree-icon').length >= 2) {
-				$(_this).children('.tree-icon:eq(-2)').addClass('tree-middle-line').removeClass('tree-end-line');
-				$(_this).children('.tree-icon:eq(-1)').addClass('tree-end-line').removeClass('tree-start-line');
-			}
-			if(data.member.length >= 2)
-				_member.appendTo($(_this).parent());
-			return $(_this).children('span:last');
-		}
-		$.fn.removeTree = function() {
-			var _this=this;
-			$('.tree-item-bg').remove();
-			$(_this).prev().remove();
-			if(!$(_this).hasClass('no-child')) {
-				$(_this).parent().siblings('.tree-files:eq('+$(_this).prevAll('span:not(.no-child)').length+')').remove();
-				$(_this).next('.tree-files').remove();
-			}
-			$(_this).remove();
-		}
 		$.fn.tips = function(param) {
 			var _this = this,
 				_page = $('<div/>'),

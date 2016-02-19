@@ -1,0 +1,13 @@
+<div ng-if="isFolder(treeData)" class="tree-folders">	
+				<span ng-repeat="(dept, staff) in treeData" ng-if="isFiles(staff)">
+					{{dept}}
+				</span>
+				<span ng-repeat="(dept, staff) in treeData" class="no-child" ng-if="isFiles(staff) == false">
+					{{staff}}
+				</span>
+			</div>
+			<span ng-if="isFolder(treeData) == false" class="no-child" ng-repeat="(dept, staff) in treeData">
+					{{staff}}
+			</span>
+			<div class="tree-files" ng-repeat="(dept, staff) in treeData" ng-if="isFiles(staff)" ng-include="'./treeview.html'" ng-init="treeData=staff">
+			</div>

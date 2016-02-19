@@ -1,0 +1,20 @@
+* {margin:0;padding:0}
+body {font: 12px Arial, 宋体;}
+.tree-icon {background:url('./tree.png')}
+.tree-folders {position:relative;z-index:2;}
+
+.tree-folders > span {display:block;height:22px;line-height:22px;}
+.tree-files {display:none;}
+.tree-files > span {display:block;height:22px;line-height:22px;}
+.tree-files > span:hover ,.tree-folders > span:hover {cursor:default;background:antiquewhite;}
+.tree-button-bg {width:22px;height:22px;float:left;}
+.tree-button {display:block;width:14px;height:14px;float:left;margin-top:5px}
+.tree-button-close {background-position: -2px -17px;}
+.tree-button-close:hover {background-position: -2px -2px;}
+.tree-button-open {background-position: -2px -48px;}
+.tree-button-open:hover {background-position: -2px -33px;}
+.tree-start-line {background-position: 2px -63px;}
+.tree-middle-line {background-position: 2px -84px;}
+.tree-end-line {background-position: 2px -107px;}
+.tree-main-line {position:relative;}
+.tree-main-line > .tree-main-line-usable,.tree-main-line > .tree-folders > .tree-main-line-usable {height: 100%;position: absolute;top: 0;background-position: -34px 0;background-repeat: repeat-y;width: 1px;}

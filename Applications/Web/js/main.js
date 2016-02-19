@@ -1,4 +1,5 @@
 $(function(){
+    $('.recent').treeView({})
 	$('.pop-smiley').tips({'target':['left',5]})
 	$('.pop-keys').tips({'target':['right',3]});
 	//表情、快捷发送浮动层
@@ -115,7 +116,8 @@ $(function(){
 	$("body").on('dblclick','.tab-detail.active span:not([type=dept])',function(){
 		//$(this).moveTreeTop($('.tab-detail.recent'));
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
-		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(.*<\/\1>)*/g,'');
+        console.log($(this).html())
+		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(?:.*?<\/\1>)/g,'');
 		var _member = $(this).attr('data-id');
 		var dotChatid = make___ToDot(_member);
 		$('.home').hide();

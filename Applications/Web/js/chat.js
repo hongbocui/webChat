@@ -125,7 +125,7 @@
     	var userlist_all_window = $("#organization-structure");
     	userlist_all_window.empty();
     	flushAllListFunc(userlist_all_window,data);
-    	userlist_all_window.treeViewModify({});
+    	userlist_all_window.treeView({});
     }
     //更新最近联系人列表
     function loadNearestContact(data) {
@@ -310,7 +310,7 @@
 		
 		var itemType = chatid.indexOf('--') > -1 ? 'personal' : 'group';
     	var chatItem = $('#nearest-contact span[type='+itemType+'][data-id='+chatid+']');
-    	chatItem.moveTreeTop();
+    	chatItem.moveTree(0);
     	if(msgNum === 0) {
     		chatItem.find('b').remove();return;
     	}
@@ -365,17 +365,17 @@
     	for(var i in users) {
     		var tmpchatid = makeChatIdFromGf(users[i]);
 			$("#organization-structure .no-child[data-id='"+tmpchatid+"']").each(function(){
-				$(this).removeClass('no-login').moveTreeTop();
+				$(this).removeClass('no-login').moveTree(0);
 			})
     		//联系人列表在线处理
     		/*userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
     		userItemObjInUserList.removeClass('no-login');
-    		userItemObjInUserList.moveTreeTop(userItemObjInUserList.parent());*/
+    		userItemObjInUserList.moveTree(0);*/
     		//最近联系人在线处理
     		nearestContactList = $("#nearest-contact .no-child[data-id='"+tmpchatid+"']");
     		nearestContactList.removeClass('no-login');
     		$.each(nearestContactList,function(key,item){
-    			$(item).moveTreeTop();
+    			$(item).moveTree(0);
     		});
     	}
     }
@@ -406,13 +406,9 @@
 			var cuid = makeChatidToUserid(chatid);
 			if(cuid === wc_loginName) return;
 		    treeData.title = wc_allUserArr[cuid];
-		    treeData.member.push({
-		    	'username':wc_allUserArr[cuid],
-		    	'avatar':'default_34_34.jpg',
-		    	'attr':{'data-id':chatid,'type':'member'}
-		    });
 		    var loginClass = getUserStatus(chatid) ? 'no-login' : '';
-		    treeData.attr = {'data-id':chatid,'type':'personal','class':loginClass};
+		    treeData.attr = {'data-avatar':'./default_34_34.jpg','data-id':chatid,'type':'personal','class':loginClass};
+            treeData.callback = avatar;
 		    $('.recent').children('.tree-folders').addTree(treeData);
 		//群用户聊天
 		} else if (chatid.indexOf('-') > -1) {
@@ -424,11 +420,11 @@
 				var loginClass = getUserStatus(tempidstr) ? 'no-login' : '';
 				treeData.member.push({
 			    	'username':wc_allUserArr[groupInfo.members[r]],
-			    	'avatar':'default_34_34.jpg',
-			    	'attr':{'data-id':tempidstr,'type':'member','class':loginClass}
+			    	'attr':{'data-id':tempidstr,'type':'member','class':loginClass,'data-avatar':'./default_34_34.jpg'}
 			    });
 			}
 		    treeData.attr = {'data-id':chatid,'type':'group','ctime':groupInfo.info.ctime};
+            treeData.callback = avatar;
 		    $('.recent').children('.tree-folders').addTree(treeData);
 		}
     	return;
@@ -502,8 +498,8 @@
  	    		//对于没有删除的人,添加新增的人到列表
  	    		memberObj.addTree({
 					'title':wc_allUserArr[data.addMember[j]],
-					'member':[{'username':wc_allUserArr[data.addMember[j]],'avatar':"default_34_34.jpg",'attr':{'type':'member','data-id':tempChatid,'class':loginClass}}],
-					'attr':{'type':'member','data-id':tempChatid,'class':loginClass}
+					'attr':{'type':'member','data-id':tempChatid,'class':loginClass,'data-avatar':'./default_34_34.jpg'},
+                    'callback':avatar
 				});
  	    	}
  	    	

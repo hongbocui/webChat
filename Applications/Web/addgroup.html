@@ -9,26 +9,28 @@
 	var chatuser = $('.recent').children('.tree-folders').children('span[data-id='+$('.contact-msg').attr('chatid')+']')
 	if(chatuser.attr('type')=='group') {
 		//group
-		chatuser.next().children('span').clone().appendTo($('.group-member'))
+		chatuser.next().clone().children('span').each(function(){
+                $(this).find('.tree-icon').remove().end().appendTo($('.group-member'))
+            });
 	}else{
 		//self
 		$('<span/>').addClass('no-child undelete').attr({'type':'personal','data-id':wc_loginName+'--'+wc_loginName}).html('<img class="avatar" width="22px" src="./default_34_34.jpg">'+wc_allUserArr[wc_loginName]).appendTo($('.group-member'))
 		//chatuser
-		chatuser.clone().addClass('undelete').find('.unread').remove().end().appendTo($('.group-member'))
+		chatuser.clone().addClass('undelete').find('.unread').remove().end().find('.tree-icon').remove().end().appendTo($('.group-member'))
 	}
 	$('.structure').clone().find('.tree-icon').remove().end().children(':not(.tree-item-bg)').appendTo($('.add-group-struct'))
-	$('.add-group-struct').treeViewModify({})
+	$('.add-group-struct').treeView({})
 	$('.add-group-struct span:not(.no-child)').append('<a href="javascript:;" class="add-group-all">+</a>')
 	$('.add-group-struct').on('mouseover','span:not(.no-child)',function(){$(this).children('.add-group-all').show()}).on('mouseout','span:not(.no-child)',function(){$(this).children('.add-group-all').hide()})
 	$('.add-group-struct').on('click','.add-group-all',function(){
 		$(this).parent().next().find('span.no-child[type=member]').each(function(){
 			if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0)
-				$(this).clone().appendTo($('.group-member'));
+				$(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));
 		})
 	})
 	$('.add-group-struct').on('click','span.no-child[type=member]',function(){
 		if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0)
-                                $(this).clone().appendTo($('.group-member'));	
+                                $(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));	
 	})
 	$('.group-member').on('click','span:not(.undelete)',function(){
 		$(this).remove();
@@ -42,22 +44,17 @@
 		
 		if(chatuser.attr('type') == 'group'){
 			//insert
-			var member = null;
-			if(chatuser.next('.tree-files').length == 0) {
-				member = chatuser.parent().nextAll('.tree-files').eq(chatuser.prevAll('span:not(.no-child)').length)
-			}else{
-				member = chatuser.next();
-			}
-			member.empty();
+            var treeMember = chatuser.treeMember();
+			treeMember.empty();
 			chatid = chatuser.attr('data-id');
 			//groupTitle 
 			$('.group-member span').each(function(){
 				memberids.push(makeChatidToUserid($(this).attr('data-id')));
-				member.addTree({
+				treeMember.addTree({
 					'title':$(this).html().replace(/<[^>]+>/,''),
-					'member':[{'username':$(this).html().replace(/<[^>]+>/,''),'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}}],
-					'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}
-				});
+					'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''},'data-avatar':$(this).find('img').attr('src'),
+				    'callback':avatar
+                });
 		    })
 		
 		}else{
@@ -68,14 +65,15 @@
 				var username=$(this).html().replace(/<[^>]+>/,'');
 				if(ii<3) groupTitle += username+',';
 				memberids.push(makeChatidToUserid($(this).attr('data-id')));
-				member.push({'username':username,'avatar':$(this).find('img').attr('src'),'attr':{'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}});
+				member.push({'username':username,'attr':{'data-avatar':$(this).find('img').attr('src'),'type':'member','data-id':$(this).attr('data-id'),'class':$(this).find('.avatar').hasClass('no-login')||$(this).hasClass('no-login') ? 'no-login' : ''}});
 				ii++;
 			})
 			$('.recent').children('.tree-folders').addTree({
 				'title':groupTitle,
 				'member':member,
-				'attr':{'type':'group','data-id':chatid,'ctime' : new Date().getTime(),}
-			}).moveTreeTop()
+				'attr':{'type':'group','data-id':chatid,'ctime' : new Date().getTime()},
+                'callback':avatar
+			}).moveTree(0)
 		}
 		//chatuser.dblclick();
 		$('.modal-close').click();

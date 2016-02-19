@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>beta-即时消息系统</title>
+		<meta charset="utf-8" />
+		<link href="css/chat.css" type="text/css" rel="stylesheet">
+		<link href="js/treeview/treeview.css" type="text/css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<!--联系人-->
+			<div class="contact" ng-controller="contact">
+				<!--搜索框-->
+				<div class="search-box">
+					<div class="search">
+						<i class="chat-icon search-icon"></i>
+						<input type="text" class="search-contact" placeholder="搜索" ng-modal="searchContact" />
+					</div>
+					<!--搜索结果-->
+					<div class="search-result">
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar no-login" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar no-login" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+						<p><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</p>
+					</div>
+				</div>
+				<!--联系人tab页-->
+				<div class="contact-type">
+					<div class="tab" tab-name="recent" type="default">最近联系人</div>
+					<div class="tab active" tab-name="structure">组织架构</div>
+				</div>
+				<!--最近联系人-->
+				<div class="tab-detail recent">
+					
+				</div>
+				<!--<tree-view class="tab-detail recent" tree-data="recent"></tree-view>-->
+				<!--组织架构-->
+				<tree-view class="tab-detail structure active" tree-data="structure"></tree-view>
+				<div class="tool"></div>
+			</div>
+			<!--聊天详情-->
+			<div class="detail">
+				<!--当前联系人信息-->
+				<div class="contact-msg" chatid="">
+					<h1>进展如何了</h1>
+					<p>谢衍鑫创建于2016-01-08 12:15:10</p>
+					<div class="contact-tool">
+						<i class="chat-icon add-group show-modal" modal-title="添加群成员" modal-data="addgroup.html"></i>
+					</div>
+				</div>
+				<div class="chat-box">
+					<!--联系人群组成员-->
+					<!--<div class="member">
+						<div class="tree-folders">
+							<span type="group">
+								陈明、刘书
+							</span>
+						</div>
+						<div class="tree-files">
+							<span class="no-child" type="member"><img class="avatar" src="./default_34_34.jpg" width="22px">陈明</span>
+                        	<span class="no-child" type="member"><img class="avatar no-login" src="./default_34_34.jpg" width="22px">刘书</span>
+						</div>
+					</div>-->
+					<div class="message">
+						<!--历史消息-->
+						<div class="logs">
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row self">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>&nbsp;</p>
+									<div class="message-box">
+										wget http://sourceforge.net/projects/levent/files/release-2.0.22-stable/libevent-2.0.22-stable.tar.gz/download
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div>
+								<div class="message-detail">
+									<p>崔洪波 - 2016-01-08 12:16:11</p>
+									<div class="message-box">
+										<div class="files">
+											<div class="file-msg">
+												<p>会议.docx</p>
+												<p>10.5kb</p>
+											</div>
+											<div class="attach-upload">
+												<div class="progress"></div>
+												<div class="loaded"></div>
+												<div class="attach-upload-control"><i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i><span>0%</span></div>
+											</div>
+											<div class="file-tool">
+												<a href="javascript:;">保存</a>
+											</div>
+										</div>
+										<i class="chat-icon message-box-pike"></i>
+									</div>
+								</div>
+							</div>
+							<!--系统消息-->
+							<div class="row system">
+  								<span>孙霆邀请了侯玉魁加入群聊</span>
+							</div>
+						</div>
+						<!--消息发送-->
+						<div class="send-msg">
+							<div class="tool">
+								<a class="chat-icon smile" href="javascript:;"></a>
+								<i class="chat-icon image show-modal" modal-title="上传图片" modal-data="upload.html"></i>
+								<i class="chat-icon attach"></i>
+								<i class="chat-icon audio"></i>
+								<i class="chat-icon remind"></i>
+								<i class="chat-icon history"></i>
+								<input type="file" name="attach" style="width:0;height:0;float:left;" />
+								<div class="pop-smiley">
+								</div>
+							</div>
+							<!--消息输入框-->
+							<div class="chat-input" id="chat-input" contenteditable="true" spellcheck="false"></div>
+							<!--消息发送按钮-->
+							<div class="send-button">
+								<a href="javascript:;" class="chat-icon more">&nbsp;</a>
+								<a href="javascript:;" class="chat-icon button send">发送</a>
+								<div class="pop-keys">
+									<p data-keys="return">按Enter键发送消息</p>
+									<p data-keys="Ctrl+return" class="active">按Ctrl+Enter键发送消息</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="home"></div>
+			</div>
+		</div>
+		<script src="js/app/require.js"></script>
+		<script src="js/app/config.js"></script>
+		<script src="js/app.js"></script>
+		<!--treeview模板-->
+		<script type="text/ng-template" id="treeView">
+			<div ng-if="isFolder(treeData)" class="tree-folders">	
+				<span ng-repeat="(dept, staff) in treeData" ng-if="isFiles(staff)">
+					{{dept}}
+				</span>
+				<span ng-repeat="(dept, staff) in treeData" class="no-child" ng-if="isFiles(staff) == false">
+					{{staff}}
+				</span>
+			</div>
+			<span ng-if="isFolder(treeData) == false" class="no-child" ng-repeat="(dept, staff) in treeData">
+					{{staff}}
+			</span>
+			<div class="tree-files" ng-repeat="(dept, staff) in treeData" ng-if="isFiles(staff)" ng-include="'treeView'" ng-init="treeData=staff">
+			</div>
+		</script>
+	</body>
+</html>

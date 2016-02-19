@@ -14,24 +14,6 @@ body {font:12px Arial,宋体;}
 .file {position:absolute;left:30px;top:0;}
 .file span {display:block;top:0;left:0; height:18px;line-height:18px;background:url('./images/tree_linemiddle.gif') left center no-repeat;text-indent:25px;margin-left:10px;}
 
-.tree-icon {background:url('../images/tree.png')}
-.tree-item-bg {position: absolute;width: 100%;height: 22px;background: antiquewhite;z-index: 1;top: 0;}
-.tree-folders {position:relative;z-index:2;}
-
-.tree-folders > span {display:block;height:22px;line-height:22px;}
-.tree-files {display:none;padding-left:20px}
-.tree-files > span {display:block;height:22px;line-height:22px;}
-.tree-files > span:hover,.tree-folders > span:hover {cursor:default;}
-.tree-button-bg {width:22px;height:22px;float:left;}
-.tree-button {display:block;width:14px;height:14px;float:left;margin-top:5px}
-.tree-button-close {background-position: -2px -17px;}
-.tree-button-close:hover {background-position: -2px -2px;}
-.tree-button-open {background-position: -2px -48px;}
-.tree-button-open:hover {background-position: -2px -33px;}
-.tree-main-line {background-position: -27px 0;background-repeat: repeat-y;}
-.tree-start-line {background-position: 2px -63px;}
-.tree-middle-line {background-position: 2px -84px;}
-.tree-end-line {background-position: 2px -107px;}
 
 .form-icon {background:url('./images/form-icon.png')}
 .color-input-text {position:relative;width:100%;height:35px;line-height:35px;border:1px solid #e9e7e3;border-left:5px solid #e9e7e3;padding:0 10px;background:#FFFFFF;}
