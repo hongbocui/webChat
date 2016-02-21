@@ -196,7 +196,8 @@ class Event
                 ));
                 //如果本身不在群里则禁止修改群信息
                 if(!in_array($clientName, $originalMembers));
-                
+                //var_dump($messageData['members']);
+                //var_dump($originalMembers);
                 //根据  $originalMembers 和 $messageData['members'] 获取分别要添加和减少的成员
                 $addMembers = array_diff($messageData['members'], $originalMembers);
                 $delMembers = array_diff($originalMembers, $messageData['members']);

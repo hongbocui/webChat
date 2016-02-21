@@ -53,6 +53,14 @@ class RedisModel{
         self::init($server);
         return self::$redis->expire($key, $time);
     }
+    /**
+     * 模糊获取多个key
+     */
+    public static function keys($server, $key) {
+        if(!Redis::$server[$server] || !$key)return false;
+        self::init($server);
+        return self::$redis->keys($key);
+    }
     /*--------------------------------------------------------------------
                             key-value类型
     ---------------------------------------------------------------------*/

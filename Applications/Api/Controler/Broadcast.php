@@ -18,6 +18,8 @@
         }
         /**
          * 删除用户未读广播消息数量
+         * 请求参数             是否必须            类型(示例)      说明
+         * accountid   true      string        用户账号
          */
         public function doDelUnreadNum() {
             $accountid = $this->toStr('accountid');
