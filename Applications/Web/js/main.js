@@ -159,7 +159,7 @@ $(function(){
 	$('.tab-detail,.member').rightMouse({
 		'data':{
 			'发送消息':'javascript:$(".right-mouse-base").dblclick();',
-			'从最近联系人中删除':'javascript:$(".right-mouse-base").removeTree();',
+			'从最近联系人中删除':'javascript:delRecentchatMember($(".right-mouse-base").attr("data-id"));$(".right-mouse-base").removeTree();',
 			'查看消息记录':'#',
 			'查看资料':'#',
 			'成员列表':'#',

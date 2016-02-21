@@ -22,6 +22,15 @@ $(function(){
         }
     },500);
 });
+
+//删除一个最近联系人
+function delRecentchatMember(chatid) {
+	dotChatid = make___ToDot(chatid);
+	$.get('/chatapi.php?c=user&a=DelRecentContact&accountid='+wc_loginName+'&chatid='+dotChatid);
+}
+
+
+
 /*************
  * 用于消息提醒*
  ************/
