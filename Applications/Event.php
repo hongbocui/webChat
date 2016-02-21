@@ -116,7 +116,7 @@ class Event
                 $offlineUsers = self::getOfflineUsers($clientLists, $chatList);
                 if($offlineUsers) {
                     foreach($offlineUsers as $offname) {
-                       self::addOfflineMsgQueue($offname, $chatid, ':unread:msg');
+                       self::addOfflineMsgQueue($offname, $chatid, Storekey::UNREAD_MSG);
                     }
                 }
                 return;
@@ -156,7 +156,7 @@ class Event
                 $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
                 if($offlineUsers) {
                     foreach($offlineUsers as $offname) {
-                        self::addOfflineBroadcastQueue($offname, ':unread:broadcast');
+                        self::addOfflineBroadcastQueue($offname, Storekey::UNREAD_BROADCAST);
                     }
                 }
                 return;
@@ -261,7 +261,7 @@ class Event
     * @param int $client_id
     */
    public static function delUserFromOnline($client_id){
-       $key = \Config\St\Storekey::USER_ONLINE_LIST;
+       $key = Storekey::USER_ONLINE_LIST;
        // 存储驱动是redis
        $try_count = 3;
        while ($try_count--) {
@@ -276,7 +276,7 @@ class Event
     */
    public static function getClientnameFromId($clientId) {
        if(!$clientId) return false;
-       return RedisModel::hashGet('webChat', \Config\St\Storekey::USER_ONLINE_LIST, $clientId);
+       return RedisModel::hashGet('webChat', Storekey::USER_ONLINE_LIST, $clientId);
    }
    
    /**
@@ -301,7 +301,7 @@ class Event
     * @param string $clientName
     */
    public static function addUserToOnlineList($clientId, $clientName){
-       $key = \Config\St\Storekey::USER_ONLINE_LIST;
+       $key = Storekey::USER_ONLINE_LIST;
        // 获取所有所有在线用户clientid--------------
        $allOnlineClientId = Gateway::getOnlineStatus();
        //获取存储中在线用户列表       
@@ -345,7 +345,7 @@ class Event
                    //下线用户
                    Gateway::closeClient($unkey);
                    //删除存储用户
-                   RedisModel::hashDel('webChat', \Config\St\Storekey::USER_ONLINE_LIST, $unkey);
+                   RedisModel::hashDel('webChat', Storekey::USER_ONLINE_LIST, $unkey);
                }
            }
        }
@@ -371,7 +371,7 @@ class Event
    public static function msgIntoQueue($msgData) {
        Redisq::rpush(array(
            'serverName'    => 'webChat', #服务器名，参照见Redisa的定义 ResysQ
-           'key'      => 'chat:msg-list',  #队列名
+           'key'      => Storekey::MSG_CHAT_LIST,  #队列名
            'value'    => serialize($msgData),  #插入队列的数据
        ));
    }

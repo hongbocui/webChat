@@ -103,14 +103,14 @@
          */
         public static function getUnreadMsg($username) {
             if(!$username) return false;
-            return RedisModel::hashGet(self::$redisServer, $username.':unread:msg');
+            return RedisModel::hashGet(self::$redisServer, $username.\Config\St\Storekey::UNREAD_MSG);
         }
         /**
          * 用户点击对话时删除该对话的离线消息
          */
         public static function delOneItemUnreadMsg($username, $chatid) {
             if(!$username || !$chatid) return false;
-            return RedisModel::hashDel(self::$redisServer, $username.':unread:msg', $chatid);
+            return RedisModel::hashDel(self::$redisServer, $username.\Config\St\Storekey::UNREAD_MSG, $chatid);
         }
         /**
          * 获取某路聊天的最近的历史消息 
@@ -118,7 +118,7 @@
         public static function getHistoryMsg($chatid){
             $historyList = \Vendors\Redis\Redisq::range(array(
                 'serverName'  => 'webChat',     #
-                'key'         => $chatid.':msg-history',  #队列名
+                'key'         => $chatid.\Config\St\Storekey::MSG_HISTORY,  #队列名
                 'offset'      => 0,      #开始索引值
                 'len'         => -1,      #结束索引值
             ));

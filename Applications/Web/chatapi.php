@@ -2,7 +2,7 @@
     //自动加载类
     use \Workerman\Autoloader;
     require '../../Workerman/Autoloader.php';
-    Autoloader::setRootPath("../");
+    Autoloader::setRootPath(__DIR__."/..");
     
     //class and method
     $class = rtrim('Api\Controler\ ').ucfirst($_REQUEST['c']);

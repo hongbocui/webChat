@@ -68,14 +68,14 @@
          */
         public static function getUnreadBroadcast($username){
             if(!$username) return false;
-            return RedisModel::get(self::$redisServer, $username.':unread:broadcast');
+            return RedisModel::get(self::$redisServer, $username.\Config\St\Storekey::UNREAD_BROADCAST);
         }
         /**
          * 删除用户离线广播消息数量
          */
         public function delUnreadBroadcast($username) {
             if(!$username) return false;
-            return RedisModel::delete(self::$redisServer, $username.':unread:broadcast');
+            return RedisModel::delete(self::$redisServer, $username.\Config\St\Storekey::UNREAD_BROADCAST);
         }
     }
 ?>

@@ -1,7 +1,7 @@
 <?php 
     namespace Api\Model;
     use \Vendors\Redis\RedisModel;
-    
+        
     class Mgroup extends Abstractex {
         //群生命周期
         public static $groupLife = 2592000;
@@ -120,7 +120,7 @@
         public static function remRecentMembers($chatid, $userList) {
             if(!is_array($userList)) return false;
             foreach($userList as $userid) {
-                RedisModel::zRem(self::$redisServer, $userid.':recentchat:members', $chatid);
+                RedisModel::zRem(self::$redisServer, $userid.\Config\St\Storekey::RECENT_MEMBERS, $chatid);
             }
             return true;
         }
@@ -131,14 +131,14 @@
          */
         public static function groupInfoKey($master, $uuid) {
             if(!$master || !$uuid) return false;
-            return 'group:'.$master.$uuid.':info';
+            return $master.$uuid.\Config\St\Storekey::GROUP_BASEINFO;
         }
         /**
          * 生成群成员信息存储的redis键值
          */
         public static function groupMembersKey($master, $uuid) {
             if(!$master || !$uuid) return false;
-            return 'group:'.$master.$uuid.':members';
+            return $master.$uuid.\Config\St\Storekey::GROUP_MEMBERS;
         }
     }
 ?>
