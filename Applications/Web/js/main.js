@@ -117,7 +117,7 @@ $(function(){
 		//$(this).moveTreeTop($('.tab-detail.recent'));
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
         console.log($(this).html())
-		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(?:.*?<\/\1>)/g,'');
+		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(?:.*?<\/\1>)?/g,'');
 		var _member = $(this).attr('data-id');
 		var dotChatid = make___ToDot(_member);
 		$('.home').hide();

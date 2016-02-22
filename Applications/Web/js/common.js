@@ -15,4 +15,6 @@ function avatar(obj) {
     })
     if(member.length !=1)
         avatar.appendTo(obj);
+    if(!obj.parent().hasClass('tree-folders'))
+        obj.children('.tree-icon').css('margin-left','20px');
 }
