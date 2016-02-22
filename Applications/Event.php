@@ -121,8 +121,9 @@ class Event
                 }
                 return;
             case 'broadcast':
-                $toUsersList = explode('-', $messageData['touser']);
+                $toUsersList = $messageData['touser']['member'];
                 if(!$toUsersList || !is_array($toUsersList)) return;
+                $toUsersList = array_unique($toUsersList);
                 // 非法请求
                 if(!isset($_SESSION['clientName'])) {
                     throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
@@ -132,12 +133,13 @@ class Event
                 //makeMsg($chatid, $from, $content='', $type=0)
                 //所有广播消息压入redis队列中，以便存储
                 $pushArr = array(
-                    'fromuser' => $clientName,
-                    'touser'   => $messageData['touser'],
-                    'title'    => addslashes($messageData['title']),
-                    'content'  => addslashes($messageData['content']),
-                    'time'     => time(),
-                    'type'     => Storekey::BROADCAST_MSG_TYPE,
+                    'fromuser'   => $clientName,
+                    'touser'     => implode('-',$messageData['touser']['member']),
+                    'touserTitle'=> $messageData['touser']['title'],
+                    'title'      => addslashes($messageData['title']),
+                    'content'    => addslashes($messageData['content']),
+                    'time'       => time(),
+                    'type'       => Storekey::BROADCAST_MSG_TYPE,
                 );
                 self::msgIntoQueue($pushArr);
                 

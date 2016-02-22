@@ -60,11 +60,12 @@
 	       Mbroadcast::createTable(Mbroadcast::getTbname($data['time']));
 	    //广播消息入库
 	    $insertData = array(
-	        'fromuser' => $data['fromuser'],
-	        'touser'   => $data['touser'],
-	        'title'    => $data['title'],
-	        'content'  => $data['content'],
-	        'time'     => $data['time'],
+	        'fromuser'   => $data['fromuser'],
+	        'touser'     => $data['touser'],
+	        'touserTitle'=> $data['touserTitle'],
+	        'title'      => $data['title'],
+	        'content'    => $data['content'],
+	        'time'       => $data['time'],
 	    );
 	    Mbroadcast::storeBroadcast($insertData);
 	}
