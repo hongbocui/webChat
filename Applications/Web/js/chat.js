@@ -436,7 +436,7 @@
     	for(var p in allList) {
     		if(typeof(allList[p]) === 'object') {
     			isFolder = true;
-    			innerStr += '<span type="dept" data-dept="'+p+'">'+p+'</span>';
+    			innerStr += '<span type="dept" data-dept="'+Math.floor(Math.random()*1000).toString()+Math.floor(Math.random()*100000)+Math.floor(Math.random()*100000)+'">'+p+'</span>';
     			
     			var filesObj = document.createElement('div');
     				filesObj.className = "tree-files";
