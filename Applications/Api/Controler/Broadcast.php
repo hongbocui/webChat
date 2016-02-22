@@ -1,7 +1,8 @@
 <?php 
     namespace Api\Controler;
     use Api\Model\Mbroadcast;
-    class Broadcast extends Abstractex {
+use Config\St\Storekey;
+        class Broadcast extends Abstractex {
         /**
          * 获取用户的广播消息列表
          * 请求参数             是否必须            类型(示例)      说明
@@ -46,6 +47,16 @@
             $accountid = $this->toStr('accountid');
             if(!$accountid) $this->_error('param error');
             Mbroadcast::delUnreadBroadcast($accountid);
+            $this->_success('ok');
+        }
+        
+        /**
+         * 新增一个离线广播数据
+         */
+        public function doAddUnreadNum() {
+            $accountid = $this->toStr('accountid');
+            if(!$accountid) $this->_error('param error');
+            Mbroadcast::addUnreadBroadcastNum($accountid, Storekey::UNREAD_BROADCAST);
             $this->_success('ok');
         }
     }

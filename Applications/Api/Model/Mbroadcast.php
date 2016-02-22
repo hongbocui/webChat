@@ -95,9 +95,16 @@
         /**
          * 删除用户离线广播消息数量
          */
-        public function delUnreadBroadcast($username) {
+        public static function delUnreadBroadcast($username) {
             if(!$username) return false;
             return RedisModel::delete(self::$redisServer, $username.\Config\St\Storekey::UNREAD_BROADCAST);
+        }
+        /**
+         * 新增离线广播数据
+         * 每个用户都有一个string类型的  键值 用来保存离线广播数量
+         */
+        public static function addUnreadBroadcastNum($username, $partkey='') {
+            return RedisModel::increment(self::$redisServer, $username.$partkey);
         }
     }
 ?>

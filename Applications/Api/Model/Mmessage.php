@@ -113,6 +113,13 @@
             return RedisModel::hashDel(self::$redisServer, $username.\Config\St\Storekey::UNREAD_MSG, $chatid);
         }
         /**
+         * 用户某路对话的离线消息数加 num 个
+         * 每个用户有一个离线hash，hash中的键值分别是每路聊天对应的消息数量
+         */
+        public static function addUnreadMsg($username, $chatid, $partkey='', $num=1) {
+            return RedisModel::hashIncrBy(self::$redisServer, $username.$partkey, $chatid, $num);
+        }
+        /**
          * 获取某路聊天的最近的历史消息 
          */
         public static function getHistoryMsg($chatid){

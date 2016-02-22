@@ -88,5 +88,21 @@
             Mmessage::delOneItemUnreadMsg($accoutid, $chatid);
             $this->_success('ok');
         }
+        /**
+         * 某路未读消息数量加 1
+         * 请求参数            是否必须            类型(示例)      说明
+         * accountid  true      string(cuihb) 账户
+         * chatid     true      string        添加的离线消息到chatid上
+         * 
+         * return
+         * bool true/false
+         */
+        public function doAddUnreadNum() {
+            $accoutid = $this->toStr('accountid');
+            $chatid   = $this->toStr('chatid');
+            if(!$accoutid || !$chatid) $this->_error('param error');
+            Mmessage::addUnreadMsg($accoutid, $chatid, Storekey::UNREAD_MSG);
+            $this->_success('ok');
+        }
     }
 ?>

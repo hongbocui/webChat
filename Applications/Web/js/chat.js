@@ -159,22 +159,25 @@
     }
     //接收消息
     function recieveMsg(fromuser, chatid, msg, time) {
-    	chatid = makeDotTo___(chatid);
-    	makeHistoryList(fromuser, chatid, msg, time);
+    	var _chatid = makeDotTo___(chatid);
+    	var dotChatid = make___ToDot(chatid);
+    	makeHistoryList(fromuser, _chatid, msg, time);
     	
     	var nowChatId = getNowChatId();
 		//判断是否在最近联系人中，如没有则显示(个人消息和群消息都判断)
-		if(!isChatidInContact(chatid)){
-			loadNearestContactFunc(chatid);
+		if(!isChatidInContact(_chatid)){
+			loadNearestContactFunc(_chatid);
 			lightOnlineUserList(new Array(fromuser));
 		}
     	
 		//判断是否为当前用户，当前用户则append到聊天box里面，否则则将该聊天对话的未读消息+1
-		if(nowChatId === chatid) {
+		if(nowChatId === _chatid) {
 			var msgList = [{"message":msg, "fromuser":fromuser, "time":time}];
 			chatInDialogContainer(msgList);
 		}else{
-			loadUnreadMsgFun(chatid, 1);
+			//未读消息数加1
+			$.get('/chatapi.php?c=message&a=AddUnreadNum&accountid='+wc_loginName+'&chatid='+dotChatid);
+			loadUnreadMsgFun(_chatid, 1);
 		}
     }
     

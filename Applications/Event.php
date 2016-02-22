@@ -18,7 +18,9 @@ use \GatewayWorker\Lib\Gateway;
 use \Vendors\Redis\RedisModel;
 use \Vendors\Redis\Redisq;
 use \Api\Model\Muser;
+use \Api\Model\Mmessage;
 use \Config\St\Storekey;
+use Api\Model\Mbroadcast;
 
 class Event
 {
@@ -116,7 +118,7 @@ class Event
                 $offlineUsers = self::getOfflineUsers($clientLists, $chatList);
                 if($offlineUsers) {
                     foreach($offlineUsers as $offname) {
-                       self::addOfflineMsgQueue($offname, $chatid, Storekey::UNREAD_MSG);
+                        Mmessage::addUnreadMsg($offname, $chatid, Storekey::UNREAD_MSG);
                     }
                 }
                 return;
@@ -159,7 +161,7 @@ class Event
                 $offlineUsers = self::getOfflineUsers($clientLists, $toUsersList);
                 if($offlineUsers) {
                     foreach($offlineUsers as $offname) {
-                        self::addOfflineBroadcastQueue($offname, Storekey::UNREAD_BROADCAST);
+                        Mbroadcast::addUnreadBroadcastNum($offname, Storekey::UNREAD_BROADCAST);
                     }
                 }
                 return;
@@ -353,20 +355,6 @@ class Event
            }
        }
        return;
-   }
-   /**
-    * 离线聊天数据或广播数据 压入用户离线聊天消息数量队列
-    * 每个用户有一个离线hash，hash中的键值分别是每路聊天对应的消息数量
-    */
-   public static function addOfflineMsgQueue($username, $chatid, $partkey='') {
-       RedisModel::hashIncrBy('webChat', $username.$partkey, $chatid, 1);
-   }
-   /**
-    * 离线广播数据 
-    * 每个用户都有一个string类型的  键值 用来保存离线广播数量
-    */
-   public static function addOfflineBroadcastQueue($username, $partkey='') {
-       RedisModel::increment('webChat', $username.$partkey);
    }
    /**
     * 所有聊天消息和广播消息都压入到redis队列中
