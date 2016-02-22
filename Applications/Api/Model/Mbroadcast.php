@@ -37,9 +37,11 @@
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
             extract($options);
             if(!$accountid || !$time) return false;
-            $where = " where accountid like '*-".$accountid."-*' ";
-            $where .= " and time>{$time} ";
+            $where = " where touser like '%-".$accountid."-%' ";
+            $where .= " and time<{$time} ";
+            $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
             $formatData = self::setSelectField($fields);
+            $tbname = self::getTbname($time);
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
             return self::dbobj()->query($sql);
         }
