@@ -11,7 +11,7 @@
     if(chatuser.attr('type')=='group') {
 		//group
 		treeMember.clone().children('span').each(function(){
-                $(this).addClass('undelete').find('.tree-icon').remove().end().appendTo($('.group-member'))
+                $(this).find('.tree-icon').remove().end().appendTo($('.group-member'))
             });
 	}else{
 		//self

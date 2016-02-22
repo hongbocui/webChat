@@ -101,7 +101,8 @@
 		}else{
 			_title.children('span').addClass('no-child');
 		}
-		_html.treeView({});
+        if(_this.hasClass('tree-folders') || _this.prev('span').length)
+		    _html.treeView({});
 		_title.children().appendTo(_this);
 		if(data.member && data.member.length >= 2)
 			_member.appendTo(_this.parent());
