@@ -31,7 +31,7 @@ p {height:30px;line-height:30px;}
 
 .group-avatar {width: 20px;height: 20px;border: 1px solid aliceblue;float: left;margin-right: 5px;border-radius: 5px;}
 .group-avatar .avatar {margin-right: 0;}
-.unread {display: inline-block;text-align: right;float: right;width: 18px;height: 18px;background: red;border-radius: 11px;color: #fff;text-align: center;line-height: 18px;margin: 2px 5px 0 0;}
+.unread {display: inline-block;text-align: right;float: right;width: 18px;height: 18px;background: red;border-radius: 11px;color: #fff;text-align: center;line-height: 18px;margin: 2px 5px 0 0;position: absolute;top: 0;right: 0;}
 .chat-icon {background:url('../images/chat.png') no-repeat;}
 .search {width: 160px;height: 28px;background: #EBECED;float: left;margin: 5px 20px;border-radius: 15px;line-height:28px;text-align:center;border:1px solid #ccc;color:#ccc;cursor:text;}
 .search-icon {width: 15px;height: 14px;display: inline-block;background-position: -7px -87px;}
@@ -54,18 +54,28 @@ p {height:30px;line-height:30px;}
 .self .message-detail p {text-align:right}
 .self .message-box {background:#eeeeee;float:right;}
 .self .message-box-pike {left: inherit;right: -7px;background-position: -182px -163px;}
-.smile,.image,.audio,.remind,.history,.attach {display: inline-block;width: 30px;height: 30px;}
+.smile,.image,.audio,.remind,.history,.attach,.broadcast {display: inline-block;width: 30px;height: 30px;}
 .simile {background-position: 0px 0px;}
 .image {background-position: -62px 0px;}
 .audio {background-position: -91px 0px;}
 .remind {background-position: -121px 0px;}
 .history {background-position: -30px 0px;}
 .attach {background-position: -156px 0px;}
+.broadcast {background-position: -153px -32px;}
+.add-broadcast {background-position: -45px -38px;}
+.add-group {background-position: -4px -38px;}
+.add-broadcast,.add-group {width: 40px;height: 35px;display: block;float: right;margin-right: 10px;}
 
 .contact .tool {background:gainsboro;}
 .more {background-position: -104px -85px;}
 .button {background-position: -56px -85px;}
 .text-cut {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+
+.broadcast-content {width: 476px;height: 200px;border: 1px solid #cccccc;float: left;margin-top: 6px;outline:none;}
+label {width: 40px;height: 30px;line-height: 30px;float: left;text-align: right;margin-right: 5px;}
+input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: none;border-bottom: 1px solid #ccc;}
+.user {width:22px;height:22px;background-position: -157px -60px;}
+.add-receive {position: absolute;border: 1px solid #cccccc;right: 25px;top: 49px;}
 
 .attach-upload {
     position: absolute;
@@ -312,14 +322,6 @@ p {height:30px;line-height:30px;}
     width: 400px;
     height: 35px;
 }
-.add-group {
-    background-position: -4px -38px;
-    width: 40px;
-    height: 35px;
-    display: block;
-    float: right;
-    margin-right: 10px;
-}
 .target-right,.target-left {
     width: 38px;
     height: 35px;
@@ -395,6 +397,9 @@ p {height:30px;line-height:30px;}
     word-wrap: break-word;
     text-align: left;
     display: inline-block;
+}
+.tree-folders > span {
+    position:relative;
 }
 @-moz-document url-prefix() { 
 	.avatar.no-login,.no-login .avatar, { 

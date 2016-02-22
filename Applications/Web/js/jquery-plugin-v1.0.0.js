@@ -684,9 +684,10 @@
 			$('<div/>').addClass('modal-border').appendTo($('body'));
 			$('<div/>').addClass('modal-bg').appendTo($('body'));
 			$('.modal-close').click(function(){
-				$('.modal').remove();
-				$('.modal-border').remove();
-				$('.modal-bg').remove();
+				var obj = $(this).closest('.modal')
+                obj.next('.modal-border').remove();
+				obj.next('.modal-bg').remove();
+                obj.remove();
 			})
 		}
 })(jQuery);

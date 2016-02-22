@@ -1,0 +1,24 @@
+<div class="add-group-struct"></div>
+<div class="add-group-tool">
+	<i class="chat-icon target-right">添加</i>
+	<i class="chat-icon target-left">移除</i>
+</div>
+<div class="group-member"></div>
+<a href="javascript:;" class="confirm-receive button float-right">确定</a>
+<script>
+	$('.structure').clone().find('.tree-icon').remove().end().children('.tree-folders').find('.tree-files').remove().end().end().children().appendTo($('.add-group-struct'))
+	$('.add-group-struct').treeView({})
+	$('.add-group-struct span:not(.no-child)').append('<a href="javascript:;" class="add-group-all">+</a>')
+	$('.add-group-struct').on('mouseover','span:not(.no-child)',function(){$(this).children('.add-group-all').show()}).on('mouseout','span:not(.no-child)',function(){$(this).children('.add-group-all').hide()})
+	$('.add-group-struct').on('click','.add-group-all',function(){
+		$(this).parent().clone().find('.tree-icon').remove().end().find('.add-group-struct').remove().end().appendTo($('.group-member'));
+	})
+	$('.add-group-struct').on('click','span.no-child[type=member]',function(){
+		if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0)
+                                $(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));	
+	})
+	$('.group-member').on('click','span:not(.undelete)',function(){
+		$(this).remove();
+	})
+
+</script>

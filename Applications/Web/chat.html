@@ -122,7 +122,9 @@
 						</div>
                      </div>
 				</div>
-				<div class="tool"></div>
+				<div class="tool">
+                    <i class="chat-icon broadcast show-modal" modal-title="发送广播消息" modal-data="broadcast.html"></i>
+                </div>
 			</div>
 			<!--聊天详情-->
 			<div class="detail">
@@ -465,7 +467,7 @@
 				}
 			}
 			$(function(){
-				$('.show-modal').click(function(){
+				$(document).on('click','.show-modal',function(){
 					$(this).modal();
 				})
 				$('.pop-keys p').click(function(){
