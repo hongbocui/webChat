@@ -94,8 +94,6 @@ $(function(){
 		$(this).addClass('active').siblings('.tab').removeClass('active');
 		$(this).parent().siblings('.'+$(this).attr('tab-name')).addClass('active').siblings('.tab-detail').removeClass('active');	
 	});
-	$('.tab-detail.structure').treeViewModify({});
-	$('.tab-detail.recent').treeViewModify({});
 	//新消息，若最近联系人中存在，则将其移至最近联系人中顶部
 	//$('待移动元素').moveTreeTop($('.recent'));
 //	$(".tab-detail.structure,.chat-box .member").on('dblclick','span[type=member]',function(){
