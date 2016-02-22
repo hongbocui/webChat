@@ -67,7 +67,8 @@
 			//目标位置是通过目标位置所在元素来定位的
             //目标位置在当前元素之后，当前元素移动之后目标位置上移，所以目标位置加1
             if(target > currentPos) target++;
-			_parent.nextAll('.tree-files:eq('+_this.prevAll('span:not(.no-child)').length+')').insertBefore(_parent.nextAll('.tree-files:eq('+target+')'))
+			if(!_this.hasClass('no-child'))
+                _parent.nextAll('.tree-files:eq('+_this.prevAll('span:not(.no-child)').length+')').insertBefore(_parent.nextAll('.tree-files:eq('+target+')'))
  			if(_this.next('.tree-files').length){
 				_this.next('.tree-files').insertBefore(targetPos);
 				_this.insertBefore(targetPos.prev('.tree-files'));
