@@ -483,8 +483,8 @@
 			}else{
 				memberObj = groupObj.next();
 			}
- 	    	var systemLogDel = wc_allUserArr[data.fromuser]+'将 ';
- 	    	var systemLogAdd = wc_allUserArr[data.fromuser]+'邀请 ';
+ 	    	var systemLogDel = wc_allUserArr[data.fromuser]+' 将 ';
+ 	    	var systemLogAdd = wc_allUserArr[data.fromuser]+' 邀请 ';
  	    	for(var i in data.delMember) {
  	    		systemLogDel += wc_allUserArr[data.delMember[i]]+',';
  	    		var tempChatid = makeChatIdFromGf(data.delMember[i]);
@@ -511,12 +511,12 @@
  	    	if(data.addMember.length !== 0)
  	    		window[chatSomeoneHistory].push({"message":systemLogAdd+" 加入群聊", "time":"groupNoticeType"});
  	    	if(data.delMember.length !== 0)
- 	    		window[chatSomeoneHistory].push({"message":systemLogDel+" 踢出群聊", "time":"groupNoticeType"});
+ 	    		window[chatSomeoneHistory].push({"message":systemLogDel+" 移出群聊", "time":"groupNoticeType"});
  	    	//判断是否为当前用户,如果是当前用户则直接通知
  	    	var nowChatId = getNowChatId();
  	    	if(nowChatId === __Chatid) {
  	    		if(data.delMember.length !== 0)
- 	 	    		systemLogs(systemLogDel+" 踢出群聊");
+ 	 	    		systemLogs(systemLogDel+" 移出群聊");
  	 	    	if(data.addMember.length !== 0)
  	 	    		systemLogs(systemLogAdd+" 加入群聊");
  			}

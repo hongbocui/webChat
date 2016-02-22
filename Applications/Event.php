@@ -134,7 +134,7 @@ class Event
                 //所有广播消息压入redis队列中，以便存储
                 $pushArr = array(
                     'fromuser'   => $clientName,
-                    'touser'     => implode('-',$messageData['touser']['member']),
+                    'touser'     => '-'.implode('-',$messageData['touser']['member']).'-',//便于查询
                     'touserTitle'=> $messageData['touser']['title'],
                     'title'      => addslashes($messageData['title']),
                     'content'    => addslashes($messageData['content']),
@@ -143,8 +143,9 @@ class Event
                 );
                 self::msgIntoQueue($pushArr);
                 
-                // 聊天内容
+                // 聊天内容.修改type，前端发送不必发送所有用户
                 $pushArr['type'] = 'broadcast';
+                unset($pushArr['touser']);
                 $jsonNewMessage = json_encode($pushArr);
                 
                 //获取所有存储的在线用户

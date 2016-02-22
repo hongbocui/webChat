@@ -23,6 +23,26 @@
             $sql = "insert into ".self::getTbname($data['time'])."({$formatData['fileds']}) values({$formatData['values']})";
             return self::dbobj()->query($sql);
         }
+        /**
+         * 获取广播消息列表
+         */
+        public static function getList($paramArr) {
+            $options = array(
+                'accountid' => '',//用户账号
+                'time'      => '',//根据这个时间向前查询
+                'limit'     => 20, //默认每次查询20条
+                'fields'    => array(),//要查询的字段
+                'order'     => 'order by id desc',
+            );
+            if (is_array($paramArr))$options = array_merge($options, $paramArr);
+            extract($options);
+            if(!$accountid || !$time) return false;
+            $where = " where accountid like '*-".$accountid."-*' ";
+            $where .= " and time>{$time} ";
+            $formatData = self::setSelectField($fields);
+            $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
+            return self::dbobj()->query($sql);
+        }
         
         /**
          * 自动建表语句、判断是否有本月聊天表，没有则创建
