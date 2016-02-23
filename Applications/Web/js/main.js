@@ -2,6 +2,7 @@ $(function(){
     $('.recent').treeView({})
 	$('.pop-smiley').tips({'target':['left',5]})
 	$('.pop-keys').tips({'target':['right',3]});
+	$('.pop-broadcast').tips({'target':['left',3]});
 	//表情、快捷发送浮动层
 	$('.smile').click(function(event){
 		$('.pop-smiley').show();

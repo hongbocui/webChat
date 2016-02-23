@@ -56,6 +56,7 @@ body {font:12px Arial,宋体;}
     top: 5px;
     bottom: 5px;
     overflow: hidden;
+    width: 100%;
 }
 
 .tips-target {

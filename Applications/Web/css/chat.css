@@ -402,6 +402,47 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     position:relative;
     overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
 }
+.pop-broadcast {
+    position: absolute;
+    left: 5px;
+    top: -115px;
+    width: 187px;
+    height: 100px;
+    background: #FFFFFF;
+    border: 1px solid #efefef;
+    border-radius: 5px;
+    box-shadow: 3px 3px 3px #ccc;
+}
+.pop-broadcast .tips-close {
+    top: -3px;
+    right: 5px;
+}
+.pop-broadcast .tit {
+    border-bottom: 1px solid lightsteelblue;
+    padding: 0 10px;
+}
+.pop-broadcast .con {
+    padding: 5px 9px;
+    display: block;
+    line-height: 18px;
+}
+.notice {
+    background: red;
+    width: 7px;
+    height: 7px;
+    display: none;
+    border-radius: 100%;
+    margin: 5px 0 0 20px;
+}
+.rainbow {
+    animation: 0.5s rainbow infinite;
+}
+@keyframes rainbow {
+    0% { opacity:1; }
+    50% { opacity:0; }
+    100% { opacity:1; }
+}
+
 @-moz-document url-prefix() { 
 	.avatar.no-login,.no-login .avatar, { 
 		filter: grayscale(1); 

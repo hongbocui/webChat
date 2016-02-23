@@ -4,10 +4,12 @@
 <a href="javascript:;" class="create-broadcast button float-right">确定</a>
 <script>
     var toUser = {};
-    toUser.member = [];
-    toUser.title = '';
+    var memberObj = null;
     $(document).off('click', '.confirm-receive').on('click','.confirm-receive',function(){
+        toUser.member = [];
+        toUser.title = '';
         var modal = $(this).closest('.modal');
+        memberObj = modal.find('.group-member').clone();
         modal.find('.group-member').children().each(function(){
             if($(this).attr('type') == 'dept') {
                 modal.find('.add-group-struct').find('span[data-dept='+$(this).attr('data-dept')+']').next('.tree-files').find('span.no-child').each(function(){
@@ -16,13 +18,14 @@
             }else{
                 toUser.member.push(makeChatidToUserid($(this).attr('data-id')));
             }
-            toUser.title += $(this).html().replace(/<[^>]+>/,'')+';';
+            toUser.title += ';'+$(this).html().replace(/<[^>]+>/,'');
         })
         modal.find('.modal-close').click();
-        toUser.title = toUser.title.substr(0,toUser.title.length-1);
+        toUser.title = toUser.title.substr(1);
         $('input[name=broadcast-receive]').val(toUser.title);
     });
     $('.create-broadcast').click(function(){
         wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":wc_loginName,"touser":toUser,"title":$("input[name=broadcast-title]").val(),"content":$(".broadcast-content").html()}));
+        $(this).closest('.modal').find('.modal-close').click();
     })
 </script>

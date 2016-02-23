@@ -18,3 +18,7 @@ function avatar(obj) {
     if(!obj.parent().hasClass('tree-folders'))
         obj.children('.tree-icon').css('margin-left','20px');
 }
+function newBroadcast(data) {
+    $('.broadcast').addClass('rainbow').find('.notice').css('display','block');
+    $('.pop-broadcast').show().find('.tit').html(data.title).end().find('.con').html(data.content);
+}
