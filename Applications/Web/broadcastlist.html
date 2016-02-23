@@ -1,0 +1,38 @@
+<div class="broadcast-all">
+<div class="broadcast-lists">
+    <ul>
+        <li class="active">
+            <p class="text-cut">标题</p>
+            <p class="text-cut text-preview">content</p>
+        </li>
+        <li>
+            <p class="text-cut">标题</p>
+            <p class="text-cut text-preview">content</p>
+        </li>
+        <li>
+            <p class="text-cut">标题</p>
+            <p class="text-cut text-preview">content</p>
+        </li>
+        <li class="page"><a class="page-button prev" href="javascript:;">&lt;</a><a class="page-button next" href="javascript:;">&gt;</a></li>
+    </ul>
+</div>
+
+<div class="broadcast-detail">
+    <div class="tit">
+        <p class="text-bold">标题</p>
+        <p>sender: xieyx<span class="float-right">time:2016-01-01 00:00:00</span></p>
+        <p>receiver: IT center</p>
+    </div>
+    <div class="con">
+        内容
+    </div>
+</div>
+</div>
+<script>
+    //$.getJSON('chatapi.php?c=broadcast&a=list&accountid=xieyx&time=',function(){
+    //
+    //});
+    $('.broadcast-lists li:not(.page)').click(function(){
+        $(this).addClass('active').siblings().removeClass('active');
+    })
+</script>
