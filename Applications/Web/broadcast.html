@@ -6,7 +6,7 @@
     var toUser = {};
     toUser.member = [];
     toUser.title = '';
-    $(document).on('click','.confirm-receive',function(){
+    $(document).off('click', '.confirm-receive').on('click','.confirm-receive',function(){
         var modal = $(this).closest('.modal');
         modal.find('.group-member').children().each(function(){
             if($(this).attr('type') == 'dept') {
