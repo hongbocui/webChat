@@ -56,15 +56,15 @@
 	 */
 	function insertBroadcastData($data) {
 	    //自动分表处理,每天检测一次就行
-	    if(isFirstSet())
+	    if(isFirstSet("broadcast:tableset"))
 	       Mbroadcast::createTable(Mbroadcast::getTbname($data['time']));
 	    //广播消息入库
 	    $insertData = array(
 	        'fromuser'   => $data['fromuser'],
 	        'touser'     => $data['touser'],
-	        'touserTitle'=> $data['touserTitle'],
-	        'title'      => $data['title'],
-	        'content'    => $data['content'],
+	        'touserTitle'=> addslashes($data['touserTitle']),
+	        'title'      => addslashes($data['title']),
+	        'content'    => addslashes($data['content']),
 	        'time'       => $data['time'],
 	    );
 	    Mbroadcast::storeBroadcast($insertData);
@@ -74,7 +74,7 @@
 	 */
 	function insertMsgData($data){
 	    //自动分表处理,每天检测一次就行
-	    if(isFirstSet())
+	    if(isFirstSet(":msg:tableset"))
 	       Mmessage::createTable(Mmessage::getTbname($data['time']));
 	    //插入聊天数据
 	    $insertData = array(
@@ -128,8 +128,7 @@
 	 * true  是第一次set
 	 * false 不是第一次set
 	 */
-	function isFirstSet() {
-	    $keyHz = ":keyset:first";
+	function isFirstSet($keyHz) {
 	    $key = date("Ymd").$keyHz;
 	    //今天的key存在则返回true，否则返回false
 	    if(RedisModel::exists('webChat', $key)) {
@@ -144,7 +143,7 @@
 	        }
 	        //设置今天的key
 	        RedisModel::set('webChat', $key, '1');
-	        return false;
+	        return true;
 	    }
 	}
 ?>

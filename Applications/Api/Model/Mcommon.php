@@ -1,6 +1,6 @@
 <?php 
     namespace Api\Model;
-    class Mcommon {
+    class Mcommon extends Abstractex{
         /**
          * 单人聊天获取chatid
          * @param array $chatList 聊天人员 域账号数组

@@ -6,6 +6,7 @@
      */
     class Group extends Abstractex {
         public function doTest() {
+            var_dump(\Api\Model\Msqlmerge::hasCreateMerge());
             die();
             var_dump(pathinfo('jfkdfj',PATHINFO_EXTENSION));die;
             $str = $this->toStr('pwd');

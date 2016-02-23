@@ -5,12 +5,29 @@
      */
     namespace Api\Model;
     abstract class Abstractex {
-         //redis服务器
-         protected static $redisServer = 'webChat';
+        //redis服务器
+        protected static $redisServer = 'webChat';
         
-         protected static function setSelectField($fields){
-            return self::formatFiledsValue($fields);
-         }
+        //数据库对象
+        protected static $db = null;
+        
+        protected static function dbobj(){
+            if(null === self::$db)
+                self::$db = \GatewayWorker\Lib\Db::instance('webChat');
+            return self::$db;
+        }
+        
+        /**
+         * 获取apppath
+         */
+        protected static function getAppPath() {
+            return __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..';
+        }
+        
+        protected static function setSelectField($fields){
+           return self::formatFiledsValue($fields);
+        }
+        
         
         /**
          * 设置insert条件

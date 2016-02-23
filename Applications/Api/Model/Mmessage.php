@@ -4,16 +4,6 @@
     class Mmessage extends Abstractex{
         //表前缀
         public static $messagetablePre = 'webchat_message';
-        //数据库对象
-        public static $db = null;
-        //redis服务器
-        public static $redisServer = 'webChat';
-        
-        public static function dbobj(){
-            if(null === self::$db)
-                self::$db = \GatewayWorker\Lib\Db::instance('webChat');
-            return self::$db;
-        }
         /**
          * 获取某路聊天的历史记录
          * time/chatid 必须
@@ -37,6 +27,7 @@
             $where = " where chatid='{$chatid}' ";
             $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
             $tbname = self::getTbname($time);
+            if(!self::tbexists($tbname)) return false;
             $formatData = self::setSelectField($fields);
             $where .= " and time<{$time} ";
             if($joinTime)//如果是群聊则限制消息记录的时间
@@ -68,17 +59,7 @@
          * 自动建表
          */
         public static function createMessageTable($tbname) {
-            $sql = "CREATE TABLE if not exists `{$tbname}` (
-                          `id` int(11) NOT NULL AUTO_INCREMENT,
-                          `chatid` char(32) NOT NULL COMMENT '俩用户间聊天的唯一标示（组合方法：参与用户名排序后MD5），用来查询历史记录',
-                          `fromuser` varchar(30) NOT NULL,
-                          `message` varchar(500) NOT NULL,
-                          `time` int(11) NOT NULL,
-                          `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:聊天 1：广播 2：图片 3：附件',
-                          PRIMARY KEY (`id`),
-                          KEY `chatidindex` (`chatid`),
-                          KEY `timeindex` (`time`)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+            $sql = \Api\Plugin\Tableddlget::msgTableDdl($tbname);
             return self::dbobj()->query($sql);
         }
         /**

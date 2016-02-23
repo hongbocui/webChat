@@ -123,6 +123,8 @@ class Event
                 }
                 return;
             case 'broadcast':
+                if(!isset($messageData['touser']['member'])) return;
+                
                 $toUsersList = $messageData['touser']['member'];
                 if(!$toUsersList || !is_array($toUsersList)) return;
                 $toUsersList = array_unique($toUsersList);
@@ -134,6 +136,7 @@ class Event
                 
                 //makeMsg($chatid, $from, $content='', $type=0)
                 //所有广播消息压入redis队列中，以便存储
+                $messageData['title'] = isset($messageData['title']) ? $messageData['title'] : '无标题';
                 $pushArr = array(
                     'fromuser'   => $clientName,
                     'touser'     => '-'.implode('-',$messageData['touser']['member']).'-',//便于查询

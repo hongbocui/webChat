@@ -14,6 +14,7 @@
          *  chatid     true       string        属于该chatid下的聊天记录
          *  time       true       string        根据这个时间向前查找
          *  type       true       string        查看的消息类型 nomal/image/attach
+         *  selectType false      int           0:查以前的，1:查以后的
          *  accountid  true/false string        如果chatid是群组则必须(查询入群时间)。否则非必须
          * 
          * 返回值 消息列表
@@ -24,6 +25,8 @@
             $time      = $this->toStr('time');
             $type      = $this->toStr('type');
             $accountid = $this->toStr('accountid');
+           // $selectType= isset($this->toStr('selectType')) ;
+            
             
             if(!$chatid || !$time) $this->_error('参数出错');
             //消息类型处理

@@ -5,17 +5,8 @@
      * // dbobj 中的几个方法 lastInsertId()、single($query = '',$params = null)、
      * row($query)、column($query)、query($query)
      */
-    use \GatewayWorker\Lib\Db;
     class Mqueue extends Abstractex{
         public static $queuetable = 'queue_deamon_status';
-        //数据库对象
-        public static $db = null;
-        
-        public static function dbobj(){
-            if(null === self::$db)
-                self::$db = Db::instance('webChat');
-            return self::$db;
-        }
         /**
          * 自动建表
          */

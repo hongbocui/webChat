@@ -21,7 +21,7 @@
                 'accountid' => '',//用户账号
                 'time'      => '',//根据这个时间向前查询
                 'limit'     => 20, //默认每次查询20条
-                'type'      => 1, //向前查还是向后查
+                'selectType'=> 1, //向前查还是向后查
                 'fields'    => array(),//要查询的字段
                 'order'     => 'order by id desc',
             );
@@ -30,7 +30,7 @@
             if(!$accountid || !$time) return false;
             $where = " where touser like '%-".$accountid."-%' ";
             
-            $mode = $type ? '<' : '>';
+            $mode = $selectType ? '<' : '>';
             $where .= " and time{$mode}{$time} ";
             $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
             $formatData = self::setSelectField($fields);
