@@ -1,4 +1,28 @@
-<div class="row"><label>接收者</label><input type="text" name=="broadcast-receive" class="text" /><i class="chat-icon user add-receive show-modal" modal-title="选择联系人" modal-data="addreceive.html"></i></div>
+<div class="row"><label>接收者</label><input type="text" name="broadcast-receive" class="text" /><i class="chat-icon user add-receive show-modal" modal-title="选择联系人" modal-data="addreceive.html"></i></div>
 <div class="row"><label>主题</label><input type="text" name="broadcast-title" class="text" /></div>
 <div class="broadcast-content" contenteditable="true" spellcheck="false"></div>
 <a href="javascript:;" class="create-broadcast button float-right">确定</a>
+<script>
+    var toUser = {};
+    toUser.member = [];
+    toUser.title = '';
+    $(document).on('click','.confirm-receive',function(){
+        var modal = $(this).closest('.modal');
+        modal.find('.group-member').children().each(function(){
+            if($(this).attr('type') == 'dept') {
+                modal.find('.add-group-struct').find('span[data-dept='+$(this).attr('data-dept')+']').next('.tree-files').find('span.no-child').each(function(){
+                    toUser.member.push(makeChatidToUserid($(this).attr('data-id')));
+                })
+            }else{
+                toUser.member.push(makeChatidToUserid($(this).attr('data-id')));
+            }
+            toUser.title += $(this).html().replace(/<[^>]+>/,'')+';';
+        })
+        modal.find('.modal-close').click();
+        toUser.title = toUser.title.substr(0,toUser.title.length-1);
+        $('input[name=broadcast-receive]').val(toUser.title);
+    });
+    $('.create-broadcast').click(function(){
+        wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":wc_loginName,"touser":toUser,"title":$("input[name=broadcast-title]").val(),"content":$(".broadcast-content").html()}));
+    })
+</script>

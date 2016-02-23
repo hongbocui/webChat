@@ -11,11 +11,15 @@
 	$('.add-group-struct span:not(.no-child)').append('<a href="javascript:;" class="add-group-all">+</a>')
 	$('.add-group-struct').on('mouseover','span:not(.no-child)',function(){$(this).children('.add-group-all').show()}).on('mouseout','span:not(.no-child)',function(){$(this).children('.add-group-all').hide()})
 	$('.add-group-struct').on('click','.add-group-all',function(){
-		$(this).parent().clone().find('.tree-icon').remove().end().find('.add-group-struct').remove().end().appendTo($('.group-member'));
-	})
+        if($('.group-member span[data-dept='+($(this).closest('.tree-files').prev('span')||$(this).parent()).attr('data-dept')+']').length == 0) {
+		    $(this).parent().clone().find('.tree-icon').remove().end().find('.add-group-all').remove().end().appendTo($('.group-member'));
+        }
+    })
 	$('.add-group-struct').on('click','span.no-child[type=member]',function(){
-		if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0)
-                                $(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));	
+		if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0) {
+            if($('.group-member span[data-dept='+$(this).closest('.tree-files').prev('span').attr('data-dept')+']').length == 0)
+                $(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));
+        }
 	})
 	$('.group-member').on('click','span:not(.undelete)',function(){
 		$(this).remove();

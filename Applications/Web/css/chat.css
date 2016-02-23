@@ -398,8 +398,9 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     text-align: left;
     display: inline-block;
 }
-.tree-folders > span {
+.tree-folders span,.tree-files span {
     position:relative;
+    overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
 }
 @-moz-document url-prefix() { 
 	.avatar.no-login,.no-login .avatar, { 
