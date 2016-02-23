@@ -20,7 +20,7 @@
             $options = array(
                 'accountid' => '',//用户账号
                 'time'      => '',//根据这个时间向前查询
-                'limit'     => 20, //默认每次查询20条
+                'limit'     => 5, //默认每次查询20条
                 'selectType'=> 1, //向前查还是向后查
                 'fields'    => array(),//要查询的字段
                 'order'     => 'order by id desc',

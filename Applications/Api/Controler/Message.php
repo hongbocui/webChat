@@ -13,8 +13,8 @@
          *  请求参数            是否必须            类型(示例)      说明
          *  chatid     true       string        属于该chatid下的聊天记录
          *  time       true       string        根据这个时间向前查找
-         *  type       true       string        查看的消息类型 nomal/image/attach
-         *  selectType false      int           0:查以前的，1:查以后的
+         *  class      true       string         查看的消息类型 nomal/image/attach
+         *  type       true        int           0:查以前的，1:查以后的
          *  accountid  true/false string        如果chatid是群组则必须(查询入群时间)。否则非必须
          * 
          * 返回值 消息列表
@@ -23,9 +23,9 @@
         public function doMsgList() {
             $chatid    = $this->toStr('chatid');
             $time      = $this->toStr('time');
-            $type      = $this->toStr('type');
+            $type      = $this->toStr('class');
             $accountid = $this->toStr('accountid');
-           // $selectType= isset($this->toStr('selectType')) ;
+            $selectType= $this->toInt('type');
             
             
             if(!$chatid || !$time) $this->_error('参数出错');

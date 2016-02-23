@@ -54,6 +54,10 @@ class Tableddlget {
               KEY `chatidindex` (`chatid`),
               KEY `timeindex` (`time`)";
     }
+    /**
+     * broadcast表的字段sql
+     */
+    //private static function broadcastField
     
 }
 ?>

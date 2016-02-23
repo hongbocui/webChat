@@ -8,7 +8,7 @@ use Config\St\Storekey;
          * 请求参数             是否必须            类型(示例)      说明
          * accountid   true      string        用户账号
          * time        false     string        根据这个时间来向前查询消息记录，默认为当前时间
-         * type        false     int           0:向前查 1:向后查
+         * type        true      int           查询方式，0:向前查 1:向后查
          * 
          * 返回值json
          * data.data = 广播消息列表
@@ -17,7 +17,6 @@ use Config\St\Storekey;
             $accountid = $this->toStr('accountid');
             $time      = $this->toStr('time');
             $type      = $this->toInt('type');
-            $type      = isset($type) ? $type : 1;
             if(!$time) $time = time();
             if(!$accountid) $this->_error('param error');
             $list = Mbroadcast::getList(array(

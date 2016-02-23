@@ -12,13 +12,14 @@
          */
         public static function getMsgList($paramArr) {
             $options = array(
-                'limit'  => 20,     //limit
-                'time'   => 0,      //时间戳、根据这个向前查询  必填
-                'chatid' => '',     //要查询的chatid
-                'joinTime'=> '',    //用户的入群时间
-                'type'    => 0,     //消息类型  Storekey::CHAT_MSG_TYPE
-                'fields' => array(),//要查询的字段或者以 英文'，'分开
-                'order'  => 'order by id desc',
+                'limit'     => 20,     //limit
+                'time'      => 0,      //时间戳、根据这个向前查询  必填
+                'chatid'    => '',     //要查询的chatid
+                'joinTime'  => '',    //用户的入群时间
+                'type'      => 0,     //消息类型  Storekey::CHAT_MSG_TYPE
+                'selectType'=> 1, //向前查还是向后查
+                'fields'    => array(),//要查询的字段或者以 英文'，'分开
+                'order'     => 'order by id desc',
             );
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
             extract($options);
@@ -29,7 +30,8 @@
             $tbname = self::getTbname($time);
             if(!self::tbexists($tbname)) return false;
             $formatData = self::setSelectField($fields);
-            $where .= " and time<{$time} ";
+            $mode = $selectType ? '<' : '>';
+            $where .= " and time{$mode}{$time} ";
             if($joinTime)//如果是群聊则限制消息记录的时间
                 $where .= " and time > {$joinTime} ";
             if($type)
