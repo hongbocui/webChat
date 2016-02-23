@@ -19,6 +19,9 @@ function avatar(obj) {
         obj.children('.tree-icon').css('margin-left','20px');
 }
 function newBroadcast(data) {
+	//新增一个通知
+	$.get('/chatapi.php?c=broadcast&a=AddUnreadNum&accountid='+wc_loginName);
     $('.broadcast').addClass('rainbow').find('.notice').css('display','block');
-    $('.pop-broadcast').show().find('.tit').html(data.title).end().find('.con').html(data.content);
+    if(data.title)
+    	$('.pop-broadcast').show().find('.tit').html(data.title).end().find('.con').html(data.content);
 }

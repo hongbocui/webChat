@@ -18,6 +18,10 @@ $(function(){
                     });
                 });
             });
+            //加载未读广播
+            $.getJSON('/chatapi.php?c=broadcast&a=UnreadNum&accountid='+wc_loginName, function(r) {
+            	if(r.data) newBroadcast(r.data);
+            });
             clearInterval(loadChatDataTime);
         }
     },500);

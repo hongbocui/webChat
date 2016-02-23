@@ -65,8 +65,7 @@
 	           case 'broadcast':
 	               //前端发送广播接口
 	               //wc_ws.send(JSON.stringify({"type":"broadcast","touser":["技术部"],"content":"qqqdddddddddddddddddddd"}));
-	               console.log(data);
-                   newBroadcast(data);
+	        	   newBroadcast(data);
 	         	  break;
 	           // 加载历史消息
 	           case 'history':
