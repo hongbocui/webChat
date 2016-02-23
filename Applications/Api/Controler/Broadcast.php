@@ -15,13 +15,16 @@ use Config\St\Storekey;
         public function doList() {
             $accountid = $this->toStr('accountid');
             $time      = $this->toStr('time');
+            $type      = isset($this->toInt('type')) ? $this->toStr('type') : 1;
             if(!$time) $time = time();
             if(!$accountid) $this->_error('param error');
             $list = Mbroadcast::getList(array(
                 'accountid' => $accountid,
                 'time'      => $time,
+                'type'      => $type,
                 'fields'    => array('fromuser','touserTitle', 'title', 'content','time'),
             ));
+            if(!$list) $this->_error('暂无数据');
             $this->_success($list);
         }
         /**

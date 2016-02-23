@@ -4,16 +4,6 @@
     class Mbroadcast extends Abstractex {
         //表前缀
         public static $messagetablePre = 'webchat_broadcast';
-        //数据库对象
-        public static $db = null;
-        //redis服务器
-        public static $redisServer = 'webChat';
-        
-        public static function dbobj(){
-            if(null === self::$db)
-                self::$db = \GatewayWorker\Lib\Db::instance('webChat');
-            return self::$db;
-        }
         
         /**
          * 消息入库
@@ -31,6 +21,7 @@
                 'accountid' => '',//用户账号
                 'time'      => '',//根据这个时间向前查询
                 'limit'     => 20, //默认每次查询20条
+                'type'      => 1, //向前查还是向后查
                 'fields'    => array(),//要查询的字段
                 'order'     => 'order by id desc',
             );
@@ -38,10 +29,14 @@
             extract($options);
             if(!$accountid || !$time) return false;
             $where = " where touser like '%-".$accountid."-%' ";
-            $where .= " and time<{$time} ";
+            
+            $mode = $type ? '<' : '>';
+            $where .= " and time{$mode}{$time} ";
             $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
             $formatData = self::setSelectField($fields);
             $tbname = self::getTbname($time);
+            if(false === self::tbexists($tbname))
+                return false;
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
             return self::dbobj()->query($sql);
         }
@@ -57,15 +52,7 @@
          * 自动建表
          */
         public static function createBroadcastTable($tbname) {
-            $sql = "CREATE TABLE if not exists `{$tbname}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `fromuser` varchar(32) NOT NULL,
-                `touser` text NOT NULL,
-                `title` varchar(200) NOT NULL,
-                `content` varchar(1000) NOT NULL,
-                `time` int(11) NOT NULL,
-                PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+            $sql = \Api\Plugin\Tableddlget::broadcastTableDdl($tbname);
             return self::dbobj()->query($sql);
         }
         /**
