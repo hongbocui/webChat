@@ -379,30 +379,4 @@ class Event
        );
        return $msg;
    }
-   /**
-    * 根据部门获取部门下所有用户，部门之间用,号分割
-    * 用于广播
-    */
-   public static function getUsersByDept($chatDept) {
-       if(in_array('公司全体员工', $chatDept)) {
-           $toUserList = Muser::getUserinfo(array(
-               'fields' => array('accountid'),
-           ));
-       } else {
-           $toUserList = array();
-           foreach($chatDept as $key=>$dept) {
-               $userList = Muser::getUserinfo(array(
-                   'fields' => array('accountid'),
-                   'dept'   => $dept,
-               ));
-               $toUserList = array_merge($toUserList, $userList);
-           }
-       }
-       if(!$toUserList) return;
-       foreach((array)$toUserList as $key=>$userval) {
-           $toUserList[$key] = $userval['accountid'];
-       }
-       return $toUserList;
-   }
-   
 }
