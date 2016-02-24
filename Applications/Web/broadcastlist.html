@@ -1,4 +1,5 @@
 <div class="broadcast-all">
+<div class="no-broadcast"></div>
 <div class="broadcast-lists">
     <ul>
         <li class="active">
@@ -19,7 +20,7 @@
 
 <div class="broadcast-detail">
     <div class="tit">
-        <p class="text-bold title">标题</p>
+        <p class="text-bold title text-cut">标题</p>
         <p>发送人: <span class="fromuser">xieyx</span><span class="float-right">发送时间: <span class="time">2016-01-01 00:00:00</span></span></p>
         <p>接收人: <span class="touser">IT center</span></p>
     </div>
@@ -32,22 +33,44 @@
     $('.broadcast-lists').on('click','li:not(.page)',function(){
         $(this).addClass('active').siblings().removeClass('active');
         $('.broadcast-detail .tit').find('p.title').html(list[$(this).index()-1].title);
-        $('.broadcast-detail .tit').find('span.fromuser').html(list[$(this).index()-1].fromuser);
+        $('.broadcast-detail .tit').find('span.fromuser').html(wc_allUserArr[list[$(this).index()-1].fromuser]);
         $('.broadcast-detail .tit').find('span.time').html(getLocalTime(list[$(this).index()-1].time));
         $('.broadcast-detail .tit').find('span.touser').html(list[$(this).index()-1].touserTitle);
         $('.broadcast-detail .con').html(list[$(this).index()-1].content);
     })
+    $('.broadcast-lists .page .prev').click(function(){
+        $(this).addClass('disabled').siblings().removeClass('disabled')
+        var tmp = getData(1,list[$('.broadcast-lists li:last').index()-1].time);
+        if(tmp == null)
+            return false;
+        $(this).removeClass('disabled')
+        list = tmp;
+        fillData(list);
+    })
+    $('.broadcast-lists .page .next').click(function(){
+        $(this).addClass('disabled').siblings().removeClass('disabled')
+        var tmp = getData(0,list[0].time);
+        if(tmp == null)
+            return false;
+        $(this).removeClass('disabled')
+        list = tmp;
+        fillData(list);
+    })
     var list = getData(1);
-    fillData(list);
+    if(list == null)
+        $('.no-broadcast').show();
+    else
+        fillData(list);
     $('.broadcast-lists li:eq(1)').click();
     function fillData(data) {
-        if(data == null) return false;
+        if(data == null)
+            return false;
         $('.broadcast-lists li:not(.page)').remove();
         for(var x in data) {
             $('.broadcast-lists ul').append('<li> \
                         <p class="text-cut">'+data[x].title+'</p> \
-                                    <p class="text-cut text-preview">'+data[x].content+'</p> \
-                                            </li>')
+                        <p class="text-cut text-preview">'+data[x].content.replace(/<[^>]+>/g,'')+'</p> \
+                    </li>');
         }
     }
     function getData(type, time) {
