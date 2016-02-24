@@ -3,7 +3,7 @@
     use Vendors\Redis\RedisModel;
     class Mbroadcast extends Abstractex {
         //表前缀
-        public static $messagetablePre = 'webchat_broadcast';
+        public static $bdcTablePre = 'webchat_broadcast';
         
         /**
          * 消息入库
@@ -34,7 +34,8 @@
             $where .= " and time{$mode}{$time} ";
             $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
             $formatData = self::setSelectField($fields);
-            $tbname = self::getTbname($time);
+            $tbname = self::$bdcTablePre;
+            \Api\Model\Msqlmerge::mergeBdcTable();
             if(false === self::tbexists($tbname))
                 return false;
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
@@ -67,7 +68,7 @@
          */
         public static function getTbname($timestamp = '') {
             $time = $timestamp ? $timestamp : time();
-            return self::$messagetablePre.date('Y', $time);
+            return self::$bdcTablePre.date('Y', $time);
         }
         /****************************************
          *                redis操作                                   *
