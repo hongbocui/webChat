@@ -1,3 +1,6 @@
+function getLocalTime(nS) {
+    return new Date(parseInt(nS) * 1000).toLocaleString();
+}
 function avatar(obj) {
     var member = obj;
     var avatar = $('<div/>').addClass('group-avatar');

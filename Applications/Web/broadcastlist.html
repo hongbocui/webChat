@@ -19,9 +19,9 @@
 
 <div class="broadcast-detail">
     <div class="tit">
-        <p class="text-bold">标题</p>
-        <p>sender: xieyx<span class="float-right">time:2016-01-01 00:00:00</span></p>
-        <p>receiver: IT center</p>
+        <p class="text-bold title">标题</p>
+        <p>发送人: <span class="fromuser">xieyx</span><span class="float-right">发送时间: <span class="time">2016-01-01 00:00:00</span></span></p>
+        <p>接收人: <span class="touser">IT center</span></p>
     </div>
     <div class="con">
         内容
@@ -29,10 +29,40 @@
 </div>
 </div>
 <script>
-    //$.getJSON('chatapi.php?c=broadcast&a=list&accountid=xieyx&time=',function(){
-    //
-    //});
-    $('.broadcast-lists li:not(.page)').click(function(){
+    $('.broadcast-lists').on('click','li:not(.page)',function(){
         $(this).addClass('active').siblings().removeClass('active');
+        $('.broadcast-detail .tit').find('p.title').html(list[$(this).index()-1].title);
+        $('.broadcast-detail .tit').find('span.fromuser').html(list[$(this).index()-1].fromuser);
+        $('.broadcast-detail .tit').find('span.time').html(getLocalTime(list[$(this).index()-1].time));
+        $('.broadcast-detail .tit').find('span.touser').html(list[$(this).index()-1].touserTitle);
+        $('.broadcast-detail .con').html(list[$(this).index()-1].content);
     })
+    var list = getData(1);
+    fillData(list);
+    $('.broadcast-lists li:eq(1)').click();
+    function fillData(data) {
+        if(data == null) return false;
+        $('.broadcast-lists li:not(.page)').remove();
+        for(var x in data) {
+            $('.broadcast-lists ul').append('<li> \
+                        <p class="text-cut">'+data[x].title+'</p> \
+                                    <p class="text-cut text-preview">'+data[x].content+'</p> \
+                                            </li>')
+        }
+    }
+    function getData(type, time) {
+        var ret = null;
+        $.ajax({
+            url:'chatapi.php?c=broadcast&a=list',
+            data:{'accountid':wc_loginName,'type':type, 'time':time||''},
+            dataType:'JSON',
+            type:'POST',
+            async:false,
+            success:function(data){
+                if(data.code)
+                    ret =  data.data;
+            }
+        })
+        return ret;
+    }
 </script>
