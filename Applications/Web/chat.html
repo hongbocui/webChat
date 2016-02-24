@@ -123,7 +123,7 @@
                      </div>
 				</div>
 				<div class="tool">
-                    <i class="chat-icon broadcast show-modal" modal-title="发送广播消息" modal-data="broadcast.html"><i class="notice"></i></i>
+                    <i class="chat-icon broadcast show-modal" modal-title="广播消息" modal-data="broadcastlist.html"><i class="notice"></i></i>
                     <div class="pop-broadcast">
                         <a href="javascript:;" class="tips-close button-close">×</a>
                         <p class="tit text-cut">广播标题</p>
@@ -446,7 +446,7 @@
 					'wav','wma','wmv','xls','xml','zip'
 				];
 				var typeReplace = {
-					'docx':'xls','xlsx':'xls'
+					'docx':'doc','xlsx':'xls','pptx':'ppt'
 				};
 				if(type in typeReplace) {
 					return typeReplace[type];

@@ -162,13 +162,14 @@ $(function(){
 			'查看消息记录':'#',
 			'查看资料':'#',
 			'成员列表':'#',
-			'更改群名称':'javascript:editGroupName();'
+			'更改群名称':'javascript:editGroupName();',
+            '发送广播消息':'javascript:$(this).attr({"modal-title":"发送广播消息","modal-data":"broadcast.html","class":"show-modal"}).modal();'
 		},
 		'limit':{
 			'group':['发送消息','从最近联系人中删除','查看消息记录','成员列表','更改群名称'],
 			'personal':['发送消息','从最近联系人中删除','查看消息记录','查看资料'],
 			'member':['发送消息','查看消息记录','查看资料'],
-			'dept':['成员列表']
+			'dept':['成员列表','发送广播消息']
 		},
 		'elem':'span'
 	});
