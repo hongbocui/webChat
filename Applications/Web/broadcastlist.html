@@ -32,39 +32,52 @@
 <script>
     $('.broadcast-lists').on('click','li:not(.page)',function(){
         $(this).addClass('active').siblings().removeClass('active');
-        $('.broadcast-detail .tit').find('p.title').html(list[$(this).index()-1].title);
-        $('.broadcast-detail .tit').find('span.fromuser').html(wc_allUserArr[list[$(this).index()-1].fromuser]);
-        $('.broadcast-detail .tit').find('span.time').html(getLocalTime(list[$(this).index()-1].time));
-        $('.broadcast-detail .tit').find('span.touser').html(list[$(this).index()-1].touserTitle);
-        $('.broadcast-detail .con').html(list[$(this).index()-1].content);
-    })
+        $('.broadcast-detail .tit').find('p.title').html(broadcastlist[$(this).index()-1].title);
+        $('.broadcast-detail .tit').find('span.fromuser').html(wc_allUserArr[broadcastlist[$(this).index()-1].fromuser]);
+        $('.broadcast-detail .tit').find('span.time').html(getLocalTime(broadcastlist[$(this).index()-1].time));
+        $('.broadcast-detail .tit').find('span.touser').html(broadcastlist[$(this).index()-1].touserTitle);
+        $('.broadcast-detail .con').html(broadcastlist[$(this).index()-1].content);
+    });
     $('.broadcast-lists .page .prev').click(function(){
         $(this).addClass('disabled').siblings().removeClass('disabled')
-        var tmp = getData(1,list[$('.broadcast-lists li:last').index()-1].time);
+        var tmp = getData(1,broadcastlist[$('.broadcast-lists li:last').index()-1].time);
         if(tmp == null)
             return false;
         $(this).removeClass('disabled')
-        list = tmp;
-        fillData(list);
-    })
+        broadcastlist = tmp;
+        fillData(broadcastlist);
+    });
     $('.broadcast-lists .page .next').click(function(){
         $(this).addClass('disabled').siblings().removeClass('disabled')
-        var tmp = getData(0,list[0].time);
+        var tmp = getData(0,broadcastlist[0].time);
         if(tmp == null)
             return false;
         $(this).removeClass('disabled')
-        list = tmp;
-        fillData(list);
-    })
-    var list = getData(1);
-    if(list == null)
+        broadcastlist = tmp;
+        fillData(broadcastlist);
+    });
+    var broadcastlist = getData(1);
+    if(broadcastlist == null)
         $('.no-broadcast').show();
     else
-        fillData(list);
+        fillData(broadcastlist);
     $('.broadcast-lists li:eq(1)').click();
     function fillData(data) {
         if(data == null)
             return false;
+      	//判断小弹框中是否有数据
+      	var ftitle = $('.pop-broadcast').find('.tit').html();
+    	if(ftitle) {
+    		var ftime  = $('.pop-broadcast').attr('d-time');
+    		if(data[0]['time'] != ftime){
+    			var ffromuser = $('.pop-broadcast').attr('d-fromuser');
+    			var ftoTitle  = $('.pop-broadcast').attr('d-touserTitle');
+    			var fcontent  = $('.pop-broadcast').find('.con').html();
+    			var firstmsgData = {"fromuser":ffromuser,"touserTitle":ftoTitle,"title":ftitle,"content":fcontent,"time":ftime};
+    			data.pop();
+    			data.unshift(firstmsgData);
+    		}
+    	}
         $('.broadcast-lists li:not(.page)').remove();
         for(var x in data) {
             $('.broadcast-lists ul').append('<li> \
@@ -88,4 +101,5 @@
         })
         return ret;
     }
+    readBroadcast();
 </script>
