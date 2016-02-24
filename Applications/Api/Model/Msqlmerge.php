@@ -41,7 +41,6 @@ class Msqlmerge extends Abstractex{
         if(!$unionTables) return false;
         self::dropTable(self::$msgPrefix);//先删除表
         $sqlStr = \Api\Plugin\Tableddlget::msgMergeTableDdl(self::$msgPrefix, $unionTables);
-        echo $sqlStr;
         return self::dbobj()->query($sqlStr);
     }
     /**

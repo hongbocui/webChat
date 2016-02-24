@@ -3,3 +3,5 @@ workerman.log
 Applications/Vendors/Redis/dump.rdb
 Applications/Web/upload/
 Applications/Config/Redis.php
+Applications/Config/Db.php
+Applications/Config/St/merge.engine
