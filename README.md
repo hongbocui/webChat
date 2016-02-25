@@ -68,8 +68,10 @@ chatid一共有三种形式
 	
 ###发送广播消息
 	wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":"cuihb","touser":'cuihb-wangjx',"title":"aaa","content":"bbbb"}));
-
-
+###修改群组广播
+	wc_ws.send(JSON.stringify({"type":"groupset","chatid":dotChatid,"title":groupTitle,"members":memberids}));
+###修改群名称广播
+	wc_ws.send(JSON.stringify({"type":"grouptitle","chatid":dotChatid,"title":groupTitle}));
 ##实现的功能：
 - 1、所有聊天历史记录永久保存
 - 2、记录用户最近联系人，用户每次登陆即可加载
