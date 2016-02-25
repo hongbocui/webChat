@@ -1,6 +1,7 @@
 * {margin:0;padding:0}
 html,body {font:12px Arial,宋体;width:100%;height:100%;}
 a {text-decoration:none;}
+a.disabled {pointer-events: none;}
 b {font-weight:normal;}
 h1 {padding-top: 10px;}
 p {height:30px;line-height:30px;}
@@ -24,7 +25,7 @@ ul {list-style:none;}
 .contact-type .tab {width: 50%;height: 30px;color: #ccc;line-height: 30px;text-align: center;float: left;}
 .contact-type .tab.active {background: #000;color:#FFF;}
 .contact-type .tab:hover {cursor:default;color:#FFF;}
-.tab-detail {display: none;width: 200px;position: absolute;top: 70px;bottom: 40px;padding:5px 0;overflow-y:auto;overflow-x:hidden;}
+.tab-detail {display: none;width: 200px;position: absolute;top: 70px;bottom: 40px;padding:5px 0;overflow-y:auto;overflow-x:hidden;z-index:0;}
 .tab-detail.active {display: block;}
 .contact .tool {position: absolute;bottom: 10px;}
 .avatar {border-radius: 11px;float: left;margin-right: 5px;}
@@ -440,6 +441,7 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     width:100%;
     height:300px;
     border:1px solid #cccccc;
+    position:relative;
 }
 .broadcast-lists {
     float:left;
@@ -459,6 +461,7 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     float: left;
     border-bottom: 1px solid #efefef;
     padding: 4px 8px 0;
+    color: #888888;
 }
 .broadcast-lists li.active {
     background: #fff;
@@ -466,6 +469,7 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     border-bottom-color: #ccc;
     border-top: 1px solid #ccc;
     margin-top: -1px;
+    color: #000000;
 }
 .broadcast-all p {
     height: 25px;
@@ -474,6 +478,10 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
 .broadcast-detail .con {
     border-top: 1px solid #EFEFEF;
     padding: 10px 0;
+    line-height: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 204px;
 }
 .broadcast-lists .page {
     padding: 0;
@@ -490,7 +498,7 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     display: block;
     width: 73px;
     text-align: center;
-    color: #ccc;
+    color: #aaaaaa;
     height: 25px;
     line-height: 25px;
     float: left;
@@ -510,6 +518,14 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     color: #000;
     background: #ccc;
     border-left-color: #eeeeee;
+}
+.no-broadcast {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('../images/no-broadcast.png') center center no-repeat #efefef;
+    z-index: 1;
+    display: none;
 }
 .text-preview {
     color:#888;
