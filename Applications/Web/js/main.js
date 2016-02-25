@@ -181,6 +181,14 @@ $(function(){
 			return false;
 		$('.search').removeAttr('style').find('.search-contact').val('').css({'width':'26px'}).end().find('.empty').remove();
 	})
+	//修改群名称
+	$(".pop-groupName input").keyup(function(e){
+		if(e.which === 13){
+			$(".pop-groupName").hide();
+			var dotChatid = make___ToDot($(".pop-groupName").attr("data-id"));
+			wc_ws.send(JSON.stringify({"type":"grouptitle","chatid":dotChatid,"title":$(this).val()}));
+		}
+	});
     /*$('.recent').on('click','span[type=group]',function(){
         if($('.pop-groupName:visible').length)
             $('.pop-groupName').css({'top':$('.recent span[data-id='+$('.pop-groupName').attr('data-id')+']').offset().top-47+'px'});
