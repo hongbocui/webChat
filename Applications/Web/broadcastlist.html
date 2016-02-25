@@ -31,7 +31,6 @@
 </div>
 <script>
     $('.broadcast-lists').on('click','li:not(.page)',function(){
-    	if(broadcastlist.length<1) return;
         $(this).addClass('active').siblings().removeClass('active');
         $('.broadcast-detail .tit').find('p.title').html(broadcastlist[$(this).index()-1].title);
         $('.broadcast-detail .tit').find('span.fromuser').html(wc_allUserArr[broadcastlist[$(this).index()-1].fromuser]);

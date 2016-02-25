@@ -68,8 +68,7 @@ class Msqlmerge extends Abstractex{
      */
     public static function hasCreateMerge($fileName, $strInFile) {
         if(!$fileName || !$strInFile) return false;
-        $apppath = self::getAppPath();
-        $fpath = rtrim($apppath, '/').'/Config/Symbolfile/'.$fileName;
+        $fpath = '/tmp/webChat/'.$fileName;
         $dir = dirname($fpath);
         if(!file_exists($dir)){
             if (false === \Api\Plugin\File::mkdir($dir)) {
