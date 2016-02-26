@@ -27,8 +27,6 @@
             if(!$chatid || !$time) return false;
             $where = " where chatid='{$chatid}' ";
             $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
-            $tbname = self::getTbname($time);
-            if(!self::tbexists($tbname)) return false;
             $formatData = self::setSelectField($fields);
             $mode = $selectType ? '<' : '>';
             $where .= " and time{$mode}{$time} ";
@@ -37,6 +35,9 @@
             if($type)
                 $where .= " and type = {$type} ";
             
+            $tbname = self::$messagetablePre;
+            \Api\Model\Msqlmerge::mergeMsgTable();
+            if(!self::tbexists($tbname)) return false;
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
             return self::dbobj()->query($sql);
         }

@@ -23,7 +23,7 @@
         public function doMsgList() {
             $chatid    = $this->toStr('chatid');
             $time      = $this->toStr('time');
-            $type      = $this->toStr('class');
+            $type      = $this->toStr('class') ? $this->toStr('class') : 'nomal';
             $accountid = $this->toStr('accountid');
             $selectType= $this->toInt('type');
             

@@ -26,5 +26,11 @@ function newBroadcast(data) {
 	$.get('/chatapi.php?c=broadcast&a=AddUnreadNum&accountid='+wc_loginName);
     $('.broadcast').addClass('rainbow').find('.notice').css('display','block');
     if(data.title)
-    	$('.pop-broadcast').show().find('.tit').html(data.title).end().find('.con').html(data.content);
+    	$('.pop-broadcast').attr({"d-time":data.time,"d-fromuser":data.fromuser,"d-touserTitle":data.touserTitle}).show().find('.tit').html(data.title).end().find('.con').html(data.content);
+}
+function readBroadcast() {
+	$('.broadcast').removeClass('rainbow').find('.notice').css('display','none');
+	$('.pop-broadcast').hide().find('.tit').html('');//将小提醒框置空
+	$.get('/chatapi.php?c=broadcast&a=DelUnreadNum&accountid='+wc_loginName);
+	
 }
