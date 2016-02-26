@@ -2,7 +2,8 @@ $(function(){
     $('.recent').treeView({})
 	$('.pop-smiley').tips({'target':['left',5]})
 	$('.pop-keys').tips({'target':['right',3]});
-	$('.pop-broadcast').tips({'target':['left',3]});
+	$('.pop-broadcast').tips({'target':['left',5]});
+	$('.pop-groupName').tips({'target':['left',5]});
 	//表情、快捷发送浮动层
 	$('.smile').click(function(event){
 		$('.pop-smiley').show();
@@ -180,7 +181,19 @@ $(function(){
 			return false;
 		$('.search').removeAttr('style').find('.search-contact').val('').css({'width':'26px'}).end().find('.empty').remove();
 	})
+    /*$('.recent').on('click','span[type=group]',function(){
+        if($('.pop-groupName:visible').length)
+            $('.pop-groupName').css({'top':$('.recent span[data-id='+$('.pop-groupName').attr('data-id')+']').offset().top-47+'px'});
+    })*/
 })
 function editGroupName() {
-	console.log('wait')	
+	//console.log('wait')
+    /*$('.pop-groupName').remove();
+    var groupName = $('<div/>');
+    groupName.addClass('pop-groupName').css({'left':$('.right-mouse-base').offset().left+20+'px','top':$('.right-mouse-base').offset().top-47+'px'}).appendTo($('body'));
+    groupName.append('<a href="javascript:;" class="tips-close button-close">&times;</a> \
+                        <input type="text" name="groupName">')
+               .tips({'left':5});
+    groupName.show();*/
+    $('.pop-groupName').attr('data-id',$('.right-mouse-base').attr('data-id')).css({'left':$('.right-mouse-base').offset().left+20+'px','top':$('.right-mouse-base').offset().top-47+'px'}).show();
 }

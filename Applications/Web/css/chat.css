@@ -527,7 +527,33 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     z-index: 1;
     display: none;
 }
+
+.pop-groupName {
+    display: none;
+    height: 35px;
+    left: 39px;
+    position: absolute;
+    top: 47px;
+    width: 133px;
+    background: #FFFFFF;
+    border: 1px solid #efefef;
+    border-radius: 5px;
+    box-shadow: 3px 3px 3px #ccc;
+    z-index: 3;
+    padding: 5px 10px;
+}
+.pop-groupName input {
+    width: 120px;
+    height: 30px;
+    outline: none;
+}
+.pop-groupName .tips-close {
+    top: -6px;
+    right: 13px;
+}
 .text-preview {
+
+
     color:#888;
 }
 .text-bold {

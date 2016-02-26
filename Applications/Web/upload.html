@@ -1,5 +1,5 @@
 <a href="javascript:$('#send-pic').click();" class="button">选择图片</a>
-                                <span>（可以使用截图工具截图后在此Ctrl+V）</span>
+                                <span><!--（可以使用截图工具截图后在此Ctrl+V）--></span>
                                 <input type="file" multiple="multiple" name="send-pic" id="send-pic" accept="image/*" style="
     width: 0;
     height: 0;
@@ -18,7 +18,14 @@
 		image.src = src;
 		if(image.width < image.height)
 			css = "height=100%"
-		$('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append("<img src='" + src + "' "+ css +">").appendTo($('.image-lists'));
+        var width = image.width;
+        var height = image.height;
+        var maxWidth = 650;
+        if(image.width > maxWidth) {
+            width = maxWidth;
+            height = image.height * maxWidth/image.width;
+        }
+		$('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append("<img data-width="+width+" data-height="+height+" src='" + src + "' "+ css +">").appendTo($('.image-lists'));
 	}
 	/*function sendMsg(msg) {
 		if(msg == '')
@@ -36,7 +43,7 @@
 		$('.logs').scrollToBottom();
 	}	*/
 	$(function(){
-		$.pasteimage(paste);
+		//$.pasteimage(paste);
 		$('#send-pic').change(function(){
 			$('.image-lists').previewImg(this,paste);
 		})
@@ -58,7 +65,8 @@
 					if(res.code) {
 						var picArr = eval("("+res.data+")");
 						for(var pp in picArr) {
-							sendToWsMsg('<img src="'+picArr[pp]+'" width=100%>', 'image');
+                            var im = $('.image-lists .image-msg').eq(picArr[pp].substr(-5).substr(0,1)).children('img')
+							sendToWsMsg('<img class="lazy" src="images/wait.png" data-original="'+picArr[pp]+'" width='+im.attr('data-width')+' height='+im.attr('data-height')+'>', 'image');
 						}
 						//$('.image-lists').find('img').each(function(){
 							//sendToWsMsg('<img src="'+res.data+'" width=100%>', 'image');
@@ -72,7 +80,7 @@
 				}
 			})
 		})
-		$('.image-lists .remove-img').click(function(){
+		$('.image-lists').on('click','.remove-img',function(){
 			$(this).parent().remove();
 		})
 	})

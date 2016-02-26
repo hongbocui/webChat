@@ -218,6 +218,7 @@
     		else
     			$('.logs').append(decMsg(msgList[i].message,msgList[i].fromuser,msgList[i].time));
     	}
+        $('img.lazy').lazyload({container:$('.logs')})
 		$('.logs').scrollToBottom();
     }
     //根据chatid获取userList
