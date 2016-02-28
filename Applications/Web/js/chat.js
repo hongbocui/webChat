@@ -62,12 +62,14 @@
 	        case 'say':
 	            //标签非活动时才有新消息提醒
 	            if (document[hiddenProperty]) {
-	                playAudio();
-	                palyDeskNotice(wc_allUserArr[data['fromuser']] + "说：", {
-	                    body: data['message'],
-	                    icon: "images/default_34_34.jpg"
-	                });
-	                if (!newMsgNotinceTimer) newMsgNotinceTimer = setInterval("newMsgCount()", 200);
+	            	if(data.chatid.indexOf('--')>-1 || !readCookie(makeDotTo___(data.chatid))){
+	            		playAudio();
+		                palyDeskNotice(wc_allUserArr[data['fromuser']] + "说：", {
+		                    body: data['message'],
+		                    icon: "images/default_34_34.jpg"
+		                });
+		                if (!newMsgNotinceTimer) newMsgNotinceTimer = setInterval("newMsgCount()", 200);
+	            	}
 	            }
 	            //{"type":"say","fromuser":xxx,"chatid":xxx,"message":"xxx","time":"xxx"}
 	            recieveMsg(data['fromuser'], data['chatid'], data['message'], data['time']);

@@ -198,7 +198,7 @@ $(function(){
 		var nowChatid = getNowChatId();
 		var dotChatid = make___ToDot(nowChatid);
 		if(nowChatid.indexOf('--') > -1) return;//单人聊天没有屏蔽消息的功能
-		var cookieKey = nowChatid+'_noremind';
+		var cookieKey = nowChatid;
 		if(readCookie(cookieKey)){
 			delCookie(cookieKey);
 			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"opennotice"}));
