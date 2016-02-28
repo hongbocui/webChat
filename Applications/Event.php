@@ -243,7 +243,7 @@ class Event
                     Gateway::sendToAll(json_encode($broadMsg), $onlineClientIds);
                 }
                 return;
-            case 'grouptitle':
+            case 'systemNotice':
                 // 非法请求
                 if(!isset($_SESSION['clientName'])){
                     throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");

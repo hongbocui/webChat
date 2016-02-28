@@ -88,7 +88,7 @@
 	            groupUpdate(data);
 	            break;
 	            //修改群title时需要广播推送
-	        case 'grouptitle':
+	        case 'systemNotice':
 	        	groupTitle(data);
 	        	break;
 	            // 错误处理

@@ -186,13 +186,26 @@ $(function(){
 		if(e.which === 13){
 			$(".pop-groupName").hide();
 			var dotChatid = make___ToDot($(".pop-groupName").attr("data-id"));
-			wc_ws.send(JSON.stringify({"type":"grouptitle","chatid":dotChatid,"title":$(this).val()}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"title":$(this).val()}));
 		}
 	});
     /*$('.recent').on('click','span[type=group]',function(){
         if($('.pop-groupName:visible').length)
             $('.pop-groupName').css({'top':$('.recent span[data-id='+$('.pop-groupName').attr('data-id')+']').offset().top-47+'px'});
     })*/
+	//屏蔽&取消屏蔽 消息提醒
+	$(".remind").click(function(){
+		var nowChatid = getNowChatId();
+		var dotChatid = make___ToDot(nowChatid);
+		var cookieKey = nowChatid+'_noremind';
+		if(readCookie(cookieKey)){
+			delCookie(cookieKey);
+			wc_ws.send(JSON.stringify({"type":"msgRemind","chatid":dotChatid,"action":"open"}));
+		}else{
+			writeCookie(cookieKey, '1', 30);
+			wc_ws.send(JSON.stringify({"type":"msgRemind","chatid":dotChatid,"action":"close"}));
+		}
+	});
 })
 function editGroupName() {
 	//console.log('wait')
