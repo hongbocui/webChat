@@ -203,6 +203,7 @@ class Event
                     'title'  => $messageData['title'],
                 ));
                 if(!$setRes) return;
+                $messageData['members'] = array_unique($messageData['members']);
                 //根据  $originalMembers 和 $messageData['members'] 获取分别要添加和减少的成员
                 $addMembers = array_diff($messageData['members'], $originalMembers);
                 $delMembers = array_diff($originalMembers, $messageData['members']);
