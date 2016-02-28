@@ -186,7 +186,7 @@ $(function(){
 		if(e.which === 13){
 			$(".pop-groupName").hide();
 			var dotChatid = make___ToDot($(".pop-groupName").attr("data-id"));
-			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"title":$(this).val()}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":dotChatid,"title":$(this).val()}));
 		}
 	});
     /*$('.recent').on('click','span[type=group]',function(){
@@ -197,13 +197,14 @@ $(function(){
 	$(".remind").click(function(){
 		var nowChatid = getNowChatId();
 		var dotChatid = make___ToDot(nowChatid);
+		if(nowChatid.indexOf('--') > -1) return;//单人聊天没有屏蔽消息的功能
 		var cookieKey = nowChatid+'_noremind';
 		if(readCookie(cookieKey)){
 			delCookie(cookieKey);
-			wc_ws.send(JSON.stringify({"type":"msgRemind","chatid":dotChatid,"action":"open"}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"opennotice"}));
 		}else{
 			writeCookie(cookieKey, '1', 30);
-			wc_ws.send(JSON.stringify({"type":"msgRemind","chatid":dotChatid,"action":"close"}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"closenotice"}));
 		}
 	});
 })
