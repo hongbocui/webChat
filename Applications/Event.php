@@ -168,19 +168,6 @@ class Event
                     }
                 }
                 return;
-            case 'history':
-                if(!isset($messageData['chatid'])) return;
-                
-                $historyList = \Api\Model\Mmessage::getHistoryMsg($messageData['chatid']);
-                if($historyList){
-                    $history_message = array(
-                        'type' => 'history',
-                        'messageList' => $historyList,
-                    );
-                    //忽略的消息传给用户
-                    Gateway::sendToCurrentClient(json_encode($history_message));
-                }
-                return;
             case 'groupset':
                 // 非法请求
                 if(!isset($_SESSION['clientName'])){

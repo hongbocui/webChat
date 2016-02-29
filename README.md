@@ -62,9 +62,6 @@ chatid一共有三种形式
 	       如果是单人聊天则chatid就是两个人用‘--’连接的字串（且注意俩名称是经过sort排序的）cuihb--xieyx
 	       如果是群组聊天则chatid就是唯一的字串(例如群组+创建群的时间)cuihb-63756323 根据这个字串可以从redis中获取成员
 - wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":msg}));
-
-###前端获取redis历史消息记录
-	wc_ws.send(JSON.stringify({"type":"history","chatid":chatid}));
 	
 ###发送广播消息
 	wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":"cuihb","touser":'cuihb-wangjx',"title":"aaa","content":"bbbb"}));

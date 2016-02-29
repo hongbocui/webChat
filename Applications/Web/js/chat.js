@@ -241,26 +241,23 @@
 	        var historyLog = window["chat" + chatid + "History"];
 	        chatInDialogContainer(historyLog);
 	        $('.logs').scrollToBottom();
-	        //redis中取历史记录
+	    //redis中取历史记录
 	    } else {
-	        wc_ws.send(JSON.stringify({
-	            "type": "history",
-	            "chatid": chatid
-	        }));
-
-	        //等待redis中数据
-	        var i = 0;
-	        var waitHistory = function() {
-	                i++;
-	                if (window["chat" + chatid + "History"] != undefined) {
-	                    chatInDialogContainer(window["chat" + chatid + "History"], true);
-	                    $('.logs').scrollToBottom();
-	                    clearInterval(waitTime);
-	                }
-	                if (i > 50) clearInterval(waitTime);
-	            };
-	        var waitTime = setInterval(waitHistory, 10);
-
+	    	$.ajax({
+		        url:'chatapi.php?c=message&a=history',
+		        data:{'chatid':chatid},
+		        dataType:'JSON',
+		        type:'POST',
+		        async:false,
+		        success:function(data){
+		            if(data.code)
+		            	loadHistoryMessage(data.data)
+		        }
+		    });
+            if (window["chat" + chatid + "History"] != undefined) {
+                chatInDialogContainer(window["chat" + chatid + "History"], true);
+                $('.logs').scrollToBottom();
+            }
 	    }
 	}
 	//向聊天容器中放数据都走这个
@@ -305,8 +302,6 @@
 	    }
 	}
 	//encmsg 原始的msg数据加工成像数据库中存储的数据（return str）
-
-
 	function encMsg(msg, type) {
 	    switch (type) {
 	    case 'image':
@@ -389,8 +384,6 @@
 	    }
 	}
 	//组装本地历史消息数组
-
-
 	function makeHistoryList(fromuser, chatid, message, time) {
 	    //俩通信客户端的唯一历史记录
 	    var chatSomeoneHistory = 'chat' + chatid + 'History';
@@ -400,26 +393,23 @@
 	    nowMessage.message = message;
 	    nowMessage.time = time;
 	    if (window[chatSomeoneHistory] == undefined) {
-	        //此时应该从redis中取出最新的数据，防止用户点击标红信息的时候只有一条
-	        wc_ws.send(JSON.stringify({
-	            "type": "history",
-	            "chatid": chatid
-	        }));
+	    	$.ajax({
+		        url:'chatapi.php?c=message&a=history',
+		        data:{'chatid':chatid},
+		        dataType:'JSON',
+		        type:'POST',
+		        async:false,
+		        success:function(data){
+		            if(data.code)
+		            	loadHistoryMessage(data.data)
+		        }
+		    });
 	    }
-
-	    //判断fromuser是否在最近联系人列表中，如果在则等redis，如果不在则直接push到本地
+	    //判断fromuser是否在最近联系人列表中，如果不在则直接push到本地
 	    if (isChatidInContact(chatid)) {
-	        //等待redis中数据
-	        var i = 0;
-	        var waitHistory = function() {
-	                i++;
-	                if (window[chatSomeoneHistory] != undefined) {
-	                    window[chatSomeoneHistory].push(nowMessage);
-	                    clearInterval(waitTime);
-	                }
-	                if (i > 50) clearInterval(waitTime);
-	            };
-	        var waitTime = setInterval(waitHistory, 10);
+            if (window[chatSomeoneHistory] != undefined) {
+                window[chatSomeoneHistory].push(nowMessage);
+            }
 	    } else {
 	        //如果不在最近联系人中则不需要等
 	        if (window[chatSomeoneHistory] == undefined) {
@@ -429,8 +419,6 @@
 	    }
 	}
 	//给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
-
-
 	function lightOnlineUserList(users) {
 	    if (!users) return false;
 	    for (var i in users) {

@@ -58,6 +58,15 @@
             $this->_success($msgList);
         }
         /**
+         * 获取redis中存储的最近50条聊天历史记录
+         */
+        public function doHistory() {
+            $chatid = $this->toStr('chatid');
+            if(!$chatid) $this->_error('param error');
+            $historyList = Mmessage::getHistoryMsg($chatid);
+            $this->_success($historyList);
+        }
+        /**
          * 获取用户所有聊天对象离线消息的数量
          * 请求参数            是否必须            类型(示例)      说明
          * accountid  true       string(cuihb) 请求用户cuihb的离线消息
