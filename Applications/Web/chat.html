@@ -485,8 +485,13 @@
 					$(this).addClass('active').siblings().removeClass('active');
 					$('.chat-input').unbind('keydown',hotkeysbind)
 					$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
-				})
-				$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
+					writeCookie('sendMsghk',$('.pop-keys .active').attr('data-keys'), 60);
+				});
+				if(readCookie('sendMsghk')) {
+					$('.pop-keys p').removeClass('active');
+					$('.pop-keys p[data-keys="'+readCookie('sendMsghk')+'"]').addClass('active');
+				}
+				$('.chat-input').bind('keydown',readCookie('sendMsghk') || $('.pop-keys .active').attr('data-keys'),hotkeysbind)
 				$('.attach').click(function(){
 					$('input[name=attach]').click();
 				})

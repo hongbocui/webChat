@@ -365,7 +365,7 @@
 	 */
 
 	function isChatidInContact(chatid) {
-	    if (!$('#nearest-contact span[type=personal][data-id=' + chatid + ']').length && !$('#nearest-contact span[type=group][data-id=' + chatid + ']').length) return false;
+	    if (!$('#nearest-contact span[type=personal][data-id="' + chatid + '"]').length && !$('#nearest-contact span[type=group][data-id="' + chatid + '"]').length) return false;
 	    return true;
 	}
 	/**
@@ -380,7 +380,7 @@
 	    }
 
 	    var itemType = chatid.indexOf('--') > -1 ? 'personal' : 'group';
-	    var chatItem = $('#nearest-contact span[type=' + itemType + '][data-id=' + chatid + ']');
+	    var chatItem = $('#nearest-contact span[type=' + itemType + '][data-id="' + chatid + '"]');
 	    chatItem.moveTree(0);
 	    if (msgNum === 0) {
 	        chatItem.find('b').remove();
@@ -442,15 +442,15 @@
 	    if (!users) return false;
 	    for (var i in users) {
 	        var tmpchatid = makeChatIdFromGf(users[i]);
-	        $("#organization-structure .no-child[data-id='" + tmpchatid + "']").each(function() {
+	        $('#organization-structure .no-child[data-id="' + tmpchatid + '"]').each(function() {
 	            $(this).removeClass('no-login').moveTree(0);
 	        })
 	        //联系人列表在线处理
-/*userItemObjInUserList = $("#organization-structure .no-child[data-id='"+tmpchatid+"']");
+/*userItemObjInUserList = $('#organization-structure .no-child[data-id="'+tmpchatid+'"]');
     		userItemObjInUserList.removeClass('no-login');
     		userItemObjInUserList.moveTree(0);*/
 	        //最近联系人在线处理
-	        nearestContactList = $("#nearest-contact .no-child[data-id='" + tmpchatid + "']");
+	        nearestContactList = $('#nearest-contact .no-child[data-id="' + tmpchatid + '"]');
 	        nearestContactList.removeClass('no-login');
 	        $.each(nearestContactList, function(key, item) {
 	            $(item).moveTree(0);
@@ -465,10 +465,10 @@
 	    for (var i in users) {
 	        var tmpchatid = makeChatIdFromGf(users[i]);
 	        //联系人列表处理
-	        userItemObjInUserList = $("#organization-structure .no-child[data-id='" + tmpchatid + "']").addClass('no-login');;
+	        userItemObjInUserList = $('#organization-structure .no-child[data-id="' + tmpchatid + '"]').addClass('no-login');;
 	        //userItemObjInUserList.parent().append(userItemObjInUserList);
 	        //最近联系人处理
-	        $("#nearest-contact .no-child[data-id='" + tmpchatid + "']").addClass('no-login');
+	        $('#nearest-contact .no-child[data-id="' + tmpchatid + '"]').addClass('no-login');
 	    }
 	}
 	//获取当前聊天人员 
@@ -560,13 +560,13 @@
 
 
 	function getUserStatus(chatid) {
-	    return $("#organization-structure .no-child[data-id='" + chatid + "']").hasClass('no-login');
+	    return $('#organization-structure .no-child[data-id="' + chatid + '"]').hasClass('no-login');
 	}
 	//广播修改群title
 	function groupTitle(data) {
 		if(data.title.length == 0) return;
 		var __Chatid = makeDotTo___(data.chatid);
-		var groupObj = $('.recent').children('.tree-folders').children('span[data-id=' + __Chatid + ']');
+		var groupObj = $('.recent').children('.tree-folders').children('span[data-id="' + __Chatid + '"]');
 		if (groupObj.length) {
 	        var systemLog = wc_allUserArr[data.fromuser] + ' 将群名称修改为 “'+data.title+'” ';
 	        //将通知信息放入本地消息历史
@@ -617,7 +617,7 @@
 	function groupUpdate(data) {
 	    if (wc_loginName === data.fromuser) return;
 	    var __Chatid = makeDotTo___(data.chatid);
-	    var groupObj = $('.recent').children('.tree-folders').children('span[data-id=' + __Chatid + ']');
+	    var groupObj = $('.recent').children('.tree-folders').children('span[data-id="' + __Chatid + '"]');
 	    //对于删除的用户，将最近联系人的列表中该群删除
 	    var tempMode = false;
 	    for (var p in data.delMember) {
@@ -642,7 +642,7 @@
 	            systemLogDel += wc_allUserArr[data.delMember[i]] + ',';
 	            var tempChatid = makeChatIdFromGf(data.delMember[i]);
 	            //对于没有删除的用户，通知从群列表 删除其他成员
-	            memberObj.find(".no-child[data-id='" + tempChatid + "']").removeTree();
+	            memberObj.find('.no-child[data-id="' + tempChatid + '"]').removeTree();
 	        }
 	        for (var j in data.addMember) {
 	            systemLogAdd += wc_allUserArr[data.addMember[j]] + ',';

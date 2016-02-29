@@ -18,7 +18,7 @@ $(function(){
 		event.stopPropagation();
 	});
 	$('.pop-keys').click(function(event){
-		$(this).show();
+		$(this).hide();
 		event.stopPropagation();
 	});
 	//表情插入输入框
@@ -100,8 +100,8 @@ $(function(){
 	//$('待移动元素').moveTreeTop($('.recent'));
 //	$(".tab-detail.structure,.chat-box .member").on('dblclick','span[type=member]',function(){
 //		//添加之前先判断是否有这个联系人
-//		if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
-//			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
+//		if($('.tab-detail.recent span[type=personal][data-id="'+$(this).attr('data-id')+'"]').length) {
+//			$('.tab-detail.recent span[type=personal][data-id="'+$(this).attr('data-id')+'"]').dblclick();
 //			return false;
 //		}
 //		$('.tab-detail.recent').addTree({
@@ -191,7 +191,7 @@ $(function(){
 	});
     /*$('.recent').on('click','span[type=group]',function(){
         if($('.pop-groupName:visible').length)
-            $('.pop-groupName').css({'top':$('.recent span[data-id='+$('.pop-groupName').attr('data-id')+']').offset().top-47+'px'});
+            $('.pop-groupName').css({'top':$('.recent span[data-id="'+$('.pop-groupName').attr('data-id')+'"]').offset().top-47+'px'});
     })*/
 	//屏蔽&取消屏蔽 消息提醒
 	$(".remind").click(function(){

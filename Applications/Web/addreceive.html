@@ -25,7 +25,7 @@
             }
         }).on('click','span.no-child[type=member]',function(){
             //已选联系人中不存在才添加
-		    if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0) {
+		    if($('.group-member span[data-id="'+$(this).attr('data-id')+'"]').length == 0) {
                 $(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));
             }
 	})

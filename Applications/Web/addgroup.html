@@ -6,7 +6,7 @@
 <div class="group-member"></div>
 <a href="javascript:;" class="create-group button float-right">确定</a>
 <script>
-	var chatuser = $('.recent').children('.tree-folders').children('span[data-id='+$('.contact-msg').attr('chatid')+']')
+	var chatuser = $('.recent').children('.tree-folders').children('span[data-id="'+$('.contact-msg').attr('chatid')+'"]')
 	var treeMember = chatuser.treeMember();
     if(chatuser.attr('type')=='group') {
 		//group
@@ -18,7 +18,7 @@
 		$('<span/>').addClass('no-child undelete').attr({'type':'personal','data-id':wc_loginName+'--'+wc_loginName}).html('<img class="avatar" width="22px" src="./default_34_34.jpg">'+wc_allUserArr[wc_loginName]).appendTo($('.group-member'))
 		//chatuser
         //if(chatuser==null)
-        chatuser = $('.structure').children('.tree-files').find('span[data-id='+$('.contact-msg').attr('chatid')+']');
+        chatuser = $('.structure').children('.tree-files').find('span[data-id="'+$('.contact-msg').attr('chatid')+'"]');
         //console.log(chatuser)
 		chatuser.clone().addClass('undelete').find('.unread').remove().end().find('.tree-icon').remove().end().appendTo($('.group-member'))
 	}
@@ -28,12 +28,12 @@
 	$('.add-group-struct').on('mouseover','span:not(.no-child)',function(){$(this).children('.add-group-all').show()}).on('mouseout','span:not(.no-child)',function(){$(this).children('.add-group-all').hide()})
 	$('.add-group-struct').on('click','.add-group-all',function(){
 		$(this).parent().next().find('span.no-child[type=member]').each(function(){
-			if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0)
+			if($('.group-member span[data-id="'+$(this).attr('data-id')+'"]').length == 0)
 				$(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));
 		})
 	})
 	$('.add-group-struct').on('click','span.no-child[type=member]',function(){
-		if($('.group-member span[data-id='+$(this).attr('data-id')+']').length == 0)
+		if($('.group-member span[data-id="'+$(this).attr('data-id')+'"]').length == 0)
                                 $(this).clone().find('.tree-icon').remove().end().appendTo($('.group-member'));	
 	})
 	$('.group-member').on('click','span:not(.undelete)',function(){
