@@ -562,6 +562,7 @@
 	        //判断是否为当前用户,如果是当前用户则直接通知
 	        var nowChatId = getNowChatId();
 	        if (nowChatId === data.chatid) {
+	        	$('.contact-msg h1').html(data.title);
 	            systemLogs(systemLog);
 	            $('.logs').scrollToBottom();
 	        }
