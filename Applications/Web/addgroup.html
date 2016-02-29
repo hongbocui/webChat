@@ -63,7 +63,7 @@
 		
 		}else{
 			//create
-			chatid = makeDotTo___(wc_loginName)+'-'+new Date().getTime();
+			chatid = wc_loginName+'-'+new Date().getTime();
 			var ii=0;
 			$('.group-member span').each(function(){
 				var username=$(this).html().replace(/<[^>]+>/,'');
@@ -81,7 +81,6 @@
 		}
 		//chatuser.dblclick();
 		$('.modal-close').click();
-		var dotChatid = make___ToDot(chatid);
-		wc_ws.send(JSON.stringify({"type":"groupset","chatid":dotChatid,"title":groupTitle,"members":memberids}));
+		wc_ws.send(JSON.stringify({"type":"groupset","chatid":chatid,"title":groupTitle,"members":memberids}));
 	})
 </script>
