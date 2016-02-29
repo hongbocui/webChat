@@ -64,10 +64,7 @@ document.addEventListener(visibilityChangeEvent, onVisibilityChange);
 
 //声音提示
 function playAudio() {
-	var audioElement = document.createElement('audio');
-    audioElement.setAttribute('src', 'audio/system.wav');
-    audioElement.load;
-    audioElement.play();
+	document.getElementById('chat-audio').play();
 }
 //桌面弹窗与消息提示
 function palyDeskNotice(theTitle,options) {
