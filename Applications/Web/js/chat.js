@@ -223,6 +223,7 @@
 	            "time": time
 	        }];
 	        chatInDialogContainer(msgList);
+	        $('.logs').scrollToBottom();
 	    } else {
 	        //未读消息数加1
 	        $.get('/chatapi.php?c=message&a=AddUnreadNum&accountid=' + wc_loginName + '&chatid=' + dotChatid);
@@ -241,6 +242,7 @@
 	    if (window["chat" + chatid + "History"] != undefined) {
 	        var historyLog = window["chat" + chatid + "History"];
 	        chatInDialogContainer(historyLog);
+	        $('.logs').scrollToBottom();
 	        //redis中取历史记录
 	    } else {
 	        var dotChatid = make___ToDot(chatid);
@@ -255,6 +257,7 @@
 	                i++;
 	                if (window["chat" + chatid + "History"] != undefined) {
 	                    chatInDialogContainer(window["chat" + chatid + "History"], true);
+	                    $('.logs').scrollToBottom();
 	                    clearInterval(waitTime);
 	                }
 	                if (i > 50) clearInterval(waitTime);
@@ -274,7 +277,6 @@
 	    $('img.lazy').lazyload({
 	        container: $('.logs')
 	    })
-	    $('.logs').scrollToBottom();
 	}
 	//根据chatid获取userList
 
@@ -581,6 +583,7 @@
 	        var nowChatId = getNowChatId();
 	        if (nowChatId === __Chatid) {
 	            systemLogs(systemLog);
+	            $('.logs').scrollToBottom();
 	        }
 	    }
 	}
@@ -606,6 +609,7 @@
         var nowChatId = getNowChatId();
         if (nowChatId === __Chatid) {
             systemLogs(sysLog);
+            $('.logs').scrollToBottom();
         }
 	}
 	//更新群的时候 逻辑处理
