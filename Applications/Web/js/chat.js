@@ -4,10 +4,8 @@
 	    };
 	}
 	//几个全局变量
-	var wc_loginName = '',
-	    //用户登录名称
-	    wc_allUserArr = [],
-	    //用以存储所有用户的id=》name
+	var wc_loginName = '',//用户登录名称
+	    wc_allUserArr = [],//用以存储所有用户的id=》name
 	    wc_ws, wc_reConnectTimeid, wc_reconnect = false,
 	    wc_errorType = false;
 
@@ -80,11 +78,6 @@
 	            //wc_ws.send(JSON.stringify({"type":"broadcast","touser":["技术部"],"content":"qqqdddddddddddddddddddd"}));
 	            newBroadcast(data);
 	            break;
-	            // 加载历史消息
-	        case 'history':
-	            //{"type":"history","messageList":"[...]"}
-	            loadHistoryMessage(data['messageList']);
-	            break;
 	            //拉人或者踢人时的提醒
 	        case 'groupset':
 	            groupUpdate(data);
@@ -139,10 +132,7 @@
 	    };
 	}
 	init();
-
 	// 输入姓名
-
-
 	function showLoginPage() {
 	    wc_loginName = prompt('输入你的名字：', '');
 	    if (!wc_loginName || wc_loginName == 'null') {
@@ -151,8 +141,6 @@
 	    }
 	}
 	//更新用户列表
-
-
 	function flushAllList(data) {
 	    var userlist_all_window = $("#organization-structure");
 	    userlist_all_window.empty();
@@ -160,30 +148,22 @@
 	    userlist_all_window.treeView({});
 	}
 	//更新最近联系人列表
-
-
 	function loadNearestContact(data) {
 	    for (var p in data) {
 	        loadNearestContactFunc(data[p]);
 	    }
 	}
 	//更新在线用户
-
-
 	function addOnlineList(data) {
 	    lightOnlineUserList(data);
 	}
 	//更新未读消息
-
-
 	function loadUnreadMsg(data) {
 	    for (var q in data) {
 	        loadUnreadMsgFun(q, data[q]);
 	    }
 	} /*************ws****************/
 	//发送消息
-
-
 	function sendToWsMsg(msg, type) {
 	    msg = encMsg(msg, type);
 	    if (msg == '') return false;
@@ -416,6 +396,10 @@
 	            window[chatSomeoneHistory] = [];
 	            window[chatSomeoneHistory].push(nowMessage);
 	        }
+	    }
+	    //保持本地缓存的每路历史消息不超过50条
+	    if(window[chatSomeoneHistory].length > 50) {
+	    	window[chatSomeoneHistory].shift();
 	    }
 	}
 	//给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
