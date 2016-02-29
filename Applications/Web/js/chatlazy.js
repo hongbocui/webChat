@@ -31,7 +31,27 @@ $(function(){
 function delRecentchatMember(chatid) {
 	$.get('/chatapi.php?c=user&a=DelRecentContact&accountid='+wc_loginName+'&chatid='+chatid);
 }
-
+//获取一个单个用户的信息
+function getPersonalData(chatid) {
+	if(chatid.indexOf('--')<0) return false;
+	var userid = makeChatidToUserid(chatid);
+	if(window[userid+'personInfo'] != undefined) {
+		return window[userid+'personInfo'];
+	} else {
+		$.ajax({
+	        url:'chatapi.php?c=user&a=oneinfo',
+	        data:{'accountid':userid},
+	        dataType:'JSON',
+	        type:'POST',
+	        async:false,
+	        success:function(data){
+	            if(data.code)
+	            	window[userid+'personInfo'] =  data.data[0];
+	        }
+	    });
+		return window[userid+'personInfo'] != undefined ? window[userid+'personInfo'] : null;
+	}
+}
 
 
 /*************

@@ -30,42 +30,6 @@ $(function(){
 		$(this).removeAttr('style');
 	});
 	$('.send').click(function(){
-//		var msg = $('.chat-input').html();
-//		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
-//		var br_pattern = /<\/div>/g;
-//		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
-//		var compile_pattern = /\[\\([a-z]+)(\d+)?\]/g;
-//		console.log(msg);
-//		//转义
-//		msg = msg.replace(face_pattern, '[\\face$1]');
-//		msg = msg.replace(br_pattern, '[\\br]');
-//		msg = msg.replace(clear_tag_pattern, '$2');
-//		console.log(msg);
-//		//还原
-//		msg = msg.replace(/\[\\([a-z]+)(\d+)?\]/g, function(match, p1, p2, offset, string) {
-//			switch(p1) {
-//				case 'face':
-//					return '<img src="./images/smiley/'+p2+'.gif">';
-//				case 'br':
-//					return '<br />';
-//				case 'image':
-//					//查附件表，id为p2
-//					return '';
-//				case 'file':
-//					//查附件表，id为p2
-//					return '';
-//			}
-//		});
-//		$('<div/>').addClass('row self').html(
-//			'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
-//			<div class="message-detail"> \
-//				<p>&nbsp;</p> \
-//				<div class="message-box"> \
-//					'+msg+'&nbsp; \
-//					<i class="chat-icon message-box-pike"></i> \
-//				</div> \
-//			</div>'
-//		).appendTo($('.logs'));
 		var msg = $('.chat-input').html();
 		sendToWsMsg(msg);
 		//情况输入框
@@ -127,6 +91,9 @@ $(function(){
 			$('.contact-msg p').html(getAdminByChatid(_member)+' 创建于'+timestampTodate($(this).attr('ctime')));
 			//更新一下群组的生存时间
 			$.get('/chatapi.php?c=group&a=expires&chatid='+_member);
+		}else{
+			var personalData = getPersonalData(_member);
+			$('.contact-msg p').html('部门：'+personalData.deptDetail+'&nbsp;&nbsp;&nbsp;&nbsp;邮箱：'+personalData.email+'&nbsp;&nbsp;&nbsp;&nbsp;电话：'+personalData.tel);
 		}
 		//未读消息变为0
 		if($(this).find('b').length){

@@ -31,7 +31,7 @@
          *  用户信息
          * ))
          */
-        public  function doOneUser(){
+        public  function doOneInfo(){
             $accountid = $this->toStr('accountid');
             $data = Muser::getUserinfo(array(
                 'accountid' => $accountid,
