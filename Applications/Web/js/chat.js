@@ -187,7 +187,7 @@
 	function sendToWsMsg(msg, type) {
 	    msg = encMsg(msg, type);
 	    if (msg == '') return false;
-	    var nowChatId = make___ToDot(getNowChatId());
+	    var nowChatId = getNowChatId();
 	    var sendData = {
 	        "type": "say",
 	        "chatid": nowChatId,
@@ -243,10 +243,9 @@
 	        $('.logs').scrollToBottom();
 	        //redis中取历史记录
 	    } else {
-	        var dotChatid = make___ToDot(chatid);
 	        wc_ws.send(JSON.stringify({
 	            "type": "history",
-	            "chatid": dotChatid
+	            "chatid": chatid
 	        }));
 
 	        //等待redis中数据
@@ -281,11 +280,10 @@
 
 
 	function getUserListFromChatid(chatid) {
-	    var dotChatid = make___ToDot(chatid);
 	    var userInfo = null;
 	    $.ajax({
 	        async: false,
-	        url: '/chatapi.php?c=group&a=getinfo&chatid=' + dotChatid,
+	        url: '/chatapi.php?c=group&a=getinfo&chatid=' + chatid,
 	        dataType: 'json',
 	        success: function(r) {
 	            userInfo = r.data;
@@ -403,10 +401,9 @@
 	    nowMessage.time = time;
 	    if (window[chatSomeoneHistory] == undefined) {
 	        //此时应该从redis中取出最新的数据，防止用户点击标红信息的时候只有一条
-	        var dotChatid = make___ToDot(chatid);
 	        wc_ws.send(JSON.stringify({
 	            "type": "history",
-	            "chatid": dotChatid
+	            "chatid": chatid
 	        }));
 	    }
 
@@ -682,44 +679,21 @@
 	    var d = timestamp.length > 10 ? new Date(parseInt(timestamp)) : new Date(parseInt(timestamp) * 1000);
 	    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
 	}
-	//根据聊天对象userid, 生成 chatid 替换 . 为 ___
-
-
+	//根据聊天对象userid
 	function makeChatIdFromGf(touserid) {
 	    if (!wc_loginName || !touserid) return false;
-	    if (touserid.indexOf('.') > -1) {
-	        touserid = touserid.replace('.', '___');
-	    }
-	    var tempLoginName = wc_loginName;
-	    if (tempLoginName.indexOf('.') > -1) {
-	        tempLoginName = tempLoginName.replace('.', '___');
-	    }
 	    var tomakechatid = [];
 	    tomakechatid.push(touserid);
-	    tomakechatid.push(tempLoginName);
+	    tomakechatid.push(wc_loginName);
 	    tomakechatid.sort();
 	    return tomakechatid.join('--');
 	}
 	//根据群的chatid，生成群主姓名
-
-
 	function getAdminByChatid(chatid) {
-	    if (chatid.indexOf('___') > -1) {
-	        chatid = chatid.replace(/___/g, '.');
-	    }
 	    chatid = chatid.replace(/-[0-9]+/, '');
 	    return wc_allUserArr[chatid];
 	}
 	//根据双方对话chatid，生成对方正常的userid
-
-
 	function makeChatidToUserid(chatid) {
-	    if (chatid.indexOf('___') > -1) {
-	        chatid = chatid.replace(/___/g, '.');
-	    }
 	    return chatid.replace(new RegExp('--' + wc_loginName + '|' + wc_loginName + '--'), '');
-	}
-	//将___chatid替换为正常dotchatid
-	function make___ToDot(chatid) {
-	    return chatid.replace('___', '.');
 	}

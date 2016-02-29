@@ -119,23 +119,20 @@ $(function(){
         console.log($(this).html())
 		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(?:.*?<\/\1>)?/g,'');
 		var _member = $(this).attr('data-id');
-		var dotChatid = make___ToDot(_member);
 		$('.home').hide();
 		$('.message').css('margin-right','0px');
 		$('.chat-box .member').hide();
 		//如果是群组，更新群组成员
 		if($(this).attr('type')=='group') {
-			//$('.message').css('margin-right','180px');
-			//$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
-			$('.contact-msg p').html(getAdminByChatid(dotChatid)+' 创建于'+timestampTodate($(this).attr('ctime')));
+			$('.contact-msg p').html(getAdminByChatid(_member)+' 创建于'+timestampTodate($(this).attr('ctime')));
 			//更新一下群组的生存时间
-			$.get('/chatapi.php?c=group&a=expires&chatid='+dotChatid);
+			$.get('/chatapi.php?c=group&a=expires&chatid='+_member);
 		}
 		//未读消息变为0
 		if($(this).find('b').length){
 			loadUnreadMsgFun(_member, 0); //前端
 			//服务端
-			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+dotChatid+'&accountid='+wc_loginName);
+			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+_member+'&accountid='+wc_loginName);
 		}
 		//加载本地消息
 		historyInDialog(_member);
@@ -185,8 +182,8 @@ $(function(){
 	$(".pop-groupName input").keyup(function(e){
 		if(e.which === 13){
 			$(".pop-groupName").hide();
-			var dotChatid = make___ToDot($(".pop-groupName").attr("data-id"));
-			wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":dotChatid,"title":$(this).val()}));
+			var chatid = $(".pop-groupName").attr("data-id");
+			wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":chatid,"title":$(this).val()}));
 		}
 	});
     /*$('.recent').on('click','span[type=group]',function(){
@@ -196,15 +193,14 @@ $(function(){
 	//屏蔽&取消屏蔽 消息提醒
 	$(".remind").click(function(){
 		var nowChatid = getNowChatId();
-		var dotChatid = make___ToDot(nowChatid);
 		if(nowChatid.indexOf('--') > -1) return;//单人聊天没有屏蔽消息的功能
 		var cookieKey = nowChatid;
 		if(readCookie(cookieKey)){
 			delCookie(cookieKey);
-			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"opennotice"}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"opennotice"}));
 		}else{
 			writeCookie(cookieKey, '1', 30);
-			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"closenotice"}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"closenotice"}));
 		}
 	});
 })
