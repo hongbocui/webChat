@@ -511,6 +511,7 @@
 		            		if (ext && (ext = ext[1])) {
 		                		fileType = ext.toLowerCase();
 		            		}
+		            var filemd5 = '';
 					$.ajax({
 						url:'chatapi.php?c=file&a=attach',
 						data:formData,
@@ -565,7 +566,7 @@
 			                                        <p>'+fileSize+'</p> \
 		                                        </div> \
 		                                        <div class="file-tool"><a href="/chatapi.php?c=file&a=download&srcname='+fileName+'&desname='+ret.responseJSON.info+'" data-name='+ret.responseJSON.info+'>保存</a></div> \
-		                                     </div>', "file");
+		                                     </div>', "file", filemd5);
 							}else{
 								$('.file-tool:last a').css('color','red').html(ret.responseJSON.info).parent().show();
 							}

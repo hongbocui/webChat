@@ -55,10 +55,12 @@ class Tableddlget {
               `fromuser` varchar(30) NOT NULL,
               `message` varchar(500) NOT NULL,
               `time` int(11) NOT NULL,
-              `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:聊天 1：广播 2：图片 3：附件',
+              `filemd5` char(32) NOT NULL,
+              `type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0:聊天 1：图片 2：附件',
               PRIMARY KEY (`id`),
               KEY `chatidindex` (`chatid`),
-              KEY `timeindex` (`time`)";
+              KEY `timeindex` (`time`),
+              KEY `md5index` (`filemd5`)";
     }
     /**
      * broadcast表的字段sql

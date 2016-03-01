@@ -164,7 +164,8 @@
 	    }
 	} /*************ws****************/
 	//发送消息
-	function sendToWsMsg(msg, type) {
+	function sendToWsMsg(msg, type, filemd5) {
+		var filemd5 = filemd5 || '';
 	    msg = encMsg(msg, type);
 	    if (msg == '') return false;
 	    var nowChatId = getNowChatId();
@@ -175,6 +176,7 @@
 	    };
 	    if (type === 'file') {
 	        sendData.msgType = 'file';
+	        sendData.filemd5 = filemd5;
 	    } else if (type === 'image') {
 	        sendData.msgType = 'image';
 	    }
@@ -410,10 +412,6 @@
 	        $('#organization-structure .no-child[data-id="' + tmpchatid + '"]').each(function() {
 	            $(this).removeClass('no-login').moveTree(0);
 	        })
-	        //联系人列表在线处理
-/*userItemObjInUserList = $('#organization-structure .no-child[data-id="'+tmpchatid+'"]');
-    		userItemObjInUserList.removeClass('no-login');
-    		userItemObjInUserList.moveTree(0);*/
 	        //最近联系人在线处理
 	        nearestContactList = $('#nearest-contact .no-child[data-id="' + tmpchatid + '"]');
 	        nearestContactList.removeClass('no-login');

@@ -93,15 +93,17 @@ class Event
                 
                 //判断消息类型
                 $msgType = Storekey::CHAT_MSG_TYPE;
+                $filemd5 = '';
                 if(isset($messageData['msgType'])) {
                     if($messageData['msgType']==='file'){
                         $msgType = Storekey::ATTACH_MSG_TYPE;
+                        $filemd5 = $messageData['filemd5'];
                     } elseif ($messageData['msgType'] === 'image'){
                         $msgType = Storekey::IMAGE_MSG_TYPE;
                     }
                 }
                 //所有单人聊天、群组聊天消息都压入redis队列中，以便存储
-                $pushArr = self::makeMsg($chatid, $clientName, $messageData['content'], $msgType);
+                $pushArr = self::makeMsg($chatid, $clientName, $messageData['content'], $msgType, $filemd5);
                 self::msgIntoQueue($pushArr);
                 
                 // 聊天内容
@@ -408,13 +410,14 @@ class Event
    /**
     * 格式化消息数据
     */
-   private static function makeMsg($chatid, $from, $content='', $type=0) {
+   private static function makeMsg($chatid, $from, $content='', $type=0, $filemd5='') {
        $msg = array(
            'chatid'  => $chatid,
            'fromuser'=> $from,
            'message' => $content,
            'time'    => time(),
            'type'    => $type,
+           'filemd5' => $filemd5,
        );
        return $msg;
    }

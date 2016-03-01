@@ -69,14 +69,15 @@ class Msqlmerge extends Abstractex{
     public static function hasCreateMerge($fileName, $strInFile) {
         if(!$fileName || !$strInFile) return false;
         $fpath = '/tmp/webChat/'.$fileName;
-        $dir = dirname($fpath);
-        if(!file_exists($dir)){
-            if (false === \Api\Plugin\File::mkdir($dir)) {
+        if(!file_exists($fpath)){
+            $dir = dirname($fpath);
+            if (!file_exists($dir) && false === \Api\Plugin\File::mkdir($dir)) {
                 die('filesystem is not writable: ' . $dir);
             }
             file_put_contents($fpath, $strInFile);
             return false;
         }
+        
         if(file_get_contents($fpath) !== $strInFile) {
             file_put_contents($fpath, $strInFile);
             return false;

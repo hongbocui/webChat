@@ -58,7 +58,25 @@
             $this->_success($msgList);
         }
         /**
+         * 根据file的md5判断这个file是否已经上传过了
+         * 请求参数            是否必须            类型(示例)    说明
+         * filemd5      true      string      chatid
+         * 
+         * return
+         * 存在：data.data=true 不存在 data.data=false
+         */
+        public function doMd5Exist() {
+            $filemd5 = $this->toStr('filemd5');
+            if(!$filemd5) $this->_error(0, false);
+            Mmessage::filemd5Exist($filemd5) ? $this->_success(true) : $this->_error(0,false);
+        }
+        /**
          * 获取redis中存储的最近50条聊天历史记录
+         *  请求参数            是否必须            类型(示例)    说明
+         * chatid      true      string      chatid
+         * 
+         * 返回值
+         * 历史消息中的历史
          */
         public function doHistory() {
             $chatid = $this->toStr('chatid');
