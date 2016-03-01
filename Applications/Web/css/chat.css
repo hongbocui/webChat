@@ -48,13 +48,13 @@ ul {list-style:none;}
 .user-avatar {float: left;margin: 10px;}
 .user-avatar .avatar {width: 34px;height: 34px;border-radius: 100%;}
 .message-detail {float: left;}
-.message-box {background: #b8d7f8;padding: 10px;border-radius: 1px;position: relative;float: left;word-break: break-all;table-layout: fixed;word-wrap: break-word;max-width: 650px;line-height:20px;}
+.message-box {background-color: #b8d7f8;padding: 10px;border-radius: 1px;position: relative;float: left;word-break: break-all;table-layout: fixed;word-wrap: break-word;max-width: 650px;line-height:20px;}
 .message-box-pike {display: block;width: 15px;height: 15px;position: absolute;top: 0;left: -7px;background-position: -2px -123px;}
-
+.message-box.lazy {background-image:url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nNzknIGhlaWdodD0nMjcnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PGc+PHRpdGxlPmJhY2tncm91bmQ8L3RpdGxlPjxyZWN0IHg9Jy0xJyB5PSctMScgd2lkdGg9JzgxJyBoZWlnaHQ9JzI5JyBpZD0nY2FudmFzX2JhY2tncm91bmQnIGZpbGw9J25vbmUnLz48ZyBpZD0nY2FudmFzR3JpZCcgZGlzcGxheT0nbm9uZSc+PHJlY3QgaWQ9J3N2Z18yJyB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyB4PScwJyB5PScwJyBzdHJva2Utd2lkdGg9JzAnIGZpbGw9J3VybCgjZ3JpZHBhdHRlcm4pJy8+PC9nPjwvZz48Zz48dGl0bGU+TGF5ZXIgMTwvdGl0bGU+PHRleHQgZmlsbD0nI0ZGRkZGRicgc3Ryb2tlPScjMDAwJyBzdHJva2Utd2lkdGg9JzAnIHg9JzcnIHk9JzIyJyBpZD0nc3ZnXzEnIGZvbnQtc2l6ZT0nMjQnIGZvbnQtZmFtaWx5PSdIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmJyB0ZXh0LWFuY2hvcj0nc3RhcnQnIHhtbDpzcGFjZT0ncHJlc2VydmUnPkxPQUQ8L3RleHQ+PC9nPjwvc3ZnPg==");background-repeat:no-repeat;background-position:center center;background-size:80%;}
 .self .user-avatar {float:right;}
 .self .message-detail {float:right;}
 .self .message-detail p {text-align:right}
-.self .message-box {background:#eeeeee;float:right;}
+.self .message-box {background-color:#eeeeee;float:right;}
 .self .message-box-pike {left: inherit;right: -7px;background-position: -182px -163px;}
 .smile,.image,.audio,.remind,.history,.attach,.broadcast {display: inline-block;width: 30px;height: 30px;}
 .simile {background-position: 0px 0px;}

@@ -259,6 +259,7 @@
 	        if (msgList[i].time === 'groupNoticeType') systemLogs(msgList[i].message);
 	        else $('.logs').append(decMsg(msgList[i].message, msgList[i].fromuser, msgList[i].time));
 	    }
+        $('img.lazy').parent().addClass('lazy')
 	    $('img.lazy').lazyload({
 	        container: $('.logs')
 	    })

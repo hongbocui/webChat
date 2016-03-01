@@ -39,20 +39,20 @@
         $('.broadcast-detail .con').html(broadcastlist[$(this).index()-1].content);
     });
     $('.broadcast-lists .page .prev').click(function(){
-        $(this).addClass('disabled').siblings().removeClass('disabled')
+        $(this).addClass('disabled')
         var tmp = getData(1,broadcastlist[$('.broadcast-lists li:last').index()-1].time);
         if(tmp == null)
             return false;
-        $(this).removeClass('disabled')
+        $(this).removeClass('disabled').siblings().removeClass('disabled')
         broadcastlist = tmp;
         fillData(broadcastlist);
     });
     $('.broadcast-lists .page .next').click(function(){
-        $(this).addClass('disabled').siblings().removeClass('disabled')
+        $(this).addClass('disabled')
         var tmp = getData(0,broadcastlist[0].time);
         if(tmp == null)
             return false;
-        $(this).removeClass('disabled')
+        $(this).removeClass('disabled').siblings().removeClass('disabled')
         broadcastlist = tmp;
         fillData(broadcastlist);
     });
