@@ -15,6 +15,7 @@
 	use Vendors\Redis\RedisModel;
 	use Api\Model\Mmessage;
 	use Api\Model\Mbroadcast;
+	use Api\Model\Mcommon;
 	
 	//自动建表
 	Api\Model\Mqueue::createQueueTable();
@@ -56,7 +57,7 @@
 	 */
 	function insertBroadcastData($data) {
 	    //自动分表处理,每天检测一次就行
-	    if(isFirstSet(":broadcast:tableset"))
+	    if(!Mcommon::isStrInFile('bdc.tbset', date('Ymd')))
 	       Mbroadcast::createTable(Mbroadcast::getTbname($data['time']));
 	    //广播消息入库
 	    $insertData = array(
@@ -74,7 +75,7 @@
 	 */
 	function insertMsgData($data){
 	    //自动分表处理,每天检测一次就行
-	    if(isFirstSet(":msg:tableset"))
+	    if(!Mcommon::isStrInFile('msg.tbset', date('Ymd')))
 	       Mmessage::createTable(Mmessage::getTbname($data['time']));
 	    //插入聊天数据
 	    $insertData = array(
