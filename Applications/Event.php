@@ -203,6 +203,7 @@ class Event
                     'title'  => $messageData['title'],
                 ));
                 if(!$setRes) return;
+                $messageData['members'] = array_unique($messageData['members']);
                 //根据  $originalMembers 和 $messageData['members'] 获取分别要添加和减少的成员
                 $addMembers = array_diff($messageData['members'], $originalMembers);
                 $delMembers = array_diff($originalMembers, $messageData['members']);
@@ -242,13 +243,13 @@ class Event
                     Gateway::sendToAll(json_encode($broadMsg), $onlineClientIds);
                 }
                 return;
-            case 'grouptitle':
+            case 'systemNotice':
                 // 非法请求
                 if(!isset($_SESSION['clientName'])){
                     throw new \Exception("\$_SESSION['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']}");
                 }
                 $clientName = $_SESSION['clientName'];
-                //修改群组成员
+                //群组info
                 $chatInfo = explode('-', $messageData['chatid']);//master=$chatInfo[0],uuid=$chatInfo[1]
                 
                 //获取已有群成员信息
@@ -256,23 +257,34 @@ class Event
                     'master' => $chatInfo[0],
                     'uuid'   => $chatInfo[1]
                 ));
-                //如果本身不在群里则禁止修改群信息
+                //如果本身不在群里则禁止操作
                 if(!in_array($clientName, $originalMembers))
                     return;
-                $setRes = \Api\Model\Mgroup::setGroup(array(
-                    'master' => $chatInfo[0],
-                    'uuid'   => $chatInfo[1],
-                    'title'  => $messageData['title'],
-                ));
-                if(!$setRes) return;
                 
                 //要广播的信息
                 $broadMsg = array(
                     'fromuser'=> $clientName,
                     'type'    => $messageData['type'],
                     'chatid'  => $messageData['chatid'],
-                    'title'   => $messageData['title'],
+                    'action'  => $messageData['action'],
                 );
+                
+                switch ($messageData['action']) {
+                    case "grouptitle"://修改群title
+                        $setRes = \Api\Model\Mgroup::setGroup(array(
+                            'master' => $chatInfo[0],
+                            'uuid'   => $chatInfo[1],
+                            'title'  => $messageData['title'],
+                        ));
+                        $broadMsg['title'] = $messageData['title'];
+                        if(!$setRes) return;
+                        break;
+                    case "opennotice"://打开群消息提醒 
+                        break;
+                    case "grouptitle"://屏蔽群消息提醒
+                        break;
+                }
+                
                 //获取所有存储的在线的用户
                 $clientLists = Muser::getOnlineUsers();
                 //获取该组原本用户在线的clientid,并广播

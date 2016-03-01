@@ -62,12 +62,14 @@
 	        case 'say':
 	            //标签非活动时才有新消息提醒
 	            if (document[hiddenProperty]) {
-	                playAudio();
-	                palyDeskNotice(wc_allUserArr[data['fromuser']] + "说：", {
-	                    body: data['message'],
-	                    icon: "images/default_34_34.jpg"
-	                });
-	                if (!newMsgNotinceTimer) newMsgNotinceTimer = setInterval("newMsgCount()", 200);
+	            	if(data.chatid.indexOf('--')>-1 || !readCookie(makeDotTo___(data.chatid))){
+	            		playAudio();
+		                palyDeskNotice(wc_allUserArr[data['fromuser']] + "说：", {
+		                    body: data['message'],
+		                    icon: "images/default_34_34.jpg"
+		                });
+		                if (!newMsgNotinceTimer) newMsgNotinceTimer = setInterval("newMsgCount()", 200);
+	            	}
 	            }
 	            //{"type":"say","fromuser":xxx,"chatid":xxx,"message":"xxx","time":"xxx"}
 	            recieveMsg(data['fromuser'], data['chatid'], data['message'], data['time']);
@@ -88,8 +90,18 @@
 	            groupUpdate(data);
 	            break;
 	            //修改群title时需要广播推送
-	        case 'grouptitle':
-	        	groupTitle(data);
+	        case 'systemNotice':
+	        	switch(data['action']) {
+		        	case "grouptitle":
+		        		groupTitle(data);
+		        		break;
+		        	case "opennotice":
+		        		noticeSetting(data);
+		        		break;
+		        	case "closenotice":
+		        		noticeSetting(data);
+		        		break;
+	        	}
 	        	break;
 	            // 错误处理
 	        case 'error':
@@ -256,7 +268,7 @@
 
 	function chatInDialogContainer(msgList) {
 	    for (var i in msgList) {
-	        if (msgList[i].time === 'groupNoticeType') systemLogs(msgList[i].message);
+	        if (msgList[i].time === 'systemNoticeType') systemLogs(msgList[i].message);
 	        else $('.logs').append(decMsg(msgList[i].message, msgList[i].fromuser, msgList[i].time));
 	    }
         $('img.lazy').parent().addClass('lazy')
@@ -562,7 +574,7 @@
 	        }
 	        if (data.title.length !== 0) window[chatSomeoneHistory].push({
 	            "message": systemLog,
-	            "time": "groupNoticeType"
+	            "time": "systemNoticeType"
 	        });
 	        //修改群名称
 	        groupObj.html(groupObj.html().replace(/v>(.*?)<d/,'v>'+data.title+'<d'));
@@ -572,6 +584,30 @@
 	            systemLogs(systemLog);
 	        }
 	    }
+	}
+	//广播是否屏蔽群消息
+	function noticeSetting(data) {
+		if(data['action'] === 'opennotice') {
+			var sysLog = wc_allUserArr[data.fromuser]+"取消了消息屏蔽";
+		}else{
+			var sysLog = wc_allUserArr[data.fromuser]+"开启了消息屏蔽";
+		}
+		var __Chatid = makeDotTo___(data.chatid);
+		
+		//将通知信息放入本地消息历史
+        var chatSomeoneHistory = 'chat' + __Chatid + 'History'
+        if (window[chatSomeoneHistory] == undefined) {
+            window[chatSomeoneHistory] = [];
+        }
+        window[chatSomeoneHistory].push({
+            "message": sysLog,
+            "time": "systemNoticeType"
+        });
+        //判断是否为当前用户,如果是当前用户则直接通知
+        var nowChatId = getNowChatId();
+        if (nowChatId === __Chatid) {
+            systemLogs(sysLog);
+        }
 	}
 	//更新群的时候 逻辑处理
 	function groupUpdate(data) {
@@ -628,11 +664,11 @@
 	        }
 	        if (data.addMember.length !== 0) window[chatSomeoneHistory].push({
 	            "message": systemLogAdd + " 加入群聊",
-	            "time": "groupNoticeType"
+	            "time": "systemNoticeType"
 	        });
 	        if (data.delMember.length !== 0) window[chatSomeoneHistory].push({
 	            "message": systemLogDel + " 移出群聊",
-	            "time": "groupNoticeType"
+	            "time": "systemNoticeType"
 	        });
 	        //判断是否为当前用户,如果是当前用户则直接通知
 	        var nowChatId = getNowChatId();
