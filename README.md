@@ -1,28 +1,19 @@
 ##环境
-linux环境
-安装php，php需要的扩展：pcntl、posix、redis、pdo
-建议安装libevent，高并发性更好
+lnmp环境
+php需要的扩展：pcntl、posix、redis、pdo
+建议安装libevent扩展，高并发性更好
 安装redis并启动
 
 ##需要修改
 - 1.数据库配置 Applications/Config/Db.php
 - 2.redis配置: Applications/Config/Redis.php
 
-##注意事项
-用户账号仅支持 字母、数字、下划线、英文.  例如(cui_hong.bo)
-
-chatid一共有三种形式
-- 1. xieyx--cuihb  用户--用户   这是双人聊天的chatid
-- 2. cuihb-1234567 用户-唯一码   这是群聊天的信息
-- 3. cuihb         用户                 说明是广播消息。这个用户名是一个接受者
-
-
-##需要的库表 
+##需要的库表 （其中需要手动建立webChat库，并手动建立其内的user表，其他的表会自动生成）
 - 库： webChat （需要手动建立）
 - 表：webchat_message年月       //（自动生成）用来存储聊天记录
+- 表：webchat_broadcast年       //（自动生成）用来存储广播消息
 - 表：queue_deamon_status  //（自动生成）用来存储队列状态
 - 表： webchat_user		 //（手动建立）用来存储用户数据
-
   		CREATE TABLE `webchat_user` (
 		  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
 		  `accountid` varchar(40) NOT NULL COMMENT '域账户',
@@ -32,10 +23,20 @@ chatid一共有三种形式
 		  `tel` varchar(40) NOT NULL COMMENT '分机号',
 		  `mobile` varchar(100) NOT NULL COMMENT '移动电话（用,分隔）',
 		  `email` varchar(255) NOT NULL COMMENT '邮箱',
-		  `deptDetail` varchar(128) NOT NULL DEFAULT '' COMMENT '详细部门从一级到n级，用英文,号分割',
+		  `deptDetail` varchar(128) NOT NULL DEFAULT '' COMMENT '详细部门从一级到n级',
 		  `updateTime` int(11) NOT NULL DEFAULT '0',
-		  PRIMARY KEY (`uid`)
+		  PRIMARY KEY (`uid`),
+		  UNIQUE KEY `accoutiduq` (`accountid`)
 		) ENGINE=MyISAM AUTO_INCREMENT=10727 DEFAULT CHARSET=utf8
+
+
+##注意事项
+用户账号仅支持 字母、数字、下划线、英文.  例如(cui_hong.bo)
+
+chatid一共有二种形式
+- 1. xieyx--cuihb  用户--用户   这是双人聊天的chatid
+- 2. cuihb-1234567 用户-唯一码   这是群聊天的信息
+
 
 ##运行：
 ###一、启动聊天服务。根目录下
@@ -44,9 +45,10 @@ chatid一共有三种形式
 	php start.php start
 	（以daemon方式启动  ）
 	php start.php start -d
-	还可以使用 stop restart reload status 等命令
+	除了start命令，还可以使用 stop restart reload status 等命令
 	
-###二、聊天数据保存永久保存。/Vendors/Redis/ 下运行
+###二、聊天/广播数据保存永久保存、生成最近联系人、生成缓存消息/广播列表。
+	/Vendors/Redis/ 下运行
 
            临时运行    	  php doQuene 
 	daemon方式运行     nohub php doQuene &
@@ -61,20 +63,29 @@ chatid一共有三种形式
 
 	       如果是单人聊天则chatid就是两个人用‘--’连接的字串（且注意俩名称是经过sort排序的）cuihb--xieyx
 	       如果是群组聊天则chatid就是唯一的字串(例如群组+创建群的时间)cuihb-63756323 根据这个字串可以从redis中获取成员
-- wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":msg}));
+- wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":msg, "msgType":''}));
 	
 ###发送广播消息
 	wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":"cuihb","touser":'cuihb-wangjx',"title":"aaa","content":"bbbb"}));
 ###修改群组广播
 	wc_ws.send(JSON.stringify({"type":"groupset","chatid":chatid,"title":groupTitle,"members":memberids}));
 ###修改群名称广播
-	wc_ws.send(JSON.stringify({"type":"grouptitle","chatid":chatid,"title":groupTitle}));
+	wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":chatid,"title":''}));
+###开启与屏蔽群消息
+	wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"opennotice"}));
+	wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"closenotice"}));
+
+
 ##实现的功能：
 - 1、所有聊天历史记录永久保存
-- 2、记录用户最近联系人，用户每次登陆即可加载
+- 2、记录用户最近联系人
 - 3、支持拉群
-- 4、支持新消息、离线消息提醒
+- 4、支持新消息/广播、离线消息/广播提醒
+- 5、消息提醒支持 声音、桌面弹窗、title闪烁 三种提醒方式
 - 5、支持用户上线提醒
+- 7、支持发送广播消息
+- 8、支持图片、附件发送
+- 9、支持屏蔽消息、消息发送方式
 - 6、消息队列监控
 
 ##实现方法：
