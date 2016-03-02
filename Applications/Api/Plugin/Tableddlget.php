@@ -15,7 +15,7 @@ class Tableddlget {
     }
     
     /**
-     * 创建的merge引擎 消息表的sql
+     * 创建消息表的merge引擎表 语句
      */
     public static function msgMergeTableDdl($tbname, array $unionTables) {
         if(!$tbname) return false;
@@ -25,7 +25,7 @@ class Tableddlget {
         return $sql;
     }
     /**
-     * 创建广播表语句
+     * 创建广播表 语句
      */
     public static function broadcastTableDdl($tbname) {
         if(!$tbname) return false;
@@ -35,7 +35,7 @@ class Tableddlget {
         return $sql;
     }
     /**
-     * 创建merge引擎  广播表的sql
+     * 创建广播表的merge引擎表 语句
      */
     public static function broadcastMergeTableDdl($tbname, array $unionTables) {
         if(!$tbname) return false;
@@ -46,7 +46,7 @@ class Tableddlget {
     }
     
     /**
-     * 创建队列监控表的 sql
+     * 创建队列监控表的 语句
      */
     public static function queneStatusTableDdl($tbname) {
         if(!$tbname) return false;
