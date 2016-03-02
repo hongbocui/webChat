@@ -70,6 +70,7 @@ function newMsgCount() {
 var hiddenProperty = 'hidden' in document ? 'hidden' :    
     'webkitHidden' in document ? 'webkitHidden' :    
     'mozHidden' in document ? 'mozHidden' :    
+    'msHidden' in document ? 'msHidden' :    
     null;
 	var visibilityChangeEvent = hiddenProperty.replace(/hidden/i, 'visibilitychange');
 	var onVisibilityChange = function(){
