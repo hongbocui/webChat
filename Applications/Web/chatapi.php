@@ -8,9 +8,9 @@
     $class = rtrim('Api\Controler\ ').ucfirst($_REQUEST['c']);
     $method= "do".ucfirst($_REQUEST['a']);
     
-    ApiConfig::run($class, $method); 
+    WebchatApi::run($class, $method); 
     
-    class ApiConfig {
+    class WebchatApi {
         /**
          * 执行API的方法
          */
