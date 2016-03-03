@@ -1,0 +1,154 @@
+<a href="javascript:;" class="choose-img button">选择图片</a>
+<span>（可以使用截图工具截图后在此Ctrl+V）</span>
+<input type="file" multiple="multiple" name="picture" accept="image/*" style="width: 0;height: 0;float: left;">
+<div class="image-lists"></div>
+<a href="javascript:;" class="upload-img button float-right">发送</a>
+<script>
+    var imageLists = [];
+    function chunk(file, compress){
+        const SIZE = file.size;
+        var start = 0;
+        var end = BYTE_PER_CHUNK;
+        var tmpName = file.name+'|'+file.size+'|'+file.type+'|'+wc_loginName;
+        if(SIZE > BYTE_PER_CHUNK) {
+            var formData = new FormData();
+            formData.append('image',compress);
+            formData.append('name',tmpName);
+            upload(formData);
+        }
+        while(start < SIZE) {
+            var formData = new FormData();
+            formData.append('file',file.slice(start, end));
+            formData.append('index',start/BYTE_PER_CHUNK);
+            formData.append('total',Math.ceil(SIZE/BYTE_PER_CHUNK));
+            formData.append('name',tmpName);
+            upload(formData, 'chunk');
+            start = end;
+            end += BYTE_PER_CHUNK;
+        }
+    }
+    function upload(formData, action){
+        var action = action || 'capture';
+        $.ajax({
+            url: 'chatapi.php?c=file&a='+action,
+            data: formData,
+            processData : false,
+            contentType: false,
+            dataType: 'JSON',
+            type: 'POST',
+            success:function(res) {
+                console.log(res)
+                if(res.data.type == 'complete') {
+                    var width = res.data.width;
+                    var height = res.data.height;
+                    var maxWidth = 650;
+                    if(width > maxWidth) {
+                        width = maxWidth;
+                        height = height * maxWidth/res.data.width;
+                    }
+                    sendToWsMsg('<img class="lazy" src="images/wait.gif" data-original="'+res.data.filepath+'" width='+width+' height='+height+'>', 'image');
+                }
+            }
+        });
+    }
+	function readFile(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            imageLists.push({'src':reader.result,'file':file});
+            compress(reader.result);
+            applyDataUrlToCanvas(reader.result);
+        };
+        reader.readAsDataURL(file);
+    }
+    function compress(src, quality) {
+        var quality = quality || 0.1;
+        var canvas = $('<canvas/>');
+        var img = new Image();
+        var maxWidth = 650;
+        var cxt = canvas[0].getContext('2d');
+        img.onload = function(){
+            if(img.width > maxWidth) {
+                img.height = img.height*maxWidth/img.width;
+                img.width = maxWidth;
+            }
+            canvas.attr({'width':img.width,'height':img.height});
+            cxt.drawImage(img, 0, 0, img.width, img.height);
+            imageLists[imageLists.length-1].compress = canvas[0].toDataURL('image/jpeg',quality);
+        };
+        img.src = src;
+    }
+    function applyDataUrlToCanvas(src) {
+        var canvas = $('<canvas/>');
+        var size = {width:98,height:94};
+        $('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append(canvas.attr(size)).appendTo($('.image-lists'));
+        var cxt = canvas[0].getContext("2d");
+        var img = new Image();
+        img.onload = function() {
+            if(size.width/img.width > size.height/img.height)
+                size.width = size.height/img.height*img.width;
+            else
+                size.height = size.width/img.width*img.height;
+            cxt.drawImage(img, (98-size.width)/2, (94-size.height)/2, size.width, size.height);
+        }
+        img.src = src;
+    }
+    $(function(){
+        // stop FireFox from replacing the whole page with the file.
+        $(document)[0].ondragover = function () { return false; };
+        // Add drop handler
+        $(document)[0].ondrop = function (e) {
+            e.stopPropagation();
+            e.preventDefault(); 
+            e = e || window.event;
+            var files = e.dataTransfer.files;
+            if(files){
+                readFile(files[0]);
+            }
+        };
+        
+        document.onpaste = function(e){
+            e.preventDefault();
+            if(e.clipboardData&&e.clipboardData.items){
+                // pasted image
+                for(var i=0, items = e.clipboardData.items;i<items.length;i++){
+                    if( items[i].kind==='file' && items[i].type.match(/^image/) ){
+                        readFile(items[i].getAsFile());
+                        break;
+                    }
+                }
+            }
+            return false;
+        };
+        $('.choose-img').click(function(){
+            $('input[name=picture]').click();
+        })
+		$('input[name=picture]').change(function(e){
+            var x = 0;
+            while(x < e.target.files.length) {
+                if($('.image-lists').children().length+x >= 8)
+                    break;
+                readFile(e.target.files[x])
+                x++;
+            }
+        })
+		$('.upload-img').click(function(){
+			if($(this).prev('.image-lists').children().length == 0)
+				return false;
+            //截图以base64的形式上传，否则以文件流切割上传
+            //截图没有name属性
+            for(var x in imageLists) {
+                if(imageLists[x].file.name == null) {
+                    var formData = new FormData();
+                    formData.append('image',imageLists[x].src);
+                    upload(formData);
+                }else{
+                    chunk(imageLists[x].file, imageLists[x].compress);
+                }
+            }
+		})
+		$('.image-lists').on('click','.remove-img',function(){
+            imageLists.splice($(this).parent().index(),1)
+			$(this).parent().remove();
+		})
+	})
+</script>

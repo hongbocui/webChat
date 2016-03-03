@@ -279,7 +279,7 @@
 						<div class="send-msg">
 							<div class="tool">
 								<a class="chat-icon smile" href="javascript:;"></a>
-								<i class="chat-icon image show-modal" modal-title="上传图片" modal-data="upload.html"></i>
+								<i class="chat-icon image show-modal" modal-title="上传图片" modal-data="upload-new.html"></i>
 								<i class="chat-icon attach"></i>
 								<i class="chat-icon audio"></i>
 								<i class="chat-icon remind"></i>
@@ -425,7 +425,9 @@
         <script src="js/treeview/treeview.js"></script>
         <script src="js/common.js"></script>
         <script src="js/libs/jquery.lazyload.js?v=1.9.3"></script>
+        <script src="js/libs/spark-md5.min.js"></script>
 		<script>
+            const BYTE_PER_CHUNK = 1024*1024;
 			function file_size_format(size, dec) {
 				size = size||0;
 				dec = dec||2;
