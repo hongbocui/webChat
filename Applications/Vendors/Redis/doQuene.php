@@ -15,6 +15,7 @@
 	use Vendors\Redis\RedisModel;
 	use Api\Model\Mmessage;
 	use Api\Model\Mbroadcast;
+	use Api\Model\Mcommon;
 	
 	//自动建表
 	Api\Model\Mqueue::createQueueTable();
@@ -29,7 +30,7 @@
 	    'msgNumAtm'   => 2,                    #每次处理的消息数，如果是多个会有合并处理
 	    'maxSleep'    => 30,                   #没有消息的时候，deamon将sleep，如果队列消息不多，尽量设置大点，减少处理压力20+
 	    'adminMail'   => 'cuihb@ifeng.com',    #接受监控报警的邮件地址，多个地址逗号分割
-	    'eagleeyeDb'   => 'webChat',           #消息队列监控状态所在库
+	    'eagleeyeDb'  => 'webChat',           #消息队列监控状态所在库
 	    'phpFile'     =>  __FILE__,            #php文件地址
 	    'life'        => 0,                    #程序的生命周期，如果0表示是一直循环的Deamon处理，如果设置了时间，必须采用crontab的形式
 	));
@@ -56,7 +57,7 @@
 	 */
 	function insertBroadcastData($data) {
 	    //自动分表处理,每天检测一次就行
-	    if(isFirstSet("broadcast:tableset"))
+	    if(!Mcommon::isStrInFile('bdc.tbset', date('Ymd')))
 	       Mbroadcast::createTable(Mbroadcast::getTbname($data['time']));
 	    //广播消息入库
 	    $insertData = array(
@@ -74,7 +75,7 @@
 	 */
 	function insertMsgData($data){
 	    //自动分表处理,每天检测一次就行
-	    if(isFirstSet(":msg:tableset"))
+	    if(!Mcommon::isStrInFile('msg.tbset', date('Ymd')))
 	       Mmessage::createTable(Mmessage::getTbname($data['time']));
 	    //插入聊天数据
 	    $insertData = array(
@@ -83,6 +84,7 @@
 	        'message'  => addslashes($data['message']),
 	        'time'     => $data['time'],
 	        'type'     => $data['type'],
+	        'filemd5'  => $data['filemd5']
 	    );
 	    Mmessage::storeMessage($insertData);
 	}

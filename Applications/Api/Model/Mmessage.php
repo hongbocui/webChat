@@ -50,6 +50,17 @@
             $sql = "insert into ".self::getTbname($data['time'])."({$formatData['fileds']}) values({$formatData['values']})";
             return self::dbobj()->query($sql);
         }
+        /**
+         * 根据file的md5查看文件是否已经存在,用于文件秒传
+         */
+        public static function filemd5Exist($filemd5) {
+            $tbname = self::$messagetablePre;
+            \Api\Model\Msqlmerge::mergeMsgTable();
+            if(!self::tbexists($tbname)) return false;
+            $where = " where filemd5='{$filemd5}' ";
+            $sql = "select id from {$tbname} {$where}";
+            return self::dbobj()->single($sql);
+        }
         
         /**
          * 自动建表语句、判断是否有本月聊天表，没有则创建

@@ -29,10 +29,29 @@ $(function(){
 
 //删除一个最近联系人
 function delRecentchatMember(chatid) {
-	dotChatid = make___ToDot(chatid);
-	$.get('/chatapi.php?c=user&a=DelRecentContact&accountid='+wc_loginName+'&chatid='+dotChatid);
+	$.get('/chatapi.php?c=user&a=DelRecentContact&accountid='+wc_loginName+'&chatid='+chatid);
 }
-
+//获取一个单个用户的信息
+function getPersonalData(chatid) {
+	if(chatid.indexOf('--')<0) return false;
+	var userid = makeChatidToUserid(chatid);
+	if(window[userid+'personInfo'] != undefined) {
+		return window[userid+'personInfo'];
+	} else {
+		$.ajax({
+	        url:'chatapi.php?c=user&a=oneinfo',
+	        data:{'accountid':userid},
+	        dataType:'JSON',
+	        type:'POST',
+	        async:false,
+	        success:function(data){
+	            if(data.code)
+	            	window[userid+'personInfo'] =  data.data[0];
+	        }
+	    });
+		return window[userid+'personInfo'] != undefined ? window[userid+'personInfo'] : null;
+	}
+}
 
 
 /*************
@@ -64,10 +83,7 @@ document.addEventListener(visibilityChangeEvent, onVisibilityChange);
 
 //声音提示
 function playAudio() {
-	var audioElement = document.createElement('audio');
-    audioElement.setAttribute('src', 'audio/system.wav');
-    audioElement.load;
-    audioElement.play();
+	document.getElementById('chat-audio').play();
 }
 //桌面弹窗与消息提示
 function palyDeskNotice(theTitle,options) {

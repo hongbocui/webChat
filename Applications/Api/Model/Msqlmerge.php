@@ -35,10 +35,13 @@ class Msqlmerge extends Abstractex{
      * 判断并创建merge引擎的  msg表
      */
     public static function mergeMsgTable() {
-        if(self::hasCreateMerge(self::$mergeMsgFile, date('Ym')))
-            return true;
+        //首先判断是否有要联合的表
         $unionTables = self::getTables(self::$msgPrefix, self::$msgTbNum);
         if(!$unionTables) return false;
+        //第二才能判断需不需要简历表
+        if(Mcommon::isStrInFile(self::$mergeMsgFile, date('Ym')))
+            return true;
+        
         self::dropTable(self::$msgPrefix);//先删除表
         $sqlStr = \Api\Plugin\Tableddlget::msgMergeTableDdl(self::$msgPrefix, $unionTables);
         return self::dbobj()->query($sqlStr);
@@ -47,44 +50,17 @@ class Msqlmerge extends Abstractex{
      * 判断并创建merge引擎的  broadcast表
      */
     public static function mergeBdcTable() {
-        if(self::hasCreateMerge(self::$mergeBdcFile, date('Y')))
-            return true;
+        //首先判断是否有要联合的表
         $unionTables = self::getTables(self::$broadcastPrefix, self::$broadcastTbNum);
         if(!$unionTables) return false;
+        //第二才能判断需不需要简历表
+        if(Mcommon::isStrInFile(self::$mergeBdcFile, date('Y')))
+            return true;
+       
         self::dropTable(self::$broadcastPrefix);//先删除表
         $sqlStr = \Api\Plugin\Tableddlget::broadcastMergeTableDdl(self::$broadcastPrefix, $unionTables);
         return self::dbobj()->query($sqlStr);
     }
-    
-    /**
-     * 创建merge表
-     */
-    public static function createMergeTable($sqlStr) {
-        if(!$sqlStr) return false;
-        
-    }
-    /**
-     * 判断是否已经创建过merge表
-     */
-    public static function hasCreateMerge($fileName, $strInFile) {
-        if(!$fileName || !$strInFile) return false;
-        $fpath = '/tmp/webChat/'.$fileName;
-        $dir = dirname($fpath);
-        if(!file_exists($dir)){
-            if (false === \Api\Plugin\File::mkdir($dir)) {
-                die('filesystem is not writable: ' . $dir);
-            }
-            file_put_contents($fpath, $strInFile);
-            return false;
-        }
-        if(file_get_contents($fpath) !== $strInFile) {
-            file_put_contents($fpath, $strInFile);
-            return false;
-        }else{
-            return true;
-        }
-    }
-    
     /**
      * 如果没有创建过merge 引擎的msg表。则选取最近12个月的进行merge。
      * @param string $tablePrefix 要查询的表的前缀

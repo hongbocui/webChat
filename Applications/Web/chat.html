@@ -414,6 +414,7 @@
             <a href="javascript:;" class="tips-close button-close">&times;</a>
             <input type="text" name="groupName">
         </div>
+        <audio id="chat-audio" src="audio/system.wav" display="none"></audio>
 		<script src="js/jquery.min.js"></script>
 		<script src="js/jquery-plugin-v1.0.0.js"></script>
 		<script src="js/jquery.hotkeys.js"></script>
@@ -486,8 +487,13 @@
 					$(this).addClass('active').siblings().removeClass('active');
 					$('.chat-input').unbind('keydown',hotkeysbind)
 					$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
-				})
-				$('.chat-input').bind('keydown',$('.pop-keys .active').attr('data-keys'),hotkeysbind)
+					writeCookie('sendMsghk',$('.pop-keys .active').attr('data-keys'), 60);
+				});
+				if(readCookie('sendMsghk')) {
+					$('.pop-keys p').removeClass('active');
+					$('.pop-keys p[data-keys="'+readCookie('sendMsghk')+'"]').addClass('active');
+				}
+				$('.chat-input').bind('keydown',readCookie('sendMsghk') || $('.pop-keys .active').attr('data-keys'),hotkeysbind)
 				$('.attach').click(function(){
 					$('input[name=attach]').click();
 				})
@@ -507,6 +513,7 @@
 		            		if (ext && (ext = ext[1])) {
 		                		fileType = ext.toLowerCase();
 		            		}
+		            var filemd5 = '';
 					$.ajax({
 						url:'chatapi.php?c=file&a=attach',
 						data:formData,
@@ -561,7 +568,7 @@
 			                                        <p>'+fileSize+'</p> \
 		                                        </div> \
 		                                        <div class="file-tool"><a href="/chatapi.php?c=file&a=download&srcname='+fileName+'&desname='+ret.responseJSON.info+'" data-name='+ret.responseJSON.info+'>保存</a></div> \
-		                                     </div>', "file");
+		                                     </div>', "file", filemd5);
 							}else{
 								$('.file-tool:last a').css('color','red').html(ret.responseJSON.info).parent().show();
 							}

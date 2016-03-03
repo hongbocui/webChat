@@ -18,7 +18,7 @@ $(function(){
 		event.stopPropagation();
 	});
 	$('.pop-keys').click(function(event){
-		$(this).show();
+		$(this).hide();
 		event.stopPropagation();
 	});
 	//表情插入输入框
@@ -30,42 +30,6 @@ $(function(){
 		$(this).removeAttr('style');
 	});
 	$('.send').click(function(){
-//		var msg = $('.chat-input').html();
-//		var face_pattern = /<img\b\ssrc="\.\/images\/smiley\/(\d+)\.gif">/g;
-//		var br_pattern = /<\/div>/g;
-//		var clear_tag_pattern = /<\/?(\w+\b)[^>]*>(?:([^<]*)<\/\1[^>]*>)?/g;
-//		var compile_pattern = /\[\\([a-z]+)(\d+)?\]/g;
-//		console.log(msg);
-//		//转义
-//		msg = msg.replace(face_pattern, '[\\face$1]');
-//		msg = msg.replace(br_pattern, '[\\br]');
-//		msg = msg.replace(clear_tag_pattern, '$2');
-//		console.log(msg);
-//		//还原
-//		msg = msg.replace(/\[\\([a-z]+)(\d+)?\]/g, function(match, p1, p2, offset, string) {
-//			switch(p1) {
-//				case 'face':
-//					return '<img src="./images/smiley/'+p2+'.gif">';
-//				case 'br':
-//					return '<br />';
-//				case 'image':
-//					//查附件表，id为p2
-//					return '';
-//				case 'file':
-//					//查附件表，id为p2
-//					return '';
-//			}
-//		});
-//		$('<div/>').addClass('row self').html(
-//			'<div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
-//			<div class="message-detail"> \
-//				<p>&nbsp;</p> \
-//				<div class="message-box"> \
-//					'+msg+'&nbsp; \
-//					<i class="chat-icon message-box-pike"></i> \
-//				</div> \
-//			</div>'
-//		).appendTo($('.logs'));
 		var msg = $('.chat-input').html();
 		sendToWsMsg(msg);
 		//情况输入框
@@ -100,8 +64,8 @@ $(function(){
 	//$('待移动元素').moveTreeTop($('.recent'));
 //	$(".tab-detail.structure,.chat-box .member").on('dblclick','span[type=member]',function(){
 //		//添加之前先判断是否有这个联系人
-//		if($('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').length) {
-//			$('.tab-detail.recent span[type=personal][data-id='+$(this).attr('data-id')+']').dblclick();
+//		if($('.tab-detail.recent span[type=personal][data-id="'+$(this).attr('data-id')+'"]').length) {
+//			$('.tab-detail.recent span[type=personal][data-id="'+$(this).attr('data-id')+'"]').dblclick();
 //			return false;
 //		}
 //		$('.tab-detail.recent').addTree({
@@ -116,26 +80,25 @@ $(function(){
 	$("body").on('dblclick','.tab-detail.active span:not([type=dept])',function(){
 		//$(this).moveTreeTop($('.tab-detail.recent'));
 		//ajax 获取最近聊天记录，如果是群获取创建时间，否则获取联系人基本资料
-        console.log($(this).html())
 		var	_title = $(this).html().replace(/<(\w+\b)[^>]+>(?:.*?<\/\1>)?/g,'');
 		var _member = $(this).attr('data-id');
-		var dotChatid = make___ToDot(_member);
 		$('.home').hide();
 		$('.message').css('margin-right','0px');
 		$('.chat-box .member').hide();
 		//如果是群组，更新群组成员
 		if($(this).attr('type')=='group') {
-			//$('.message').css('margin-right','180px');
-			//$('<div/>').addClass('tree-folders').append($(this).clone().find('.unread').remove().end()).append($(this).next('.tree-files').clone().show()).appendTo($('.chat-box .member').show().html(''))
-			$('.contact-msg p').html(getAdminByChatid(dotChatid)+' 创建于'+timestampTodate($(this).attr('ctime')));
+			$('.contact-msg p').html(getAdminByChatid(_member)+' 创建于'+timestampTodate($(this).attr('ctime')));
 			//更新一下群组的生存时间
-			$.get('/chatapi.php?c=group&a=expires&chatid='+dotChatid);
+			$.get('/chatapi.php?c=group&a=expires&chatid='+_member);
+		}else{
+			var personalData = getPersonalData(_member);
+			$('.contact-msg p').html('部门：'+personalData.deptDetail+'&nbsp;&nbsp;&nbsp;&nbsp;邮箱：'+personalData.email+'&nbsp;&nbsp;&nbsp;&nbsp;电话：'+personalData.tel);
 		}
 		//未读消息变为0
 		if($(this).find('b').length){
 			loadUnreadMsgFun(_member, 0); //前端
 			//服务端
-			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+dotChatid+'&accountid='+wc_loginName);
+			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+_member+'&accountid='+wc_loginName);
 		}
 		//加载本地消息
 		historyInDialog(_member);
@@ -185,26 +148,25 @@ $(function(){
 	$(".pop-groupName input").keyup(function(e){
 		if(e.which === 13){
 			$(".pop-groupName").hide();
-			var dotChatid = make___ToDot($(".pop-groupName").attr("data-id"));
-			wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":dotChatid,"title":$(this).val()}));
+			var chatid = $(".pop-groupName").attr("data-id");
+			wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":chatid,"title":$(this).val()}));
 		}
 	});
     /*$('.recent').on('click','span[type=group]',function(){
         if($('.pop-groupName:visible').length)
-            $('.pop-groupName').css({'top':$('.recent span[data-id='+$('.pop-groupName').attr('data-id')+']').offset().top-47+'px'});
+            $('.pop-groupName').css({'top':$('.recent span[data-id="'+$('.pop-groupName').attr('data-id')+'"]').offset().top-47+'px'});
     })*/
 	//屏蔽&取消屏蔽 消息提醒
 	$(".remind").click(function(){
 		var nowChatid = getNowChatId();
-		var dotChatid = make___ToDot(nowChatid);
 		if(nowChatid.indexOf('--') > -1) return;//单人聊天没有屏蔽消息的功能
 		var cookieKey = nowChatid;
 		if(readCookie(cookieKey)){
 			delCookie(cookieKey);
-			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"opennotice"}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"opennotice"}));
 		}else{
 			writeCookie(cookieKey, '1', 30);
-			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":dotChatid,"action":"closenotice"}));
+			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"closenotice"}));
 		}
 	});
 })
