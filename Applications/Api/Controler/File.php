@@ -1,26 +1,68 @@
 <?php
 	namespace Api\Controler;
 	class File extends Abstractex {
-
-		public function doUpload() {
-			$images = $this->toStr('image');
-			$fileNameArr = array();
-			$dir = 'upload/'.self::_getDir(time());
-			for($i=0; $i<count($images); $i++) {
-        			$file_type = 'jpg';
-        			$file = preg_replace_callback('/data:image\/(\w+);base64,/',function($matches) use (&$file_type){
-                			$type = array('jpeg'=>'jpg','gif'=>'gif','png'=>'png');
-                			$file_type=$type[$matches[1]];
-                			return '';
-        			},$images[$i]);
-				if(!file_exists($dir)) {
-					$this->doCreateDir($dir);
-				}
-				$fileName = $dir.'/'.time().mt_rand(1000,9999).$i.'.'.$file_type;
-				$fileNameArr[] = $fileName;
-        		file_put_contents($fileName, base64_decode($file));
+        public function doChunk() {
+            $dir = './upload/'.self::_getDir(time()).'/'.md5($this->toStr('name'));
+            if(!file_exists($dir)) {
+                $this->doCreateDir($dir);
             }
-			$this->_success(json_encode($fileNameArr));
+            $fileStatus = $this->_uploadFile($_FILES['file'], $dir, array(), 0, $this->toInt('index'));
+            if(!$fileStatus['status']) {
+                $this->_error($fileStatus['info']);
+            }
+            if(self::_allChunkUploadComplete($dir, $this->toInt('total'))) {
+                $source = explode('|',$this->toStr('name'));
+                $filePath = self::_combine($dir, self::_getExtension($source[0]), $this->toInt('total'));
+                
+                $fileInfo = self::_getInfo($filePath);
+                $fileInfo['filepath'] = $filePath;
+                $fileInfo['type'] = 'complete';
+                $this->_success($fileInfo);
+            }else{
+                $this->_success(array('type'=>'chunk'));
+            }
+        }
+        private function _getExtension($file) { 
+            return pathinfo($file, PATHINFO_EXTENSION); 
+        }
+        private function _combine($dir, $ext, $chunkNum) {
+            $ext = $ext == '' ? '' : '.'.$ext;
+            $fileName = dirname($dir).'/'.time().mt_rand(1000,9999);
+            $fp = fopen($fileName.$ext,"ab");
+            for($i=0; $i<$chunkNum; $i++) {
+                $chunkFile = $dir.'/'.$i;
+                $handle = fopen($chunkFile,'r');
+                fwrite($fp, fread($handle, filesize($chunkFile)));
+                fclose($handle);
+                unlink($chunkFile);
+            }
+            fclose($fp);
+            rmdir($dir);
+            return $fileName.$ext;
+        }
+        private function _allChunkUploadComplete($dir, $chunkNum) {
+            if(count(scandir($dir)) == $chunkNum+2)
+                return 1;
+            return 0;
+        }
+        //断点上传用
+        private function _checkChunkUpload() {
+            return 1;
+        }
+		public function doCapture() {
+			$image = $this->toStr('image');
+			$image = preg_replace('/^data:image\/png;base64,/', '', $image);
+            $dir = './upload/'.self::_getDir(time());
+        	$file_type = 'png';
+			if(!file_exists($dir)) {
+				$this->doCreateDir($dir);
+			}
+			$filePath = $dir.'/'.time().mt_rand(1000,9999).'.'.$file_type;
+        	file_put_contents($filePath, base64_decode($image));
+            $fileInfo = self::_getInfo($filePath);
+            $fileInfo['filepath'] = $fileName;
+            $fileInfo['type']     = 'complete';
+			$this->_success($fileInfo);
 		}
 		public function doAttach() {
 		    $dir = './upload/'.self::_getDir(time());
@@ -46,6 +88,7 @@
 				self::doCreateDir($sundir, $mode);
 			}
 			@mkdir($dir, $mode);
+            @chmod($dir, $mode);
 		}
 		/**
 		 * 获取上传目录
@@ -55,6 +98,16 @@
 		        return date('Ym/d', $time);
 		    return date('Ym/d', time());
 		}
+        static private function _getInfo($path) {
+           
+            $data = getimagesize($path);
+            $imgInfo = array();
+            $imgInfo["width"]  = $data[0];
+            $imgInfo["height"] = $data[1];
+            $imgInfo["type"]   = $data[2];
+                                
+            return $imgInfo;
+        }
 		/**
 		 * 自定义一个文件上传函数
 		 * @param array $upfile 上传文件信息： 如：$_FILES['filename']
@@ -66,7 +119,7 @@
 		 *	  第一个单元：下标status：值为true表示成功，false表示失败
 		 *	  第二个单元：下标info：  上传成功值为文件名，失败值为错误信息
 		 */
-		private function _uploadFile($upfile,$path,$typelist=array(),$maxsize=0){
+		private function _uploadFile($upfile,$path,$typelist=array(),$maxsize=0,$fileName = ''){
 			$path = rtrim($path,"/")."/"; //处理上传路径的右侧斜线。
 			//定义返回值信息
 			$res=array('status'=>false,'info'=>"");
@@ -109,7 +162,7 @@
 				//随机一个文件名，格式：时间戳+4位随机数+源后缀名
 				$newname = $extname ? time().rand(1000,9999).'.'.$extname : time().rand(1000,9999);
 			}while(file_exists($path.$newname)); //判断随机的文件名是否存在。
-
+            if($fileName !== '') $newname = $fileName;
 			//5. 判断并执行文件上传。
 			if(is_uploaded_file($upfile['tmp_name'])){
 				if(move_uploaded_file($upfile['tmp_name'],$path.$newname)){
