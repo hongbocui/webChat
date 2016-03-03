@@ -15,14 +15,14 @@
             return self::dbobj()->query($sqlStr);
         }
         /**
-         * 获取某个队列的信息信息
+         * 获取某个队列的信息
          * @param unknown $paramArr
          */
         public static function getQueueInfo($paramArr) {
             $options = array(
                 'jobName'   => '',
                 'queueName' => '',
-                'fields'     => array(),
+                'fields'    => array(),
             );
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
             extract($options);

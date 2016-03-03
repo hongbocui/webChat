@@ -27,9 +27,7 @@ class Msqlmerge extends Abstractex{
      * 几个用来标示的文件
      */
     private static $mergeMsgFile = 'msg.merge';//用来查看merge的msg表（webchat_message）是否存在
-    private static $mergeBdcFile    = 'bdc.merge';//用来查看merge的broadcast表（webchat_broadcast）是否存在
-    //private static $msgTbFileName = 'msg.tbtime';
-    //private static $brcTbFileName = 'brc.tbtime';
+    private static $mergeBdcFile = 'bdc.merge';//用来查看merge的broadcast表（webchat_broadcast）是否存在
     
     /**
      * 判断并创建merge引擎的  msg表
@@ -38,12 +36,14 @@ class Msqlmerge extends Abstractex{
         //首先判断是否有要联合的表
         $unionTables = self::getTables(self::$msgPrefix, self::$msgTbNum);
         if(!$unionTables) return false;
-        //第二才能判断需不需要简历表
+        //第二才能判断需不需要建立表
         if(Mcommon::isStrInFile(self::$mergeMsgFile, date('Ym')))
             return true;
-        
-        self::dropTable(self::$msgPrefix);//先删除表
-        $sqlStr = \Api\Plugin\Tableddlget::msgMergeTableDdl(self::$msgPrefix, $unionTables);
+        //获取修改或者创建merge表的 ddl语句
+        if(self::dbobj()->single("SHOW TABLES LIKE '".self::$msgPrefix."'"))
+            $sqlStr = \Api\Plugin\Tableddlget::alterMergeDdl(self::$msgPrefix, $unionTables);
+        else
+            $sqlStr = \Api\Plugin\Tableddlget::msgMergeTableDdl(self::$msgPrefix, $unionTables);
         return self::dbobj()->query($sqlStr);
     }
     /**
@@ -53,12 +53,14 @@ class Msqlmerge extends Abstractex{
         //首先判断是否有要联合的表
         $unionTables = self::getTables(self::$broadcastPrefix, self::$broadcastTbNum);
         if(!$unionTables) return false;
-        //第二才能判断需不需要简历表
+        //第二才能判断需不需要建立表
         if(Mcommon::isStrInFile(self::$mergeBdcFile, date('Y')))
             return true;
-       
-        self::dropTable(self::$broadcastPrefix);//先删除表
-        $sqlStr = \Api\Plugin\Tableddlget::broadcastMergeTableDdl(self::$broadcastPrefix, $unionTables);
+        //获取修改或者创建merge表的 ddl语句
+        if(self::dbobj()->single("SHOW TABLES LIKE '".self::$broadcastPrefix."'"))
+            $sqlStr = \Api\Plugin\Tableddlget::alterMergeDdl(self::$broadcastPrefix, $unionTables);
+        else
+            $sqlStr = \Api\Plugin\Tableddlget::broadcastMergeTableDdl(self::$broadcastPrefix, $unionTables);
         return self::dbobj()->query($sqlStr);
     }
     /**
@@ -73,15 +75,6 @@ class Msqlmerge extends Abstractex{
         rsort($tables); //反序排列
         $tables = array_slice($tables, 0, $num);
         return $tables;
-    }
-    /**
-     * 删除现有的过时的 merge 引擎的表
-     */
-    public static function dropTable($tbname) {
-        if(!$tbname) return false;
-        if(self::dbobj()->single("SHOW TABLES LIKE '".$tbname."'")) {
-            self::dbobj()->query("DROP TABLE ".$tbname);
-        }
     }
 }
 ?>

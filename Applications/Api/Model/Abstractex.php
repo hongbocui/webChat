@@ -70,11 +70,7 @@
         private static function formatFiledsValue($data, $isValue=0){
             $field = "";
             if(is_array($data) && $data){
-                if($isValue){
-                    $field = "'".join("','",$data)."'";
-                }else{
-                    $field = "`".join('`,`',$data)."`";
-                }
+                $field = $isValue ? "'".join("','",$data)."'" : "`".join('`,`',$data)."`";
             }else{
                 if($isValue) return false;
                 $field = " * ";

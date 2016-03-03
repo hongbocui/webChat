@@ -3,7 +3,7 @@
     use \Vendors\Redis\RedisModel;
         
     class Mgroup extends Abstractex {
-        //群生命周期
+        //群生命周期 一个月
         public static $groupLife = 2592000;
         /**
          * 建群，设置/修改 群基本信息

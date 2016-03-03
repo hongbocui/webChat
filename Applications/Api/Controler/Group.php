@@ -50,9 +50,9 @@
             $chatid = $this->toStr('chatid');
             $group  = explode('-', $chatid);
             $data = Mgroup::setGroupMembers(array(
-                'master' => $group[0],
-                'uuid'   => $group[1],
-                'type'   => $this->toStr('type'),
+                'master'   => $group[0],
+                'uuid'     => $group[1],
+                'type'     => $this->toStr('type'),
                 'userList' => $userList,
             ));
             return $data ? $this->_success('1', 'success', '1') : $this->_success('-1','error', '0');

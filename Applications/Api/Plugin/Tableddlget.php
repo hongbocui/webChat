@@ -44,6 +44,12 @@ class Tableddlget {
         ) ENGINE=MRG_MyISAM union=(".implode(',', $unionTables).") INSERT_METHOD=last CHARSET=utf8";
         return $sql;
     }
+    /**
+     * 修改merge引擎表 的语句
+     */
+    public static function alterMergeDdl($tbname, array $unionTables) {
+        return "ALTER TABLE {$tbname} UNION=(".implode(',', $unionTables).")";
+    }
     
     /**
      * 创建队列监控表的 语句
