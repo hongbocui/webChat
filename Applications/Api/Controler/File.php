@@ -13,13 +13,20 @@
             if(self::_allChunkUploadComplete($dir, $this->toInt('total'))) {
                 $source = explode('|',$this->toStr('name'));
                 $filePath = self::_combine($dir, self::_getExtension($source[0]), $this->toInt('total'));
-                
+                self::_haveCompress($dir,$filePath);
                 $fileInfo = self::_getInfo($filePath);
                 $fileInfo['filepath'] = $filePath;
                 $fileInfo['type'] = 'complete';
                 $this->_success($fileInfo);
             }else{
                 $this->_success(array('type'=>'chunk'));
+            }
+        }
+        private function _haveCompress($dir, $filePath) {
+            //是否存在压缩图片, 如果存在则将源图片名添加big_前缀
+            if(file_exists($dir.'.jpg')) {
+                rename($filePath, dirname($filePath).'/big_'.basename($filePath));
+                rename($dir.'.jpg', $filePath);
             }
         }
         private function _getExtension($file) { 
@@ -51,17 +58,21 @@
         }
 		public function doCapture() {
 			$image = $this->toStr('image');
-			$image = preg_replace('/^data:image\/png;base64,/', '', $image);
+            $fileName = $this->toStr('name');
+			$image = preg_replace('/^data:image\/\w+;base64,/', '', $image);
             $dir = './upload/'.self::_getDir(time());
-        	$file_type = 'png';
+        	$file_type = 'jpg';
 			if(!file_exists($dir)) {
 				$this->doCreateDir($dir);
 			}
-			$filePath = $dir.'/'.time().mt_rand(1000,9999).'.'.$file_type;
+            if($fileName == '')
+			    $filePath = $dir.'/'.time().mt_rand(1000,9999).'.'.$file_type;
+            else
+                $filePath = $dir.'/'.md5($fileName).'.'.$file_type;
         	file_put_contents($filePath, base64_decode($image));
             $fileInfo = self::_getInfo($filePath);
-            $fileInfo['filepath'] = $fileName;
-            $fileInfo['type']     = 'complete';
+            $fileInfo['filepath'] = $filePath;
+            $fileName == '' && $fileInfo['type'] = 'complete';
 			$this->_success($fileInfo);
 		}
 		public function doAttach() {

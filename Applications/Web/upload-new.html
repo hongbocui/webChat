@@ -5,11 +5,17 @@
 <a href="javascript:;" class="upload-img button float-right">发送</a>
 <script>
     var imageLists = [];
-    function chunk(file){
+    function chunk(file, compress){
         const SIZE = file.size;
         var start = 0;
         var end = BYTE_PER_CHUNK;
         var tmpName = file.name+'|'+file.size+'|'+file.type+'|'+wc_loginName;
+        if(SIZE > BYTE_PER_CHUNK) {
+            var formData = new FormData();
+            formData.append('image',compress);
+            formData.append('name',tmpName);
+            upload(formData);
+        }
         while(start < SIZE) {
             var formData = new FormData();
             formData.append('file',file.slice(start, end));
@@ -48,10 +54,28 @@
 	function readFile(file) {
         var reader = new FileReader();
         reader.onload = function(e) {
-            imageLists.push({'base64':reader.result,'file':file});
+            imageLists.push({'src':reader.result,'file':file});
+            compress(reader.result);
             applyDataUrlToCanvas(reader.result);
         };
         reader.readAsDataURL(file);
+    }
+    function compress(src, quality) {
+        var quality = quality || 0.1;
+        var canvas = $('<canvas/>');
+        var img = new Image();
+        var maxWidth = 650;
+        var cxt = canvas[0].getContext('2d');
+        img.onload = function(){
+            if(img.width > maxWidth) {
+                img.height = img.height*maxWidth/img.width;
+                img.width = maxWidth;
+            }
+            canvas.attr({'width':img.width,'height':img.height});
+            cxt.drawImage(img, 0, 0, img.width, img.height);
+            imageLists[imageLists.length-1].compress = canvas[0].toDataURL('image/jpeg',quality);
+        };
+        img.src = src;
     }
     function applyDataUrlToCanvas(src) {
         var canvas = $('<canvas/>');
@@ -107,21 +131,6 @@
                 x++;
             }
         })
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 		$('.upload-img').click(function(){
 			if($(this).prev('.image-lists').children().length == 0)
 				return false;
@@ -130,10 +139,10 @@
             for(var x in imageLists) {
                 if(imageLists[x].file.name == null) {
                     var formData = new FormData();
-                    formData.append('image',imageLists[x].base64);
+                    formData.append('image',imageLists[x].src);
                     upload(formData);
                 }else{
-                    chunk(imageLists[x].file, imageLists[x].md5);
+                    chunk(imageLists[x].file, imageLists[x].compress);
                 }
             }
 		})
