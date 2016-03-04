@@ -47,13 +47,13 @@
             }
             
             $msgList = Mmessage::getMsgList(array(
-                'limit'  => 20,     //limit
-                'fields' => array('fromuser','message','time'),//要查询的字段或者以 英文'，'分开
-                'time'   => $time,      //时间戳、根据这个向前查询  必填
-                'chatid' => $chatid,     //要查询的chatid
+                'limit'   => 20,     //limit
+                'fields'  => array('fromuser','message','time'),//要查询的字段或者以 英文'，'分开
+                'time'    => $time,      //时间戳、根据这个向前查询  必填
+                'chatid'  => $chatid,     //要查询的chatid
                 'joinTime'=> $jointime,    //用户的入群时间
-                'type'   => $type,
-                'order'  => 'order by id desc',
+                'type'    => $type,
+                'order'   => 'order by id desc',
             ));
             $this->_success($msgList);
         }

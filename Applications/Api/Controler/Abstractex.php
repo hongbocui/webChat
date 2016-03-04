@@ -31,8 +31,7 @@
         protected function toInt() {
             $args = func_get_args();
             $argsNum = func_num_args();
-            if ($argsNum)
-            {
+            if ($argsNum) {
                 $ret = array();
                 foreach ($args as $arg)
                     $ret[] = isset($_REQUEST[$arg]) ? intval($_REQUEST[$arg]) : 0;
@@ -54,7 +53,6 @@
                     return $val;
                 $val = strval($val);
                 if ($dropHtml == true)
-                    // return trim(strip_tags($val));
                     return trim(htmlspecialchars($val));
                 return $val;
             }

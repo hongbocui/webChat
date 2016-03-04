@@ -1,16 +1,5 @@
 <?php
 /**
- * This file is part of workerman.
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the MIT-LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @author walkor<walkor@workerman.net>
- * @copyright walkor<walkor@workerman.net>
- */
-
-/**
  * 聊天主逻辑
  * 主要是处理 onMessage onClose
  */
@@ -20,7 +9,7 @@ use \Vendors\Redis\Redisq;
 use \Api\Model\Muser;
 use \Api\Model\Mmessage;
 use \Config\St\Storekey;
-use Api\Model\Mbroadcast;
+use \Api\Model\Mbroadcast;
 
 class Event
 {
@@ -292,8 +281,6 @@ class Event
     */
    public static function onClose($client_id)
    {
-       // debug
-       //echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id onClose:''\n";
        //获取clientname
        $clientName = self::getClientnameFromId($client_id);
        //从在线列表中删除一个用户
