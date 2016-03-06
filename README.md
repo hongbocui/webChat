@@ -8,12 +8,14 @@ php需要的扩展：pcntl、posix、redis、pdo
 - 1.数据库配置 Applications/Config/Db.php
 - 2.redis配置: Applications/Config/Redis.php
 
-##需要的库表 （需要手动建立webChat库，并手动建立其内的user表，其他的表会自动生成）
+##需要的库表 
+（需要手动建立webChat库，并手动建立其内的user表，其他的表会自动生成）
 - 库： webChat （需要手动建立）
 - 表：webchat_message年月       //（自动生成）用来存储聊天记录
 - 表：webchat_broadcast年       //（自动生成）用来存储广播消息
 - 表：queue_deamon_status  //（自动生成）用来存储队列状态
 - 表： webchat_user		 //（手动建立）用来存储用户数据
+
   		CREATE TABLE `webchat_user` (
 		  `uid` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户id',
 		  `accountid` varchar(40) NOT NULL COMMENT '域账户',
@@ -52,7 +54,7 @@ php需要的扩展：pcntl、posix、redis、pdo
 	daemon方式运行     nohub php doQuene &
 
 
-##消息发送和接受机制
+##消息发送和接受机制 
 ###登录
 	wc_ws.send({"type":"login","clientName":wc_loginName})
 ###前端发送消息机制
