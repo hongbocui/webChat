@@ -58,14 +58,19 @@ php需要的扩展：pcntl、posix、redis、pdo
  
 #登录
 	wc_ws.send({"type":"login","clientName":wc_loginName})
+	
 #前端发送消息机制
-- wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":"aaa", "msgType":''}));
+	wc_ws.send(JSON.stringify({"type":"say","chatid":chatid,"content":"aaa", "msgType":''}));
+
 #发送广播消息
--	wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":"cuihb","touser":'cuihb-wangjx',"title":"aaa","content":"bbbb"}));
+	wc_ws.send(JSON.stringify({"type":"broadcast","fromuser":"cuihb","touser":'cuihb-wangjx',"title":"aaa","content":"bbbb"}));
+
 #修改群组广播
--	wc_ws.send(JSON.stringify({"type":"groupset","chatid":chatid,"title":groupTitle,"members":memberids}));
+	wc_ws.send(JSON.stringify({"type":"groupset","chatid":chatid,"title":groupTitle,"members":memberids}));
+
 #修改群名称广播
--	wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":chatid,"title":''}));
+	wc_ws.send(JSON.stringify({"type":"systemNotice","action":"grouptitle","chatid":chatid,"title":''}));
+
 #开启与屏蔽群消息
 	wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"opennotice"}));
 	wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"closenotice"}));
