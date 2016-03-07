@@ -4,7 +4,7 @@ php需要的扩展：pcntl、posix、redis、pdo
 建议安装libevent扩展，高并发性更好
 安装redis并启动
 
-##需要修改
+##需要配置的文件
 - 1.数据库配置 Applications/Config/Db.php
 - 2.redis配置: Applications/Config/Redis.php
 
@@ -138,3 +138,42 @@ redis中的几种数据结构只有有序集合可以实现根据score更新元�
  监控该消息队列总共处理消息数量
  监控当天处理消息数量
  监控该消息队列是否还活着
+
+简化目录结构：
+./ 
+   |-start.php   *workman的启动程序
+   |-Workerman   *workman开源框架
+   |-GatewayWorker	*GatewayWorker开源框架，
+   |-Applications / |
+    				|Api / |
+    				|      |Controler	*控制器
+					|      |
+					|      |Model	*model
+					|      |
+					|      |Plugin	*公用插件model
+					|
+					|Config /  |
+					|		   |St	*存储一些全局的常量字段
+					|		   |
+					|		   |Db.php *用于配置Db
+					|		   |
+					|		   |Redis.php	*用于配置Redis
+					|		   |
+					|		   |Store.php	*用与选择存储引擎，现在仅支持redis
+					|
+					|Vendors / |
+					|		   |-Quene	*统一队列逻辑处理
+					|		   |
+					|		   |-Redis / |-doQuene.php	*处理消息队列
+					|
+					|Web / | 
+					|      |chat.html	*聊天页面
+					|      |
+					|      |chatapi.php	*接口入口文件
+					|	
+					|Event.php	*聊天推送主处理程序
+   
+   
+   
+   
+   
