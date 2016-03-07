@@ -529,29 +529,9 @@
 							return xhr;
             					},
 						beforeSend: function() {
-							$('.logs').append('<div class="row self"> \
-                                                                <div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
-                                                                <div class="message-detail"> \
-                                                                        <p>&nbsp;</p> \
-                                                                        <div class="message-box"> \
-                                                                                <div class="files"> \
-                                                                                        <div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"> \
-                                                                                                <p class="text-cut">'+fileName+'</p> \
-                                                                                                <p>'+fileSize+'</p> \
-                                                                                        </div> \
-                                                                                        <div class="attach-upload"> \
-                                                                                                <div class="progress"></div> \
-                                                                                                <div class="loaded"></div> \
-                                                                                                <div class="attach-upload-control"><!--<i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i>--><span class="loaded-persent">0%</span></div> \
-                                                                                        </div> \
-                                                                                        <div class="file-tool" style="display:none;"> \
-                                                                                                <a href="javascript:;">保存</a> \
-                                                                                        </div> \
-                                                                                </div> \
-                                                                                <i class="chat-icon message-box-pike"></i> \
-                                                                        </div> \
-                                                                </div> \
-                                                        </div>');
+							$('.logs').append('<div class="row self"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"> \
+                                                <p class="text-cut">'+fileName+'</p><p>'+fileSize+'</p></div><div class="attach-upload"><div class="progress"></div><div class="loaded"></div><div class="attach-upload-control"><span class="loaded-persent">0%</span></div></div> \
+                                                <div class="file-tool" style="display:none;"><a href="javascript:;">保存</a></div></div><i class="chat-icon message-box-pike"></i></div></div></div>');
 						},
 						complete:function(ret){
 							$('.attach-upload:last').hide();
