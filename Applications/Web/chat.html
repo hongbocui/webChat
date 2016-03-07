@@ -542,13 +542,7 @@
 							} 
 							if(ret.responseJSON.status === true) {
 								$('.file-msg:last').parents('.row').remove();
-								sendToWsMsg('<div class="files"> \
-		                                        <div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"> \
-			                                        <p class="text-cut">'+fileName+'</p> \
-			                                        <p>'+fileSize+'</p> \
-		                                        </div> \
-		                                        <div class="file-tool"><a href="/chatapi.php?c=file&a=download&srcname='+fileName+'&desname='+ret.responseJSON.info+'" data-name='+ret.responseJSON.info+'>保存</a></div> \
-		                                     </div>', "file", filemd5);
+								sendToWsMsg('<div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"><p class="text-cut">'+fileName+'</p><p>'+fileSize+'</p></div><div class="file-tool"><a href="/chatapi.php?c=file&a=download&srcname='+fileName+'&desname='+ret.responseJSON.info+'" data-name='+ret.responseJSON.info+'>保存</a></div></div>', "file", filemd5);
 							}else{
 								$('.file-tool:last a').css('color','red').html(ret.responseJSON.info).parent().show();
 							}
