@@ -6,6 +6,7 @@
      */
     class Group extends Abstractex {
         public function doTest() {
+            var_dump(sys_get_temp_dir());die();
             var_dump(\Api\Model\Msqlmerge::getMsgTables("webchat",12));
             die();
             var_dump(pathinfo('jfkdfj',PATHINFO_EXTENSION));die;

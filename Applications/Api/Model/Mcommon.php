@@ -38,7 +38,7 @@
          */
         public static function isStrInFile($fileName, $strInFile) {
             if(!$fileName || !$strInFile) return false;
-            $fpath = '/tmp/webChat/'.$fileName;
+            $fpath = sys_get_temp_dir().'/webChat/'.$fileName;
             if(!file_exists($fpath)){
                 $dir = dirname($fpath);
                 if (!file_exists($dir)) {
