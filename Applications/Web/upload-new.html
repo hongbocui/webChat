@@ -22,6 +22,7 @@
             formData.append('index',start/BYTE_PER_CHUNK);
             formData.append('total',Math.ceil(SIZE/BYTE_PER_CHUNK));
             formData.append('name',tmpName);
+            formData.append('type','image');
             upload(formData, 'chunk');
             start = end;
             end += BYTE_PER_CHUNK;
@@ -37,7 +38,6 @@
             dataType: 'JSON',
             type: 'POST',
             success:function(res) {
-                console.log(res)
                 if(res.data.type == 'complete') {
                     var width = res.data.width;
                     var height = res.data.height;
@@ -134,6 +134,7 @@
 		$('.upload-img').click(function(){
 			if($(this).prev('.image-lists').children().length == 0)
 				return false;
+            $(this).addClass('disabled');
             //截图以base64的形式上传，否则以文件流切割上传
             //截图没有name属性
             for(var x in imageLists) {
@@ -145,6 +146,7 @@
                     chunk(imageLists[x].file, imageLists[x].compress);
                 }
             }
+            $('.modal-close').click()
 		})
 		$('.image-lists').on('click','.remove-img',function(){
             imageLists.splice($(this).parent().index(),1)

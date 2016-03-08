@@ -79,8 +79,122 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
 .user {width:22px;height:22px;background-position: -157px -60px;}
 .add-receive {position: absolute;border: 1px solid #cccccc;right: 25px;top: 49px;}
 
+.date {
+    width: 20px;
+    height: 20px;
+    background-position: -126px -56px;
+}
+.date:hover {
+    background-color: #ffffff;
+    border: 1px solid beige;
+    background-position: -125px -57px;
+}
+
+.history-box {
+    width: 100%;
+    border: 1px solid #efefef;
+    height: 300px;
+}
+.history-type {
+    width: 100%;
+    height: 30px;
+    float: left;
+}
+.history-type > span {
+    padding: 4px 5px;
+    display: block;
+    float: left;
+    margin: 4px 5px;
+    cursor: default;
+}
+
+.history-type > span.active {
+    background: cornflowerblue;
+    color: white;
+    border-radius: 5px;
+}
+.history-detail {
+    float: left;
+    width: 100%;
+    height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+                    
+.history-detail ul li {
+    padding: 0 10px 5px;
+    word-break: break-all;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+                
+.history-detail ul li.active {
+    background: aliceblue;
+}
+.history-detail ul li > p {
+    color: cornflowerblue;
+}
+.history-tool {
+    float: left;
+    height: 20px;
+    width: 460px;
+    background: beige;
+    padding: 0 10px;
+}
+.history-date, .history-prev, .history-next {
+    display: block;
+    line-height: 20px;
+    padding: 0px 5px;
+    color: #ccc;
+    cursor: default;
+}
+.history-prev:hover, .history-next:hover {
+    color:#777777;
+}
+.history-detail .files {
+    border: 1px solid #efefef;
+    border-radius: 5px;
+}
+.history-detail img {
+    max-width:100px;
+    max-height:100px;
+}
+.history-search {
+    float: left;
+    display: none;
+    height: 17px;
+    margin-top: 2px;
+    padding-left: 5px;
+    background: #ffffff;
+}
+.history-search input {
+    border: none;
+    height: 100%;
+    width: 150px;
+    outline: none;
+    float: left;
+}
+
+.history-search select {
+    border: none;
+    height: 100%;
+    outline: none;
+    float: left;
+    border-left: 1px solid beige;
+    margin-left: 5px;
+}
+.history-search a {
+    display: block;
+    height: 17px;
+    float: left;
+    width: 30px;
+    line-height: 17px;
+    text-align: center;
+    color: #fff;
+    background: cornflowerblue;
+}
+
 .attach-upload {
-    position: absolute;
     width: 200px;
     background: #ffffff;
     height: 29px;

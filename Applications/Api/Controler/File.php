@@ -13,8 +13,11 @@
             if(self::_allChunkUploadComplete($dir, $this->toInt('total'))) {
                 $source = explode('|',$this->toStr('name'));
                 $filePath = self::_combine($dir, self::_getExtension($source[0]), $this->toInt('total'));
-                self::_haveCompress($dir,$filePath);
-                $fileInfo = self::_getInfo($filePath);
+                $fileInfo = array();
+                if($this->toStr('type') == 'image') {
+                    self::_haveCompress($dir,$filePath);
+                    $fileInfo = self::_getInfo($filePath);
+                }
                 $fileInfo['filepath'] = $filePath;
                 $fileInfo['type'] = 'complete';
                 $this->_success($fileInfo);

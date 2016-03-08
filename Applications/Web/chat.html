@@ -283,7 +283,7 @@
 								<i class="chat-icon attach"></i>
 								<i class="chat-icon audio"></i>
 								<i class="chat-icon remind"></i>
-								<i class="chat-icon history"></i>
+								<i class="chat-icon history show-modal" modal-title="聊天记录" modal-data="history.html"></i>
 								<input type="file" name="attach" style="width:0;height:0;float:left;" />
 								<div class="pop-smiley" id="demo">
 									<a href="javascript:;" data-face="face0" title="微笑"></a>	
@@ -428,6 +428,9 @@
         <script src="js/libs/spark-md5.min.js"></script>
 		<script>
             const BYTE_PER_CHUNK = 1024*1024;
+            var threads = 3;
+            var waitThreads = {};
+            var uploadFile = null;
 			function file_size_format(size, dec) {
 				size = size||0;
 				dec = dec||2;
@@ -473,12 +476,54 @@
 			function systemLogs(msg) {
 				$('.logs').append('<div class="row system"><span>'+msg+'</span></div>');
 			}
-			function onprogress(evt){
-				if(evt.lengthComputable) {
-					$('.loaded').css({'width':Math.floor(evt.loaded/evt.total*$('.progress').width())});
-					$('.loaded-persent').html(Math.floor(evt.loaded/evt.total*100)+'%');
-				}
-			}
+            function chunk(file){
+                const SIZE = file.size;
+                var start = waitThreads.start || 0;
+                var end = waitThreads.end || BYTE_PER_CHUNK;
+                var tmpName = file.name+'|'+file.size+'|'+file.type+'|'+wc_loginName;
+                if(start < SIZE) {
+                    var formData = new FormData();
+                    formData.append('file',file.slice(start, end));
+                    formData.append('index',start/BYTE_PER_CHUNK);
+                    formData.append('total',Math.ceil(SIZE/BYTE_PER_CHUNK));
+                    formData.append('name',tmpName);
+                    upload(formData, 'chunk');
+                    waitThreads = {'start':end, 'end': end+BYTE_PER_CHUNK}
+                    //start = end;
+                    //end += BYTE_PER_CHUNK;
+                }
+            }
+            function onprogress(evt){
+                if(evt.lengthComputable) {
+                    $('.loaded').css({'width':Math.floor(evt.loaded/evt.total*$('.progress').width())});
+                    $('.loaded-persent').html(Math.floor(evt.loaded/evt.total*100)+'%');
+                }
+            }
+            function upload(formData, action){
+					$.ajax({
+						url:'chatapi.php?c=file&a='+action,
+						data:formData,
+						processData : false,
+						contentType: false,
+						dataType:'JSON',
+						type:'POST',
+                        xhr: function(){
+                                var xhr = $.ajaxSettings.xhr();
+                                if(xhr.upload) {
+                                    xhr.upload.addEventListener("progress" , onprogress, false);
+                                }
+                                return xhr;
+                        },
+						complete:function(ret){
+                            chunk(uploadFile);
+						    console.log(ret)
+                        },
+						error:function(ret){
+                            console.log(ret)
+						}
+					})
+            }
+
 			$(function(){
 				$(document).on('click','.show-modal',function(){
 					$(this).modal();
@@ -498,11 +543,46 @@
 					$('input[name=attach]').click();
 				})
 				$('input[name=attach]').change(function(e){
-					$('.logs').scrollToBottom();
+					waitThreads = {};
+                    $('.logs').scrollToBottom();
 					e = e || window.event;
 					var target = e.target;
 					var file = target.files[0];
-					var formData = new FormData();
+					var fileSize = file_size_format(file.size)['all'];
+					var fileType = file.type;
+					var fileName = file.name;
+		            		var ext = fileName.match(/\.(\w+)$/);
+		            		if (ext && (ext = ext[1])) {
+		                		fileType = ext.toLowerCase();
+		            		}
+		            var filemd5 = '';
+                    $('.logs').append('<div class="row self"> \
+                                        <div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
+                                        <div class="message-detail"> \
+                                                <p>&nbsp;</p> \
+                                                <div class="message-box"> \
+                                                        <div class="files"> \
+                                                                <div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"> \
+                                                                        <p class="text-cut">'+fileName+'</p> \
+                                                                        <p>'+fileSize+'</p> \
+                                                                </div> \
+                                                                <div class="attach-upload"> \
+                                                                        <div class="progress"></div> \
+                                                                        <div class="loaded"></div> \
+                                                                        <div class="attach-upload-control"><!--<i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i>--><span class="loaded-persent">0%</span></div> \
+                                                                </div> \
+                                                                <div class="file-tool" style="display:none;"> \
+                                                                        <a href="javascript:;">保存</a> \
+                                                                </div> \
+                                                        </div> \
+                                                        <i class="chat-icon message-box-pike"></i> \
+                                                </div> \
+                                        </div> \
+                                </div>');
+                    uploadFile = file;
+                    for(var i=0; i<threads && i<Math.ceil(file.size/BYTE_PER_CHUNK); i++)
+                        chunk(file);
+					/*var formData = new FormData();
 					if(file == null) return false;
 					//if(file.size > 8*1024*1024) alert('file size limit 8M');
 					formData.append('file',file);
@@ -578,7 +658,7 @@
 							$('.attach-upload:last').hide();
 							$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
 						}
-					})
+					})*/
 				});
 			})
 		</script>
