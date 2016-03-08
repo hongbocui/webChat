@@ -95,6 +95,9 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
     border: 1px solid #efefef;
     height: 300px;
 }
+.history-box .attach-upload {
+    position: initial;
+}
 .history-type {
     width: 100%;
     height: 30px;
@@ -195,6 +198,7 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
 }
 
 .attach-upload {
+    position:absolute;
     width: 200px;
     background: #ffffff;
     height: 29px;
