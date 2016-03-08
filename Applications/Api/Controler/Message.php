@@ -12,28 +12,36 @@
          * 获取存储于数据库的永久历史聊天记录
          *  请求参数            是否必须            类型(示例)      说明
          *  chatid     true       string        属于该chatid下的聊天记录
-         *  time       true       string        根据这个时间向前查找
+         *  time       false       string        根据这个时间查找,rangeTm时可以没有
          *  class      true       string         查看的消息类型 nomal/image/attach
          *  type       true        int           0:查以前的，1:查以后的
          *  accountid  true/false string        如果chatid是群组则必须(查询入群时间)。否则非必须
-         * 
+         *  rangeTm    false      string        查询的范围。month/months/year
+         *  
          * 返回值 消息列表
          * array();
          */
-        public function doMsgList() {
+        public function doList() {
             $chatid    = $this->toStr('chatid');
-            $time      = $this->toStr('time');
-            $type      = $this->toStr('class') ? $this->toStr('class') : 'nomal';
             $accountid = $this->toStr('accountid');
-            $selectType= $this->toInt('type');
             
+            $keywords  = $this->toStr('keywords');
+            $time      = $this->toStr('time');
+            $type      = $this->toStr('classType') ? $this->toStr('classType') : 'nomal';
+            $selectType= $this->toInt('selectType');
+            $rangeMode   = $this->toStr('rangeMode') ? $this->toStr('rangeMode') : '';
             
-            if(!$chatid || !$time) $this->_error('参数出错');
+            //根据rangeMode获取最小时间与最大时间
+            $timearr = self::getRangeTimestamp($rangeMode);
+            $sTime   = $timearr['stime'];//范围中 最小时间
+            $bTime   = $timearr['btime'];//范围中最大时间
+            
+            if(!$chatid) $this->_error('参数出错');
+            $time = false === strpos($time, '-') ? $time : strtotime($time)+24*3600;
             //消息类型处理
             $allowType = array(Storekey::CHAT_MSG_TYPE=>'nomal',Storekey::IMAGE_MSG_TYPE=>'image',Storekey::ATTACH_MSG_TYPE=>'attach');
-            if(!in_array($type, $allowType)) $this->_error('参数出错');;
+            if(!in_array($type, $allowType)) $this->_error('参数出错');
             $type = array_search($type, $allowType);
-            
             //如果是群聊天，获取用户进入该群的时间
             $jointime = '';
             if(false === strpos($chatid, '--')) {
@@ -45,15 +53,18 @@
                     'accountid' => $accountid
                 ));
             }
-            
             $msgList = Mmessage::getMsgList(array(
-                'limit'   => 20,     //limit
+                'limit'   => 10,     //limit
                 'fields'  => array('fromuser','message','time'),//要查询的字段或者以 英文'，'分开
-                'time'    => $time,      //时间戳、根据这个向前查询  必填
+                'time'    => $time,      //时间戳、根据这个向前查询 
                 'chatid'  => $chatid,     //要查询的chatid
                 'joinTime'=> $jointime,    //用户的入群时间
                 'type'    => $type,
                 'order'   => 'order by id desc',
+                'selectType' => $selectType,
+                'stime'   => $sTime,
+                'btime'   => $bTime,
+                'keywords'=> $keywords,
             ));
             $this->_success($msgList);
         }
@@ -133,6 +144,27 @@
             if(!$accoutid || !$chatid) $this->_error('param error');
             Mmessage::addUnreadMsg($accoutid, $chatid, Storekey::UNREAD_MSG);
             $this->_success('ok');
+        }
+        
+        private function getRangeTimestamp($mode, $date='') {
+            $btime = time();
+            switch ($mode) {
+                case 'day': //一天
+                    $date = date('Y-m-d', strtotime($date));
+                    $btime = strtotime($date.' 23:59:59');
+                    $stime = strtotime($date.' 00:00:00');
+                case 'month': //一个月
+                    $stime = $btime - 30*24*3600;
+                    break;
+                case 'months': //三个月
+                    $stime = $btime - 90*24*3600;
+                    break;
+                case 'year'://一年
+                    $stime = $btime - 360*24*3600;
+                    break;
+                default:return false;
+            }
+            return array('btime'=>$btime, 'stime'=>$stime);
         }
     }
 ?>

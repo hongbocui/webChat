@@ -139,14 +139,14 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
 }
 .history-tool {
     float: left;
-    height: 20px;
+    height: 25px;
     width: 460px;
     background: beige;
     padding: 0 10px;
 }
 .history-date, .history-prev, .history-next {
     display: block;
-    line-height: 20px;
+    line-height: 25px;
     padding: 0px 5px;
     color: #ccc;
     cursor: default;

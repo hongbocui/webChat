@@ -1,8 +1,8 @@
 <div class="history-box">
     <div class="history-type">
-        <span class="active">全部</span>
-        <span>图片</span>
-        <span>文件</span>
+        <span class="active" data-type="nomal">全部</span>
+        <span data-type="image">图片</span>
+        <span data-type="attach">文件</span>
     </div>
     <div class="history-detail">
         <ul>
@@ -27,17 +27,16 @@
         <div class="history-search">
             <input type="text" name="history-search" />
             <select name="search-range">
-                <option>一个月</option>
-                <option>三个月</option>
-                <option>一年</option>
+                <option value="month">一个月</option>
+                <option value="months">三个月</option>
+                <option value="year">一年</option>
             </select>
             <a href="javascript:;">搜索</a>
         </div>
         <i class="chat-icon search-icon"></i>
         <i class="float-right history-next">&gt;</i>
         <i class="float-right history-prev">&lt;</i>
-        <span class="float-right history-date">2016-03-08</span>
-        <i class="float-right chat-icon date"></i>
+        <input type="date" class="float-right" id="msgday" value="" />
     </div>
 </div>
 <script>
@@ -45,5 +44,92 @@
         $(this).hide();
         $('.history-search').show();
         $('.history-search input').focus();
-    })
+    });
+    $("#msgday").change(function(){
+    	qtime = $(this).val();
+    	selectType = 1;
+    	getQueryAndFillIn();
+    });
+    $(".history-search a").click(function(){
+    	keywords = $(".history-search input").val();
+    	rangeMode = $(".history-search select option:selected").attr('value');
+    	getQueryAndFillIn();
+    });
+    
+    $(".history-type span").click(function(){
+    	$(".history-detail ul").empty();
+    	$(this).addClass("active").siblings().removeClass('active');
+    	classType = $(this).attr('data-type');
+    	if(msgList === null) return false;
+    	selectType = 1;
+    	qtime = '';
+    	getQueryAndFillIn();
+    });
+    
+    $(".history-tool .history-prev").click(function(){
+    	if(msgList === null) return false;
+    	qtime = msgList[msgList.length-1].time;
+    	selectType = 1;
+    	getQueryAndFillIn();
+    });
+    $(".history-tool .history-next").click(function(){
+    	if(msgList === null) return false;
+    	qtime = msgList[0].time;
+    	selectType = 0;
+    	getQueryAndFillIn();
+    });
+    function getQueryAndFillIn(){
+    	queryData = preQueryData();
+    	tmpList = getMsgData(queryData);
+    	if(tmpList === null) return false;
+    	msgList = tmpList;
+    	msgFillInContainer(msgList);
+    }
+    
+    var classType  = 'nomal',
+     	qtime      = '',
+    	rangeMode  = '',
+     	selectType = 1;
+    	keywords   = '';
+    var queryData = preQueryData();
+    var msgList = getMsgData(queryData);
+    msgFillInContainer(msgList);
+    function preQueryData() {
+    	var paramObj = {};
+    	paramObj.classType = classType;
+    	paramObj.chatid    = getNowChatId();
+    	paramObj.time      = qtime;
+    	paramObj.rangeMode = rangeMode;
+    	paramObj.selectType= selectType;
+    	paramObj.keywords  = keywords;
+    	return paramObj;
+    }
+    function getMsgData(paramObj) {
+        var ret = null;
+        $.ajax({
+            url:'chatapi.php?c=message&a=list',
+            data:{'accountid':wc_loginName,'classType':paramObj.classType, 'chatid':paramObj.chatid, 'time':paramObj.time, 'rangeMode':paramObj.rangeMode, 'selectType':paramObj.selectType,'keywords':paramObj.keywords},
+            dataType:'JSON',
+            type:'POST',
+            async:false,
+            success:function(data){
+                if(data.code)
+                    ret =  data.data;
+            }
+        })
+        return ret.length > 0 ? ret : null;
+    }
+    function msgFillInContainer(msgList) {
+    	if(msgList === null) return false;
+    	$(".history-detail ul").empty();
+    	for(var msg in msgList) {
+    		$('.history-detail ul').append('<li> \
+                    <p>'+wc_allUserArr[msgList[msg].fromuser]+' '+timestampTodate(msgList[msg].time)+'</p> \
+                    '+msgList[msg].message+' \
+                </li>');
+    	}
+    	$('.history-detail img.lazy').lazyload({
+            container: $('.history-detail')
+        });
+    }
 </script>

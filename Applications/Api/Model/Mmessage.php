@@ -12,34 +12,52 @@
          */
         public static function getMsgList($paramArr) {
             $options = array(
-                'limit'     => 20,     //limit
+                'limit'     => 10,     //limit
                 'time'      => 0,      //时间戳、根据这个向前查询  必填
+                'stime'     => '',     //最小时间
+                'btime'     => '',      //最大时间
                 'chatid'    => '',     //要查询的chatid
                 'joinTime'  => '',    //用户的入群时间
                 'type'      => 0,     //消息类型  Storekey::CHAT_MSG_TYPE
                 'selectType'=> 1, //向前查还是向后查
+                'keywords'  => '',
                 'fields'    => array(),//要查询的字段或者以 英文'，'分开
                 'order'     => 'order by id desc',
             );
             if (is_array($paramArr))$options = array_merge($options, $paramArr);
             extract($options);
             
-            if(!$chatid || !$time) return false;
+            if(!$chatid) return false;
             $where = " where chatid='{$chatid}' ";
-            $limit = $limit < 1 ? 'limit 20' : 'limit '.$limit;
+            $limit = $limit < 1 ? 'limit 10' : 'limit '.$limit;
             $formatData = self::setSelectField($fields);
-            $mode = $selectType ? '<' : '>';
-            $where .= " and time{$mode}{$time} ";
+            
+            if($stime && $btime && !$time) {
+                $where .=  " and time>{$stime} and time<{$btime} ";
+            } 
+            if($time){
+                if($selectType){
+                    $mode = '<';
+                }else {
+                    $mode = '>';
+                    $order = " order by time asc ";
+                }
+                $where .= " and time{$mode}{$time} ";
+            }
             if($joinTime)//如果是群聊则限制消息记录的时间
                 $where .= " and time > {$joinTime} ";
             if($type)
                 $where .= " and type = {$type} ";
-            
+            if($keywords)
+                $where .= " and message like binary '%{$keywords}%' ";
             $tbname = self::$messagetablePre;
             \Api\Model\Msqlmerge::mergeMsgTable();
             if(!self::tbexists($tbname)) return false;
             $sql = "select {$formatData} from {$tbname} {$where} {$order} {$limit}";
-            return self::dbobj()->query($sql);
+            $res = self::dbobj()->query($sql);
+            if(0 === $selectType)
+                $res = array_reverse((array)$res);
+            return $res;
         }
         
         /**
