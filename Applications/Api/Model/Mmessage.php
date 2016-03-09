@@ -35,6 +35,7 @@
             if($stime && $btime && !$time) {
                 $where .=  " and time>{$stime} and time<{$btime} ";
             } 
+            //并非分页逻辑，都是以一个时间为查询的mode点，分为向前和向后两种type
             if($time){
                 if($selectType){
                     $mode = '<';
