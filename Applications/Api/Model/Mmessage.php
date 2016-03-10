@@ -12,15 +12,15 @@
          */
         public static function getMsgList($paramArr) {
             $options = array(
-                'limit'     => 10,     //limit
-                'time'      => 0,      //时间戳、根据这个向前查询  必填
-                'stime'     => '',     //最小时间
-                'btime'     => '',      //最大时间
-                'chatid'    => '',     //要查询的chatid
+                'limit'     => 10,    //limit
+                'time'      => 0,     //时间戳、根据这个向前查询  必填
+                'stime'     => '',    //最小时间
+                'btime'     => '',    //最大时间
+                'chatid'    => '',    //要查询的chatid
                 'joinTime'  => '',    //用户的入群时间
                 'type'      => 0,     //消息类型  Storekey::CHAT_MSG_TYPE
-                'selectType'=> 1, //向前查还是向后查
-                'keywords'  => '',
+                'selectType'=> 1,     //向前查还是向后查
+                'keywords'  => '',    //搜索关键词
                 'fields'    => array(),//要查询的字段或者以 英文'，'分开
                 'order'     => 'order by id desc',
             );

@@ -13,35 +13,28 @@ use \Api\Model\Mbroadcast;
 
 class Event
 {
-
    /**
     * 有消息时
     * @param int $client_id
     * @param string $message
     */
-   public static function onMessage($client_id, $message)
-   {       
+   public static function onMessage($client_id, $message) {       
         // debug
         //echo "client:{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} gateway:{$_SERVER['GATEWAY_ADDR']}:{$_SERVER['GATEWAY_PORT']}  client_id:$client_id session:".json_encode($_SESSION)." onMessage:".$message."\n";
         
         // 客户端传递的是json数据
         $messageData = json_decode($message, true);
-        if(!$messageData)
-        {
-            return;
-        }
+        if(!$messageData) return;
         
         // 根据类型执行不同的业务
-        switch($messageData['type'])
-        {
+        switch($messageData['type']) {
             // 客户端回应服务端的心跳
             case 'pong':
                 return;
             // 客户端登录 message格式: {type:login, clientName:xx} ，添加到客户端，广播给所有客户端xx上线
             case 'login':
                 // 判断是否有有名字
-                if(!isset($messageData['clientName']))
-                {
+                if(!isset($messageData['clientName'])) {
                     throw new \Exception("\$messageData['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
                 
@@ -279,8 +272,7 @@ class Event
     * 当客户端断开连接时
     * @param integer $client_id 客户端id
     */
-   public static function onClose($client_id)
-   {
+   public static function onClose($client_id) {
        //获取clientname
        $clientName = self::getClientnameFromId($client_id);
        //从在线列表中删除一个用户
@@ -298,9 +290,8 @@ class Event
        // 存储驱动是redis
        $try_count = 3;
        while ($try_count--) {
-           if (RedisModel::hashDel('webChat', $key, $client_id)) {
+           if (RedisModel::hashDel('webChat', $key, $client_id)) 
                return true;
-           }
        }
        return true;
    }

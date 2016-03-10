@@ -62,6 +62,11 @@
 	            if (document[hiddenProperty]) {
 	            	if(data.chatid.indexOf('--')>-1 || !readCookie(data.chatid)){
 	            		playAudio();
+	            		if(data['message'].indexOf('<img') > -1) {
+	            			data['message'] = '[图片消息]'
+	            		}else if(data['message'].indexOf('file-msg') > -1){
+	            			data['message'] = '[附件消息]'
+	            		}
 		                palyDeskNotice(wc_allUserArr[data['fromuser']] + "说：", {
 		                    body: data['message'],
 		                    icon: "images/default_34_34.jpg"
@@ -100,13 +105,16 @@
 	        case 'error':
 	            switch (data['info']) {
 	            case 'erroruser':
+	            	wc_ws.close();
+	            	wc_errorType = true;
+	            	wc_loginName = '';
 	                alert(data['msg']);
-	                wc_errorType = true;
-	                wc_loginName = '';
 	                break;
 	            case 'loginconflict':
+	            	wc_ws.close();
+	            	wc_errorType = true;
+	            	wc_loginName = '';
 	                alert(data['msg']);
-	                wc_errorType = true;
 	                break;
 	            default:
 	                break;
