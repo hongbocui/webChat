@@ -63,7 +63,7 @@ ul {list-style:none;}
 .remind {background-position: -121px 0px;}
 .history {background-position: -30px 0px;}
 .attach {background-position: -156px 0px;}
-.broadcast {background-position: -153px -32px;}
+.broadcast {background-position: -153px -29px;}
 .add-broadcast {background-position: -45px -38px;}
 .add-group {background-position: -4px -38px;}
 .add-broadcast,.add-group {width: 40px;height: 35px;display: block;float: right;margin-right: 10px;}
@@ -76,8 +76,31 @@ ul {list-style:none;}
 .broadcast-content {width: 476px;height: 200px;border: 1px solid #cccccc;float: left;margin-top: 6px;outline:none;}
 label {width: 40px;height: 30px;line-height: 30px;float: left;text-align: right;margin-right: 5px;}
 input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: none;border-bottom: 1px solid #ccc;}
-.user {width:22px;height:22px;background-position: -157px -60px;}
+.user {width:22px;height:22px;background-position: -157px -55px;}
 .add-receive {position: absolute;border: 1px solid #cccccc;right: 25px;top: 49px;}
+
+.img-upload-progress {
+    position: absolute;
+        width: 98px;
+            bottom: 10px;
+                height: 20px;
+                    background: #000;
+                        opacity: 0.7;
+}
+.img-upload-progress > .loaded {
+        width: 0;
+            height: 20px;
+                background: chartreuse;
+}
+.img-upload-progress > p.text {
+    position: absolute;
+        width: 98px;
+            text-align: center;
+                line-height: 20px;
+                    color: red;
+                    z-index: 2;
+}
+
 
 .date {
     width: 20px;

@@ -11,6 +11,14 @@
 			//默认图片质量
 			quality:90
 		},
+        persentages : {},
+        waitThread : {},
+        pending : [],
+        running : null,
+        threadNum : 3,
+        chunkSize : 1024 * 1024,
+        prefix : 'UP_File_',
+        file_id : 0,
 		BLANK : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D',
 		loadFromBlob : function() {
 			var urlAPI = window.createObjectURL && window ||
@@ -40,12 +48,20 @@
 				img.src = this.BLANK;
 				img = null;
 		},
+        fileMSG : function(file) {
+            file.name = file.name || 'No Name';
+            file.id = this.prefix + this.file_id++;
+            file.ext = /\.([^.]+)$/.exec(file.name) ? RegExp.$1 : '';
+            this.persentages[file.id] = {'total':file.size, 'loaded':0}
+            return file;
+        },
 		thumb : function(file, callback, param){
 				//只预览图片类型
 				if(!file.type.match(/^image\//)) {
 					callback(true);
 					return false;
 				}
+                this.pending.push({'file':this.fileMSG(file)});
 				this.opts = $.extend(this.opts, param);
 				var img = new Image();
 				var canvas = $('<canvas/>');
@@ -90,6 +106,16 @@
 				}
 				return false;
 			};
-		}
+		},
+        chunk : function(file, callback) {
+            const SIZE = file.size;
+            var start =  this.waitThread.start || 0;
+            var end = this.waitThread.end || this.chunkSize;
+            if(start < SIZE) {
+                callback(file.slice(start, end), start/this.chunkSize);
+                this.waitThread.start = end;
+                this.waitThread.end = end + this.chunkSize; 
+            }
+        }
 	}
 })(jQuery)

@@ -5,25 +5,87 @@
 <a href="javascript:;" class="upload-img button float-right">发送</a>
 <script>
     function prevview(error, src) {
-        if(error)
+        if(error) {
             console.log('not image!');
-        else
-            $('<div/>').addClass('image-msg').append($('<a/>').addClass('remove-img button-close').attr('href','javascript:;').css({'top':'7px','right':'11px'}).html('&times;')).append('<img src="'+src+'">').appendTo($('.image-lists'));
+        }else{
+            $('.image-lists').append('<div class="image-msg '+uploader.pending[$('.image-lists').children().length].file.id+'"> \
+                <div class="img-upload-progress"> \
+                    <p class="text">等待上传</p> \
+                    <div class="loaded"></div> \
+                </div> \
+                <a href="javascript:;" style="top:7px;right:11px" class="remove-img button-close">&times;</a> \
+                <img src="'+src+'" /> \
+            </div>');
+        }
     }
     function addfile(file) {
-        /*'<div class="image-msg"> \
-            <p class="image-name">'+file.name+'</p> \
-            <p class="image-wrap"></p> \
-            <p class="image-progress"><span></span></p> \
-            <a href="javascript:;" class="remove-img button-close" style="top:7px;right:11px;">&times;</a> \
-        </div>'.appendTo($('.image-lists'));*/
         uploader.thumb(file, prevview,{
             width  : 98,
             height : 94,
             type   : 'image/jpeg'
         });
     }
+    function upload(formData){
+        $.ajax({
+            url: 'chatapi.php?c=file&a=chunk',
+            data: formData,
+            dataType: 'JSON',
+            type: 'POST',
+            processData : false,
+            contentType: false,
+            success: function(res) {
+                if(res.data.type != 'complete') {
+                    uploader.persentages[uploader.running.file.id].loaded += uploader.chunkSize;
+                    var percent = Math.round(uploader.persentages[uploader.running.file.id].loaded/uploader.persentages[uploader.running.file.id].total*100);
+                    $('.image-lists .image-msg.'+uploader.running.file.id).find('.img-upload-progress p').html(percent+'%').end().find('.img-upload-progress .loaded').css('width',percent/100*98);
+                    uploader.chunk(uploader.running.file, function(file, index) {
+                        var formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('name', uploader.running.name);
+                        formData.append('index', index);
+                        formData.append('total', uploader.running.total);
+                        upload(formData);
+                    })
+                }else{ 
+                    uploader.persentages[uploader.running.file.id].loaded = uploader.persentages[uploader.running.file.id].total;
+                    $('.image-lists .image-msg.'+uploader.running.file.id).find('.img-upload-progress p').html('已完成').end().find('.img-upload-progress .loaded').css('width',98);
+                    var width = res.data.width;
+                    var height = res.data.height;
+                    var maxWidth = 650;
+                    if(width > maxWidth) {
+                        width = maxWidth;
+                        height = height * maxWidth/res.data.width;
+                    }
+                    sendToWsMsg('<img class="lazy" src="images/wait.gif" data-original="'+res.data.filepath+'" width='+width+' height='+height+'>', 'image');
+                    send();
+                }
+            }
+        })
+    }
+    function send() {
+        if(uploader.pending.length == 0) {
+            $('.modal-close').click();
+            return
+        }
+        uploader.waitThread = {};
+        uploader.running = uploader.pending[0];
+        uploader.pending.splice(0,1);
+        uploader.running.total = Math.ceil(uploader.running.file.size/uploader.chunkSize);
+        uploader.running.name = uploader.running.file.name+'|'+uploader.running.file.type+'|'+uploader.running.file.size+'|'+wc_loginName;
+        for(var i=0; i<uploader.threadNum && i<uploader.running.total; i++) {
+            uploader.chunk(uploader.running.file,function(file, index){
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('name', uploader.running.name);
+                formData.append('index', index);
+                formData.append('total', uploader.running.total);
+                upload(formData);
+            });
+        }
+    }
     $(function(){
+        uploader.pending = [];
+        var percentages = {};
         $('.choose-img').click(function(){
             $('input[name=picture]').click();
         })
@@ -47,24 +109,10 @@
             type   : 'image/jpeg'
         });
 		$('.upload-img').click(function(){
-            console.log('wait')
-			/*if($(this).prev('.image-lists').children().length == 0)
-				return false;
-            $(this).addClass('disabled');
-            //截图以base64的形式上传，否则以文件流切割上传
-            //截图没有name属性
-            for(var x in imageLists) {
-                if(imageLists[x].file.name == null) {
-                    var formData = new FormData();
-                    formData.append('image',imageLists[x].src);
-                    upload(formData);
-                }else{
-                    chunk(imageLists[x].file, imageLists[x].compress);
-                }
-            }
-            $('.modal-close').click()*/
+            send();
 		})
 		$('.image-lists').on('click','.remove-img',function(){
+            uploader.pending.splice($(this).parent().index(),1);
 			$(this).parent().remove();
 		})
 	})
