@@ -113,8 +113,8 @@
             var start =  this.waitThread.start || 0;
             var end = this.waitThread.end || this.chunkSize;
             if(start < SIZE) {
-                console.log(start/this.chunkSize)
                 callback(file.slice(start, end), start/this.chunkSize);
+                this.running.loaded = this.running.loaded ? this.running.loaded+1 : 1;
                 this.waitThread.start = end;
                 this.waitThread.end = end + this.chunkSize; 
             }

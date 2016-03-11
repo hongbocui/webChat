@@ -469,6 +469,9 @@
 			}
 		$(function(){
            function upload(formData, num, type){
+                //最后一片不能暂停, 需要合并
+                if(uploader.running.total - uploader.running.loaded < uploader.threadNum)
+                    $('.logs .row.'+uploader.running.file.id).find('.attach-upload').remove().end().find('.file-tool').html('即将上传完毕').show();
                 //暂停用
                 if(type != 'http')
                 uploader.running.chunks[num] = {'start':uploader.waitThread.start == null ? 0 : uploader.waitThread.start};
