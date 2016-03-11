@@ -252,10 +252,10 @@ input.text {height: 24px;line-height: 24px;width: 420px;border: none;outline: no
 }
 .attach-upload-start {
     background-position: -19px -3px;
+    display:none;
 }
 .attach-upload-stop {
     background-position: -2px -3px;
-    display:none;
 }
 .attach-upload-end {
     background-position: -36px -4px;

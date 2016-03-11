@@ -468,8 +468,11 @@
 				$('.logs').append('<div class="row system"><span>'+msg+'</span></div>');
 			}
 		$(function(){
-           function upload(formData){
-					$.ajax({
+           function upload(formData, num, type){
+                //暂停用
+                if(type != 'http')
+                uploader.running.chunks[num] = {'start':uploader.waitThread.start == null ? 0 : uploader.waitThread.start};
+				uploader.running.chunks[num].ajax = $.ajax({
 						url:'chatapi.php?c=file&a=chunk',
 						data:formData,
 						processData : false,
@@ -487,7 +490,7 @@
                                     formData.append('name', uploader.running.name);
                                     formData.append('index', index);
                                     formData.append('total', uploader.running.total);
-                                    upload(formData);
+                                    upload(formData, num);
                                 });
                             }else{
                                 uploader.persentages[uploader.running.file.id].loaded = uploader.persentages[uploader.running.file.id].total;
@@ -509,6 +512,7 @@
                 uploader.waitThread = {};
                 uploader.running = uploader.pending[0];
                 uploader.pending.splice(0,1);
+                uploader.running.chunks = [];
                 uploader.running.total = Math.ceil(uploader.running.file.size/uploader.chunkSize);
                 uploader.running.name = uploader.running.file.name+'|'+uploader.running.file.type+'|'+uploader.running.file.size+'|'+wc_loginName;
                 $('.logs .row.'+uploader.running.file.id).find('.attach-upload').show().end().find('.file-tool').hide();
@@ -519,10 +523,26 @@
                         formData.append('name', uploader.running.name);
                         formData.append('index', index);
                         formData.append('total', uploader.running.total);
-                        upload(formData);
+                        upload(formData, i);
                     });
                 }
             }
+                $('.logs').on('click', '.attach-upload-stop', function(){
+                    $(this).hide().siblings('.attach-upload-start').show();
+                    uploader.stop();
+                })
+                $('.logs').on('click', '.attach-upload-start', function(){
+                    $(this).hide().siblings('.attach-upload-stop').show();
+                    //重发断点
+                    uploader.http(function(file, index, x){
+                        var formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('name', uploader.running.name);
+                        formData.append('index', index);
+                        formData.append('total', uploader.running.total);
+                        upload(formData, x, 'http');
+                    })
+                })
 				$(document).on('click','.show-modal',function(){
 					$(this).modal();
 				})
@@ -547,7 +567,7 @@
                     file = uploader.fileMSG(file);
                     file.chatid = getNowChatId();
                     uploader.pending.push({'file':file});
-                    $('.logs').append('<div class="row self '+file.id+'"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(file.ext.toLowerCase())+'_256.png)"><p class="text-cut">'+file.name+'</p><p>'+fileSizeFormat(file.size)+'</p></div><div class="attach-upload" style="display:none"><div class="progress"></div><div class="loaded"></div><div class="attach-upload-control"><span class="loaded-persent">0%</span></div></div><div class="file-tool">等待上传</div></div><i class="chat-icon message-box-pike"></i></div></div></div>').scrollToBottom();
+                    $('.logs').append('<div class="row self '+file.id+'"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(file.ext.toLowerCase())+'_256.png)"><p class="text-cut">'+file.name+'</p><p>'+fileSizeFormat(file.size)+'</p></div><div class="attach-upload" style="display:none"><div class="progress"></div><div class="loaded"></div><div class="attach-upload-control"><i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i><span class="loaded-persent">0%</span></div></div><div class="file-tool">等待上传</div></div><i class="chat-icon message-box-pike"></i></div></div></div>').scrollToBottom();
                     if(uploader.running == null || (uploader.running && uploader.persentages[uploader.running.file.id].total == uploader.persentages[uploader.running.file.id].loaded))
                         send();
 				});

@@ -15,6 +15,7 @@
         waitThread : {},
         pending : [],
         running : null,
+        //paused : false,
         threadNum : 3,
         chunkSize : 1024 * 1024,
         prefix : 'UP_File_',
@@ -112,9 +113,23 @@
             var start =  this.waitThread.start || 0;
             var end = this.waitThread.end || this.chunkSize;
             if(start < SIZE) {
+                console.log(start/this.chunkSize)
                 callback(file.slice(start, end), start/this.chunkSize);
                 this.waitThread.start = end;
                 this.waitThread.end = end + this.chunkSize; 
+            }
+        },
+        //暂停
+        stop : function() {
+            for(var x in this.running.chunks) {
+                uploader.running.chunks[x].ajax.abort();
+            }
+        },
+        //续传
+        http : function(callback) {
+            for(var x in this.running.chunks) {
+                var file = this.running.file.slice(this.running.chunks[x].start, this.running.chunks[x].start+this.chunkSize);
+                callback(file, this.running.chunks[x].start/this.chunkSize, x);
             }
         }
 	}
