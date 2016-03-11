@@ -4,6 +4,7 @@
 <div class="image-lists"></div>
 <a href="javascript:;" class="upload-img button float-right">发送</a>
 <script>
+    $(function(){
     function prevview(error, src) {
         if(error) {
             console.log('not image!');
@@ -83,7 +84,6 @@
             });
         }
     }
-    $(function(){
         uploader.pending = [];
         var percentages = {};
         $('.choose-img').click(function(){
@@ -115,5 +115,8 @@
             uploader.pending.splice($(this).parent().index(),1);
 			$(this).parent().remove();
 		})
+        $('.modal-close').click(function(){
+            uploader.pending = [];
+        })
 	})
 </script>

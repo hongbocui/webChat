@@ -100,10 +100,21 @@ $(function(){
 			//服务端
 			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+_member+'&accountid='+wc_loginName);
 		}
+		$('.contact-msg').attr('chatid',_member);
 		//加载本地消息
 		historyInDialog(_member);
+        //加载传输文件
+        if(uploader.running != null && uploader.running.file.chatid == getNowChatId() && uploader.persentages[uploader.running.file.id].total != uploader.persentages[uploader.running.file.id].loaded) {
+            var percent = Math.round(uploader.persentages[uploader.running.file.id].loaded/uploader.persentages[uploader.running.file.id].total*100);
+            $('.logs').append('<div class="row self '+uploader.running.file.id+'"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(uploader.running.file.ext.toLowerCase())+'_256.png)"><p class="text-cut">'+uploader.running.file.name+'</p><p>'+fileSizeFormat(uploader.running.file.size)+'</p></div><div class="attach-upload"><div class="progress"></div><div class="loaded" style="width:'+percent/100*200+'px"></div><div class="attach-upload-control"><span class="loaded-persent">'+percent+'%</span></div></div><div class="file-tool" style="display:none">等待上传</div></div><i class="chat-icon message-box-pike"></i></div></div></div>').scrollToBottom();
+        }
+        if(uploader.pending.length) {
+            for(var x in uploader.pending) {
+                if(uploader.pending[x].file.chatid != getNowChatId()) continue;
+                $('.logs').append('<div class="row self '+uploader.pending[x].file.id+'"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(uploader.pending[x].file.ext.toLowerCase())+'_256.png)"><p class="text-cut">'+uploader.pending[x].file.name+'</p><p>'+fileSizeFormat(uploader.pending[x].file.size)+'</p></div><div class="attach-upload" style="display:none"><div class="progress"></div><div class="loaded"></div><div class="attach-upload-control"><span class="loaded-persent">0%</span></div></div><div class="file-tool">等待上传</div></div><i class="chat-icon message-box-pike"></i></div></div></div>').scrollToBottom();
+            }
+        }
 		//联系人信息更新
-		$('.contact-msg').attr('chatid',_member);
 		$('.contact-msg h1').html(_title);
 		$('.chat-input').focus();
 		

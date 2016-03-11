@@ -427,7 +427,7 @@
         <script src="js/libs/jquery.lazyload.js?v=1.9.3"></script>
         <script src="js/uploader.js"></script>
 		<script>
-			function file_size_format(size, dec) {
+			function fileSizeFormat(size, dec) {
 				size = size||0;
 				dec = dec||2;
     				var unit = ["B", "KB", "MB", "GB", "TB", "PB"];
@@ -436,12 +436,7 @@
         				size /= 1024;
         				pos++;
     				}
-				var result = {
-					'size' : Math.round(size, dec),
-					'unit' : unit[pos],
-					'all' : Math.round(size, dec)+unit[pos]
-				}
-    				return result;
+				return size.toFixed(dec)+unit[pos]
 			}
 			function fileIcon(type) {
 				var typeLimit = [
@@ -472,6 +467,7 @@
 			function systemLogs(msg) {
 				$('.logs').append('<div class="row system"><span>'+msg+'</span></div>');
 			}
+		$(function(){
            function upload(formData){
 					$.ajax({
 						url:'chatapi.php?c=file&a=chunk',
@@ -496,7 +492,11 @@
                             }else{
                                 uploader.persentages[uploader.running.file.id].loaded = uploader.persentages[uploader.running.file.id].total;
                                 $('.logs .row.'+uploader.running.file.id).find('.loaded-persent').html('100%').end().find('.loaded').css('width',200);
-                                $('.logs .row.'+uploader.running.file.id).find('.attach-upload').hide().end().find('.file-tool').html('下载').show();
+                                var filename = res.data.filepath.replace(/[^/]*\//g, '');
+                                var filemd5 = '';
+                                $('.logs .row.'+uploader.running.file.id).find('.attach-upload').remove().end().find('.file-tool').html('<a href="/chatapi.php?c=file&a=download&srcname='+uploader.running.file.name+'&desname='+filename+'" data-name="'+filename+'">保存</a>').show();
+                                sendToWsMsg('<div class="files">'+$('.logs .row.'+uploader.running.file.id+' .files').html()+'</div>', "file", filemd5);
+                                $('.logs .row.'+uploader.running.file.id).remove();
                                 send();
                             }
                         }
@@ -523,7 +523,6 @@
                     });
                 }
             }
-			$(function(){
 				$(document).on('click','.show-modal',function(){
 					$(this).modal();
 				})
@@ -546,86 +545,11 @@
 					var target = e.target;
 					var file = target.files[0];
                     file = uploader.fileMSG(file);
+                    file.chatid = getNowChatId();
                     uploader.pending.push({'file':file});
-		            var filemd5 = '';
-                    $('.logs').append('<div class="row self '+file.id+'"> \
-                                        <div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div> \
-                                        <div class="message-detail"> \
-                                                <p>&nbsp;</p> \
-                                                <div class="message-box"> \
-                                                        <div class="files"> \
-                                                                <div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(file.ext.toLowerCase())+'_256.png)"> \
-                                                                        <p class="text-cut">'+file.name+'</p> \
-                                                                        <p>'+file_size_format(file.size)['all']+'</p> \
-                                                                </div> \
-                                                                <div class="attach-upload" style="display:none"> \
-                                                                        <div class="progress"></div> \
-                                                                        <div class="loaded"></div> \
-                                                                        <div class="attach-upload-control"><!--<i class="attach-upload-start"></i><i class="attach-upload-stop"></i><i class="attach-upload-end"></i><i class="attach-upload-close"></i>--><span class="loaded-persent">0%</span></div> \
-                                                                </div> \
-                                                                <div class="file-tool"> \
-                                                                        <a href="javascript:;">等待上传</a> \
-                                                                </div> \
-                                                        </div> \
-                                                        <i class="chat-icon message-box-pike"></i> \
-                                                </div> \
-                                        </div> \
-                                </div>').scrollToBottom();
+                    $('.logs').append('<div class="row self '+file.id+'"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(file.ext.toLowerCase())+'_256.png)"><p class="text-cut">'+file.name+'</p><p>'+fileSizeFormat(file.size)+'</p></div><div class="attach-upload" style="display:none"><div class="progress"></div><div class="loaded"></div><div class="attach-upload-control"><span class="loaded-persent">0%</span></div></div><div class="file-tool">等待上传</div></div><i class="chat-icon message-box-pike"></i></div></div></div>').scrollToBottom();
                     if(uploader.running == null || (uploader.running && uploader.persentages[uploader.running.file.id].total == uploader.persentages[uploader.running.file.id].loaded))
                         send();
-                    /*for(var i=0; i<uploader.threadNum && i<Math.ceil(file.size/uploader.chunkSize); i++) {
-                        chunk(file);
-
-                    }*/
-					/*var formData = new FormData();
-					if(file == null) return false;
-					//if(file.size > 8*1024*1024) alert('file size limit 8M');
-					formData.append('file',file);
-					var fileSize = file_size_format(file.size)['all'];
-					var fileType = file.type;
-					var fileName = file.name;
-		            		var ext = fileName.match(/\.(\w+)$/);
-		            		if (ext && (ext = ext[1])) {
-		                		fileType = ext.toLowerCase();
-		            		}
-		            var filemd5 = '';
-					$.ajax({
-						url:'chatapi.php?c=file&a=attach',
-						data:formData,
-						processData : false,
-						contentType: false,
-						dataType:'JSON',
-						type:'POST',
-						xhr: function(){
-                					var xhr = $.ajaxSettings.xhr();
-                					if(xhr.upload) {
-                    						xhr.upload.addEventListener("progress" , onprogress, false);
-                    					}
-							return xhr;
-            					},
-						beforeSend: function() {
-							$('.logs').append('<div class="row self"><div class="user-avatar"><img class="avatar" src="./default_34_34.jpg"></div><div class="message-detail"><p>&nbsp;</p><div class="message-box"><div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"><p class="text-cut">'+fileName+'</p><p>'+fileSize+'</p></div><div class="attach-upload"><div class="progress"></div><div class="loaded"></div><div class="attach-upload-control"><span class="loaded-persent">0%</span></div></div><div class="file-tool" style="display:none;"><a href="javascript:;">保存</a></div></div><i class="chat-icon message-box-pike"></i></div></div></div>');
-						},
-						complete:function(ret){
-							$('.attach-upload:last').hide();
-							if(ret.status != 200){
-								console.log('error');
-								$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
-								return;
-							} 
-							if(ret.responseJSON.status === true) {
-								$('.file-msg:last').parents('.row').remove();
-								sendToWsMsg('<div class="files"><div class="file-msg" style="background-image:url(./images/filetype/icon_'+fileIcon(fileType)+'_256.png)"><p class="text-cut">'+fileName+'</p><p>'+fileSize+'</p></div><div class="file-tool"><a href="/chatapi.php?c=file&a=download&srcname='+fileName+'&desname='+ret.responseJSON.info+'" data-name='+ret.responseJSON.info+'>保存</a></div></div>', "file", filemd5);
-							}else{
-								$('.file-tool:last a').css('color','red').html(ret.responseJSON.info).parent().show();
-							}
-							
-						},
-						error:function(ret){
-							$('.attach-upload:last').hide();
-							$('.file-tool:last a').css('color','red').html('上传失败').parent().show();
-						}
-					})*/
 				});
 			})
 		</script>
