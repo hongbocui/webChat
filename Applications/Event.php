@@ -38,7 +38,7 @@ class Event
                     throw new \Exception("\$messageData['clientName'] not set. client_ip:{$_SERVER['REMOTE_ADDR']} \$message:$message");
                 }
                 
-                $clientName = htmlspecialchars($messageData['clientName']);
+                $clientName = htmlspecialchars(urldecode($messageData['clientName']));
                 
                 //判断数据库中是否存在用户,不存在则关闭链接
                 if(!Muser::getUserinfo(array('accountid'=>$clientName))){
