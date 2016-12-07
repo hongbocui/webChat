@@ -17,6 +17,7 @@
         running : null,
         //paused : false,
         threadNum : 3,
+        //切片上传，每片的大小
         chunkSize : 1024 * 1024,
         prefix : 'UP_File_',
         file_id : 0,

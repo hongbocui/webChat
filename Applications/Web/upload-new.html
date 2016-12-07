@@ -72,7 +72,8 @@
         uploader.running = uploader.pending[0];
         uploader.pending.splice(0,1);
         uploader.running.total = Math.ceil(uploader.running.file.size/uploader.chunkSize);
-        uploader.running.name = uploader.running.file.name+'|'+uploader.running.file.type+'|'+uploader.running.file.size+'|'+wc_loginName;
+        //文件名加类型，加大小
+        uploader.running.name = uploader.running.file.name+'|'+uploader.running.file.type+'|'+uploader.running.file.size;
         for(var i=0; i<uploader.threadNum && i<uploader.running.total; i++) {
             uploader.chunk(uploader.running.file,function(file, index){
                 var formData = new FormData();
