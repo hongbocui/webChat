@@ -55,7 +55,7 @@ $(function(){
 		}
 	});
 
-
+	//点击联系人
 	$('.tab').click(function(){
 		$(this).addClass('active').siblings('.tab').removeClass('active');
 		$(this).parent().siblings('.'+$(this).attr('tab-name')).addClass('active').siblings('.tab-detail').removeClass('active');	
@@ -85,14 +85,26 @@ $(function(){
 		$('.home').hide();
 		$('.message').css('margin-right','0px');
 		$('.chat-box .member').hide();
-		//如果是群组，更新群组成员
+		$('.contact-msg').attr('chatid',_member);
+		//如果是群组
 		if($(this).attr('type')=='group') {
 			$('.contact-msg p').html(getAdminByChatid(_member)+' 创建于'+timestampTodate($(this).attr('ctime')));
 			//更新一下群组的生存时间
 			$.get('/chatapi.php?c=group&a=expires&chatid='+_member);
+			//将屏蔽消息按钮显示
+			$(".remind").css('display', '');
+			
+			if(readCookie(getNowChatId())){
+				$(".remind").css({"filter":"alpha(opacity=50)",opacity:0.4});
+			} else {
+				$(".remind").css({"filter":"alpha(opacity=50)",opacity:1});
+			}
+			
 		}else{
 			var personalData = getPersonalData(_member);
 			$('.contact-msg p').html('部门：'+personalData.deptDetail+'&nbsp;&nbsp;&nbsp;&nbsp;邮箱：'+personalData.email+'&nbsp;&nbsp;&nbsp;&nbsp;电话：'+personalData.tel);
+			//将屏蔽按钮去掉
+			$(".remind").css('display', 'none');
 		}
 		//未读消息变为0
 		if($(this).find('b').length){
@@ -100,7 +112,6 @@ $(function(){
 			//服务端
 			$.get('/chatapi.php?c=message&a=delunreadmsg&chatid='+_member+'&accountid='+wc_loginName);
 		}
-		$('.contact-msg').attr('chatid',_member);
 		//加载本地消息
 		historyInDialog(_member);
         //加载传输文件
@@ -175,9 +186,11 @@ $(function(){
 		if(readCookie(cookieKey)){
 			delCookie(cookieKey);
 			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"opennotice"}));
+			$(".remind").css({"filter":"alpha(opacity=50)",opacity:1});
 		}else{
 			writeCookie(cookieKey, '1', 30);
 			wc_ws.send(JSON.stringify({"type":"systemNotice","chatid":nowChatid,"action":"closenotice"}));
+			$(".remind").css({"filter":"alpha(opacity=50)",opacity:0.4});
 		}
 	});
 })
