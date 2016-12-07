@@ -383,7 +383,7 @@
 	    nowMessage.message = message;
 	    nowMessage.time = time;
 	    if (window[chatSomeoneHistory] == undefined) {
-	    	$.ajax({
+	    		$.ajax({
 		        url:'chatapi.php?c=message&a=history',
 		        data:{'chatid':chatid},
 		        dataType:'JSON',
@@ -408,8 +408,8 @@
 	        }
 	    }
 	    //保持本地缓存的每路历史消息不超过50条
-	    if(window[chatSomeoneHistory].length > 50) {
-	    	window[chatSomeoneHistory].shift();
+	    if(window[chatSomeoneHistory] != undefined && window[chatSomeoneHistory].length > 50) {
+	    		window[chatSomeoneHistory].shift();
 	    }
 	}
 	//给出一个在线或者上线用户组，使用户列表和最近联系人中头像点亮
