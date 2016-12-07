@@ -7,8 +7,8 @@
          */
         public static  $server = array(
             'webChat' =>  array( #主服务，本业务的服务器redis
-                'host' => '172.31.152.135', #IP
-                'port' => '6379',           #port
+                'host' => 'localhost', #IP
+                'port' => '6526',           #port
             ),
         );
     }
